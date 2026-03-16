@@ -29,11 +29,11 @@ app.use(
   })
 )
 
-// Middleware
-function isLoggedIn(req, res, next) {
-  if (req.session.user) return next()
-  return res.redirect("/login")
-}
+// // Middleware
+// function isLoggedIn(req, res, next) {
+//   if (req.session.user) return next()
+//   return res.redirect("/login")
+// }
 
 // Routes
 app.get("/", home)
@@ -41,13 +41,13 @@ app.get("/", home)
 // Benjamin - Account
 app.get("/login", showLogin)
 app.get("/register", showRegister)
-app.get("/profile/create", isLoggedIn, showCreateProfile)
+app.get("/profile/create", showCreateProfile)
 
 // Mehmet - Favorites
-app.get("/favorites", isLoggedIn, showFavorites)
+app.get("/favorites", showFavorites)
 
 // Sanna - Matching
-app.get("/matching", isLoggedIn, showMatching)
+app.get("/matching", showMatching)
 
 
 // Functions
