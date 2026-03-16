@@ -29,10 +29,57 @@ app.use(
   })
 )
 
+// Middleware
+function isLoggedIn(req, res, next) {
+  if (req.session.user) return next()
+  return res.redirect("/login")
+}
+
 // Routes
+app.get("/", home)
+
+// Benjamin - Account
+app.get("/login", showLogin)
+app.get("/register", showRegister)
+app.get("/profile/create", isLoggedIn, showCreateProfile)
+
+// Mehmet - Favorites
+app.get("/favorites", isLoggedIn, showFavorites)
+
+// Sanna - Matching
+app.get("/matching", isLoggedIn, showMatching)
 
 
 // Functions
+function home(req, res) {
+  res.render("pages/index")
+}
+
+// Benjamin - Account
+function showLogin(req, res) {
+  res.render("pages/login")
+}
+
+function showRegister(req, res) {
+  res.render("pages/register")
+}
+
+function showCreateProfile(req, res) {
+  res.render("pages/createProfile")
+}
+
+
+// Mehmet - Favorites
+function showFavorites(req, res) {
+  res.render("pages/favorite")
+}
+
+
+// Sanna - Matching
+function showMatching(req, res) {
+  res.render("pages/matching")
+}
+
 
 
 // Start server
