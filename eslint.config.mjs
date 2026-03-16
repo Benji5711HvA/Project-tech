@@ -14,18 +14,13 @@ export default defineConfig([
       }
     },
     rules: {
-      // Variabelen
       "no-var": "error",
       "prefer-const": "error",
-      // Naamgeving
       "camelcase": "error",
-      // Functies
       "func-names": ["error", "always"],
-      // Formatting
       "indent": ["error", 2],
       "semi": ["error", "never"],
       "max-len": ["error", { code: 120 }],
-      // Algemene kwaliteit
       "no-unused-vars": "warn",
       "no-console": "off"
     }
