@@ -44,7 +44,7 @@ app.get("/register", showRegister)
 app.get("/profile/create", showCreateProfile)
 
 // Mehmet - Favorites
-app.get("/favorites", showFavorites)
+app.get("/favorite", showFavorites)
 
 // Sanna - Matching
 app.get("/matching", showMatching)
