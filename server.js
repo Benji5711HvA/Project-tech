@@ -44,11 +44,10 @@ app.get("/register", showRegister)
 app.get("/profile/create", showCreateProfile)
 
 // Mehmet - Favorites
-app.get("/favorite", showFavorites)
+app.get("/favorites", showFavorites)
 
 // Sanna - Matching
 app.get("/matching", showMatching)
-
 
 // Functions
 function home(req, res) {
@@ -71,7 +70,7 @@ function showCreateProfile(req, res) {
 
 // Mehmet - Favorites
 function showFavorites(req, res) {
-  res.render("pages/favorite")
+  res.render("pages/favorites")
 }
 
 
