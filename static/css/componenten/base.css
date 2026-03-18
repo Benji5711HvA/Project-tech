@@ -5,10 +5,15 @@
 }
 
 :root {
-  --oranje: #ff5e00;
-  --oranje-hover: #e65400;
-  --tekst-donker: #1a1a2e;
-  --tekst-grijs: #6b7280;
+  --orange: #ff5e00;
+  --orange-hover: #e65400;
+  --text-dark: #1a1a2e;
+  --text-gray: #6b7280;
   --input-bg: #f3f4f6;
-  --wit: #ffffff;
+  --white: #ffffff;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
