@@ -1,0 +1,47 @@
+<%- include("../partials/head") %>
+
+<main class="register-page">
+
+  <div class="register-left">
+    <img src="images/gradient-wave.png" alt="Collego illustratie" />
+    <span class="logo">Collego</span>
+    <div class="text">
+      <h2>Start jouw<br>carrière vandaag</h2>
+      <p>Vul je gegevens in zodat we vacatures kunnen matchen met jouw wensen en beschikbaarheid.</p>
+    </div>
+  </div>
+
+  <section class="register-right">
+    <div class="container">
+
+      <h1>Registreer bij <span>Collego</span></h1>
+      <p class="subtitle">Registreer om vakgenoten te ontdekken en start<br>met bouwen aan jouw netwerk.</p>
+
+      <form action="/register" method="POST">
+
+        <div class="field">
+          <label for="email">Emailadres</label>
+          <input type="email" id="email" name="email" placeholder="voorbeeld@voorbeeld.nl" required />
+        </div>
+
+        <div class="field">
+          <label for="password">Wachtwoord</label>
+          <input type="password" id="password" name="password" minlength="8" required />
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Herhaal wachtwoord</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" minlength="8" required />
+        </div>
+
+        <button type="submit" class="btn">Registreren</button>
+      </form>
+
+      <p class="link">Heb je al een account? <a href="/login">Log in →</a></p>
+
+    </div>
+  </section>
+
+</main>
+
+<%- include("../partials/foot") %>
