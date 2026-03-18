@@ -5,8 +5,8 @@ const session = require("express-session")
 const { MongoClient, ObjectId } = require("mongodb")
 
 // Database setup
-const uri = process.env.URI
-const client = new MongoClient(uri)
+const URI = process.env.URI
+const client = new MongoClient(URI)
 let usersCollection
 
 // App setup
@@ -29,7 +29,7 @@ app.use(
   })
 )
 
-// // Middleware
+// Middleware - uitgecomment totdat login functionaliteit klaar is
 // function isLoggedIn(req, res, next) {
 //   if (req.session.user) return next()
 //   return res.redirect("/login")
@@ -49,7 +49,6 @@ app.get("/favorites", showFavorites)
 // Sanna - Matching
 app.get("/matching", showMatching)
 
-
 // Functions
 function home(req, res) {
   res.render("pages/index")
@@ -68,19 +67,15 @@ function showCreateProfile(req, res) {
   res.render("pages/createProfile")
 }
 
-
 // Mehmet - Favorites
 function showFavorites(req, res) {
   res.render("pages/favorite")
 }
 
-
 // Sanna - Matching
 function showMatching(req, res) {
   res.render("pages/matching")
 }
-
-
 
 // Start server
 async function startServer() {
