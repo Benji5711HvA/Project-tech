@@ -14,3 +14,13 @@
 .btn:hover {
   background: var(--orange-hover);
 }
+
+.btn-small {
+  background: transparent;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  padding: 0.4rem 1.25rem;
+  border-radius: 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+}
