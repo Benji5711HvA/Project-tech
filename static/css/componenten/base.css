@@ -5,15 +5,22 @@
 }
 
 :root {
+  --white: #ffffff;
   --orange: #ff5e00;
   --orange-hover: #e65400;
+
   --text-dark: #1a1a2e;
   --text-gray: #6b7280;
+
   --input-bg: #f3f4f6;
-  --white: #ffffff;
+
+  --error-bg: #fff0f0;
+  --error-text: #e53e3e;
+  --error-border: #fca5a5;
 }
 
-html, body {
+html,
+body {
   height: 100%;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }

@@ -34,6 +34,10 @@
           <input type="password" id="confirmPassword" name="confirmPassword" minlength="8" required />
         </div>
 
+        <% if (typeof error !== 'undefined') { %>
+          <div class="error"><%= error %></div>
+        <% } %>
+
         <button type="submit" class="btn">Registreren</button>
       </form>
 
