@@ -1,0 +1,19 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --orange: #ff5e00;
+  --orange-hover: #e65400;
+  --text-dark: #1a1a2e;
+  --text-gray: #6b7280;
+  --input-bg: #f3f4f6;
+  --white: #ffffff;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
