@@ -2,15 +2,37 @@ nav{
     display: flex;
     align-items: center;
     justify-content:space-between;
-    padding: 0.2rem;
+    padding: 0.2.5rem;
     height: 64px;
+    background-color: #FF601D;
 }
-.nav links {
+.nav-logo {
+    font-weight:700;
+    color: #ffffff;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.nav-links a.active {
+    text-decoration: underline;
+}
+
+.nav-links {
     display: flex;
     gap: 2rem;
     list-style: none;
 }
 
-.nav links a {
-    text-decoration: underline;
+.nav-rechts {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-rechts .material-symbols-outlined {
+    color:#ffffff;
+    cursor: pointer;
 }
