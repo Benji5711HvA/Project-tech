@@ -1,0 +1,98 @@
+.auth-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100vh;
+}
+
+.auth-left {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.auth-left img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auth-left .logo {
+  position: absolute;
+  top: 2rem;
+  left: 2.5rem;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--white);
+  z-index: 1;
+}
+
+.auth-left .text {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 8rem;
+  z-index: 1;
+  max-width: 30em;
+}
+
+.auth-left .text h2 {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+
+.auth-left .text p {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+}
+
+.auth-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  overflow-y: auto;
+}
+
+.auth-right .container {
+  width: 100%;
+  max-width: 30em;
+}
+
+.auth-right h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.auth-right h1 span {
+  color: var(--orange);
+}
+
+.auth-right .subtitle {
+  color: var(--text-gray);
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.auth-right .link {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--text-gray);
+}
+
+.auth-right .link a {
+  color: var(--orange);
+  font-weight: 600;
+  text-decoration: none;
+}
