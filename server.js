@@ -30,11 +30,11 @@ app.use(
   }),
 )
 
-// Middleware - uitgecomment totdat login functionaliteit klaar is
-// function isLoggedIn(req, res, next) {
-//   if (req.session.user) return next()
-//   return res.redirect("/login")
-// }
+// deze middleware checkt of de gebruiker is ingelogd, je wilt niet dat iemand die niet is ingelogd toegnang heeft tot bepaalde routes, zoals het profiel aanmaken of de favorieten pagina
+function isLoggedIn(req, res, next) {
+  if (req.session.user) return next()
+  return res.redirect("/login")
+}
 
 // Hulp functies
 async function hashPassword(password) {
@@ -61,14 +61,17 @@ app.get("/register", showRegister)
 app.post("/register", handleRegister)
 
 app.get("/login", showLogin)
+app.post("/login", handleLogin)
 
-app.get("/profile/create", showCreateProfile)
+app.post("/logout", handleLogout)
+
+app.get("/createProfile", isLoggedIn, showCreateProfile)
 
 // Mehmet - Favorites
-app.get("/favorites", showFavorites)
+app.get("/favorites", isLoggedIn, showFavorites)
 
 // Sanna - Matching
-app.get("/matching", showMatching)
+app.get("/matching", isLoggedIn, showMatching)
 
 // Functions
 function home(req, res) {
@@ -102,11 +105,9 @@ async function handleRegister(req, res) {
     res.redirect("/login")
   } catch (err) {
     console.error("Fout bij registreren:", err)
-    res
-      .status(500)
-      .render("pages/register", {
-        error: "Er ging iets mis, probeer het opnieuw",
-      })
+    res.status(500).render("pages/register", {
+      error: "Er ging iets mis, probeer het opnieuw",
+    })
   }
 }
 
@@ -114,8 +115,50 @@ function showLogin(req, res) {
   res.render("pages/login")
 }
 
+async function handleLogin(req, res) {
+  try {
+    const { email, password } = req.body
+
+    const user = await usersCollection.findOne({ email })
+    if (!user) {
+      return res
+        .status(400)
+        .render("pages/login", { error: "Verkeerd e-mailadres of wachtwoord" })
+    }
+
+    const passwordMatches = await verifyPassword(password, user.password)
+    if (!passwordMatches) {
+      return res
+        .status(400)
+        .render("pages/login", { error: "Verkeerd e-mailadres of wachtwoord" })
+    }
+
+    req.session.user = {
+      id: user._id.toString(),
+      email: user.email,
+    }
+
+    res.redirect("/createProfile")
+  } catch (err) {
+    console.error("Fout bij inloggen:", err)
+    res
+      .status(500)
+      .render("pages/login", { error: "Er ging iets mis, probeer het opnieuw" })
+  }
+}
+
+function handleLogout(req, res) {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Fout bij uitloggen:", err)
+      return res.status(500).send("Er ging iets mis bij het uitloggen")
+    }
+    res.redirect("/login")
+  })
+}
+
 function showCreateProfile(req, res) {
-  res.render("pages/createProfile")
+  res.render("pages/createProfile", { user: req.session.user })
 }
 
 // Mehmet - Favorites
