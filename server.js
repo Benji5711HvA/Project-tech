@@ -69,7 +69,7 @@ function showCreateProfile(req, res) {
 
 // Mehmet - Favorites
 function showFavorites(req, res) {
-  res.render("pages/favorite")
+  res.render("pages/favorites")
 }
 
 // Sanna - Matching
