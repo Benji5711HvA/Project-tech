@@ -1,16 +1,16 @@
-.register-page {
+.account {
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 100vh;
 }
 
-.register-left {
+.account-left {
   position: relative;
   height: 100vh;
   overflow: hidden;
 }
 
-.register-left img {
+.account-left img {
   position: absolute;
   top: 0;
   left: 0;
@@ -19,7 +19,7 @@
   object-fit: cover;
 }
 
-.register-left .logo {
+.account-left .logo {
   position: absolute;
   top: 2rem;
   left: 2.5rem;
@@ -29,7 +29,7 @@
   z-index: 1;
 }
 
-.register-left .text {
+.account-left .text {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -38,7 +38,7 @@
   max-width: 30em;
 }
 
-.register-left .text h2 {
+.account-left .text h2 {
   font-size: 3.5rem;
   font-weight: 800;
   color: var(--white);
@@ -46,13 +46,13 @@
   margin-bottom: 1rem;
 }
 
-.register-left .text p {
+.account-left .text p {
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.85);
   line-height: 1.6;
 }
 
-.register-right {
+.account-right {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -60,12 +60,12 @@
   overflow-y: auto;
 }
 
-.register-right .container {
+.account-right .container {
   width: 100%;
   max-width: 30em;
 }
 
-.register-right h1 {
+.account-right h1 {
   font-size: 2rem;
   font-weight: 800;
   color: var(--text-dark);
@@ -73,25 +73,25 @@
   letter-spacing: -0.5px;
 }
 
-.register-right h1 span {
+.account-right h1 span {
   color: var(--orange);
 }
 
-.register-right .subtitle {
+.account-right .subtitle {
   color: var(--text-gray);
   font-size: 0.9rem;
   margin-bottom: 2rem;
   line-height: 1.5;
 }
 
-.register-right .link {
+.account-right .link {
   text-align: center;
   margin-top: 1.25rem;
   font-size: 0.9rem;
   color: var(--text-gray);
 }
 
-.register-right .link a {
+.account-right .link a {
   color: var(--orange);
   font-weight: 600;
   text-decoration: none;
