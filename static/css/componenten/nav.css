@@ -2,11 +2,12 @@ nav{
     display: flex;
     align-items: center;
     justify-content:space-between;
-    padding: 0.2.5rem;
-    height: 64px;
+    padding: 0 4rem;
+    height: 80px;
     background-color: #FF6116;
 }
 .nav-logo {
+    font-size: 2.2rem;
     font-weight:700;
     color: #ffffff;
 }
@@ -14,6 +15,7 @@ nav{
 .nav-links a {
     text-decoration: none;
     color: #ffffff;
+    font-size: 1.2rem;
 }
 
 .nav-links a.active {
@@ -22,8 +24,9 @@ nav{
 
 .nav-links {
     display: flex;
-    gap: 2rem;
+    gap: 3rem;
     list-style: none;
+    margin-right: 60rem;
 }
 
 .nav-rechts {
