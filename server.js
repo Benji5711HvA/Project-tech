@@ -76,7 +76,6 @@ function showFavorites(req, res) {
 function showMatching(req, res) {
   res.render("pages/matching")
 }
-
 // Start server
 async function startServer() {
   try {
