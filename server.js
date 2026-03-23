@@ -30,10 +30,10 @@ app.use(
 )
 
 // Middleware - uitgecomment totdat login functionaliteit klaar is
-// function isLoggedIn(req, res, next) {
-//   if (req.session.user) return next()
-//   return res.redirect("/login")
-// }
+function isLoggedIn(req, res, next) {
+  if (req.session.user) return next()
+  return res.redirect("/login")
+}
 
 // Routes
 app.get("/", home)
