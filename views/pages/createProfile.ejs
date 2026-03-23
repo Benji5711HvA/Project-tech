@@ -1,0 +1,78 @@
+<%- include("../partials/head") %>
+
+  <main class="account">
+
+    <div class="account-left">
+      <img src="/images/gradient-wave.png" alt="Collego illustratie" />
+      <span class="logo">Collego</span>
+      <div class="text">
+        <h2>Maak je profiel compleet!</h2>
+        <p>Vul je profiel in en ontdek vacatures die passen bij jouw ervaring en ambities.</p>
+      </div>
+    </div>
+
+    <section class="account-right">
+      <div class="container">
+
+        <div class="progress">
+          <div class="progress-bar active"></div>
+          <div class="progress-bar"></div>
+        </div>
+
+        <p class="step-label">Stap 1 van 2</p>
+
+        <h1>Persoonlijke gegevens</h1>
+        <p class="subtitle">Vertel ons wie je bent zodat werkgevers jou kunnen vinden.</p>
+
+        <form action="/createProfile" method="POST">
+
+          <div class="field-row-two">
+            <div class="field">
+              <label for="firstName">Voornaam</label>
+              <input type="text" id="firstName" name="firstName" placeholder="John" required />
+            </div>
+            <div class="field">
+              <label for="lastName">Achternaam</label>
+              <input type="text" id="lastName" name="lastName" placeholder="Doe" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="birthDate">Geboortedatum</label>
+            <input type="date" id="birthDate" name="birthDate" required />
+          </div>
+
+          <div class="field-row-three">
+            <div class="field">
+              <label for="streetName">Straatnaam</label>
+              <input type="text" id="streetName" name="streetName" placeholder="Bijv. Damstraat" required />
+            </div>
+            <div class="field">
+              <label for="houseNumber">Huisnummer</label>
+              <input type="text" id="houseNumber" name="houseNumber" placeholder="12A" required />
+            </div>
+            <div class="field">
+              <label for="zipCode">Postcode</label>
+              <input type="text" id="zipCode" name="zipCode" placeholder="1234 AB" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="city">Stad</label>
+            <input type="text" id="city" name="city" placeholder="Bijv. Amsterdam" required />
+          </div>
+
+          <% if (typeof error !=='undefined' ) { %>
+            <div class="error">
+              <%= error %>
+            </div>
+            <% } %>
+
+              <button type="submit" class="btn">Volgende stap →</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <%- include("../partials/foot") %>
