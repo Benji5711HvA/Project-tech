@@ -58,11 +58,14 @@
   justify-content: center;
   padding: 3rem;
   overflow-y: auto;
+  height: 100vh;
 }
 
 .account-right .container {
   width: 100%;
   max-width: 30em;
+  margin: auto;
+  padding: 2rem 0;
 }
 
 .account-right h1 {

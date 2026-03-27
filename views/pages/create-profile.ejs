@@ -1,0 +1,296 @@
+<%- include("../partials/head") %>
+
+  <main class="account">
+
+    <div class="account-left">
+      <img src="/images/gradient-wave.png" alt="Collego illustratie" />
+      <span class="logo">Collego</span>
+      <div class="text">
+        <h2>Maak je profiel compleet!</h2>
+        <p>Vul je profiel in en ontdek vacatures die passen bij jouw ervaring en ambities.</p>
+      </div>
+    </div>
+
+    <section class="account-right">
+      <div class="container">
+
+        <div class="progress">
+          <div class="progress-bar active" id="progress-bar1"></div>
+          <div class="progress-bar" id="progress-bar2"></div>
+        </div>
+
+        <form action="/create-profile" method="POST">
+
+          <section id="step1">
+            <p class="step-label">Stap 1 van 2</p>
+
+            <h1>Persoonlijke gegevens</h1>
+            <p class="subtitle">Vertel ons wie je bent zodat werkgevers jou kunnen vinden.</p>
+
+            <div class="field-row-two">
+              <div class="field">
+                <label for="firstName">Voornaam</label>
+                <input type="text" id="firstName" name="firstName" placeholder="John" required />
+              </div>
+              <div class="field">
+                <label for="lastName">Achternaam</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Doe" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="birthDate">Geboortedatum</label>
+              <input type="date" id="birthDate" name="birthDate" required />
+            </div>
+
+            <div class="field-row-three">
+              <div class="field">
+                <label for="streetName">Straatnaam</label>
+                <input type="text" id="streetName" name="streetName" placeholder="Bijv. Damstraat" required />
+              </div>
+              <div class="field">
+                <label for="houseNumber">Huisnummer</label>
+                <input type="text" id="houseNumber" name="houseNumber" placeholder="12A" required />
+              </div>
+              <div class="field">
+                <label for="zipCode">Postcode</label>
+                <input type="text" id="zipCode" name="zipCode" placeholder="1234 AB" required />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="city">Stad</label>
+              <input type="text" id="city" name="city" placeholder="Bijv. Amsterdam" required />
+            </div>
+
+            <div class="field">
+              <label for="bio">Vertel kort iets over jezelf <span class="optional">(optioneel)</span></label>
+              <textarea id="bio" name="bio" maxlength="200" oninput="updateTeller(this.value.length)"
+                placeholder="Schrijf hier een korte introductie..."></textarea>
+              <p class="teller">0/200</p>
+            </div>
+
+            <% if (typeof error !=='undefined' ) { %>
+              <div class="error">
+                <%= error %>
+              </div>
+              <% } %>
+
+                <button type="button" class="btn" onclick="nextStep()">Volgende stap</button>
+          </section>
+
+          <section id="step2">
+            <p class="step-label">Stap 2 van 2</p>
+
+            <h1>Werkvoorkeuren</h1>
+            <p class="subtitle">Vertel ons wat voor werk je zoekt.</p>
+
+            <div class="field">
+              <label>Wat voor werk spreekt jou aan?</label>
+              <div class="sector-grid">
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-ict" name="sector" value="it-jobs" />
+                  <label for="sector-ict">ICT & Tech</label>
+                </div>
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-zorg" name="sector" value="healthcare-nursing-jobs" />
+                  <label for="sector-zorg">Zorg & Welzijn</label>
+                </div>
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-admin" name="sector" value="admin-jobs" />
+                  <label for="sector-admin">Administratie</label>
+                </div>
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-retail" name="sector" value="retail-jobs" />
+                  <label for="sector-retail">Retail & Verkoop</label>
+                </div>
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-horeca" name="sector" value="hospitality-catering-jobs" />
+                  <label for="sector-horeca">Horeca & Toerisme</label>
+                </div>
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-onderwijs" name="sector" value="teaching-jobs" />
+                  <label for="sector-onderwijs">Onderwijs</label>
+                </div>
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-logistiek" name="sector" value="logistics-warehouse-jobs" />
+                  <label for="sector-logistiek">Logistiek</label>
+                </div>
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-marketing" name="sector" value="pr-advertising-marketing-jobs" />
+                  <label for="sector-marketing">Marketing & Comm.</label>
+                </div>
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-techniek" name="sector" value="industrial-jobs" />
+                  <label for="sector-techniek">Techniek & Industrie</label>
+                </div>
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-finance" name="sector" value="accounting-finance-jobs" />
+                  <label for="sector-finance">Finance & Juridisch</label>
+                </div>
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-bouw" name="sector" value="construction-jobs" />
+                  <label for="sector-bouw">Bouw & Infra</label>
+                </div>
+                <div class="sector-card">
+                  <input type="checkbox" id="sector-any" name="sector" value="" />
+                  <label for="sector-any">Maakt niet uit</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="location">In welke stad wil je werken?</label>
+              <input type="text" id="location" name="location" placeholder="Bijv. Amsterdam, Rotterdam, Utrecht..." />
+            </div>
+
+            <div class="field">
+              <label>Minimaal salaris (bruto per maand, optioneel)</label>
+              <div class="chip-group">
+                <div class="chip">
+                  <input type="radio" id="salary-none" name="salary" value="" checked />
+                  <label for="salary-none">Geen voorkeur</label>
+                </div>
+                <div class="chip">
+                  <input type="radio" id="salary-1400" name="salary" value="16800" />
+                  <label for="salary-1400">€ 1.400</label>
+                </div>
+                <div class="chip">
+                  <input type="radio" id="salary-1700" name="salary" value="20400" />
+                  <label for="salary-1700">€ 1.700</label>
+                </div>
+                <div class="chip">
+                  <input type="radio" id="salary-2000" name="salary" value="24000" />
+                  <label for="salary-2000">€ 2.000</label>
+                </div>
+                <div class="chip">
+                  <input type="radio" id="salary-2400" name="salary" value="28800" />
+                  <label for="salary-2400">€ 2.400</label>
+                </div>
+                <div class="chip">
+                  <input type="radio" id="salary-3000" name="salary" value="36000" />
+                  <label for="salary-3000">€ 3.000</label>
+                </div>
+                <div class="chip">
+                  <input type="radio" id="salary-4000" name="salary" value="48000" />
+                  <label for="salary-4000">€ 4.000+</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="education">Opleidingsniveau</label>
+              <select id="education" name="education">
+                <option value="" disabled selected>Selecteer jouw niveau</option>
+                <option value="vmbo">Middelbaar onderwijs (VMBO/HAVO/VWO)</option>
+                <option value="mbo12">MBO niveau 1 of 2</option>
+                <option value="mbo34">MBO niveau 3 of 4</option>
+                <option value="hbo">HBO Bachelor</option>
+                <option value="wo">WO Bachelor</option>
+                <option value="master">HBO/WO Master</option>
+                <option value="phd">PhD / Doctoraat</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="experience">Jaren werkervaring</label>
+              <select id="experience" name="experience">
+                <option value="" disabled selected>Selecteer je ervaring</option>
+                <option value="none">Geen ervaring (starter)</option>
+                <option value="less-than-1">Minder dan 1 jaar</option>
+                <option value="1-3">1 - 3 jaar</option>
+                <option value="3-5">3 - 5 jaar</option>
+                <option value="5-10">5 - 10 jaar</option>
+                <option value="10+">Meer dan 10 jaar</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Aantal uur per week</label>
+              <div class="chip-group">
+                <div class="chip">
+                  <input type="radio" id="hours-8-16" name="hoursPerWeek" value="8-16" />
+                  <label for="hours-8-16">8 - 16 uur</label>
+                </div>
+                <div class="chip">
+                  <input type="radio" id="hours-16-24" name="hoursPerWeek" value="16-24" />
+                  <label for="hours-16-24">16 - 24 uur</label>
+                </div>
+                <div class="chip">
+                  <input type="radio" id="hours-24-32" name="hoursPerWeek" value="24-32" />
+                  <label for="hours-24-32">24 - 32 uur</label>
+                </div>
+                <div class="chip">
+                  <input type="radio" id="hours-32-40" name="hoursPerWeek" value="32-40" />
+                  <label for="hours-32-40">32 - 40 uur</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Type contract</label>
+              <div class="chip-group">
+                <div class="chip">
+                  <input type="checkbox" id="contract-permanent" name="contractType" value="permanent" />
+                  <label for="contract-permanent">Vast contract</label>
+                </div>
+                <div class="chip">
+                  <input type="checkbox" id="contract-temporary" name="contractType" value="temporary" />
+                  <label for="contract-temporary">Tijdelijk contract</label>
+                </div>
+                <div class="chip">
+                  <input type="checkbox" id="contract-freelance" name="contractType" value="freelance" />
+                  <label for="contract-freelance">Freelance / ZZP</label>
+                </div>
+                <div class="chip">
+                  <input type="checkbox" id="contract-internship" name="contractType" value="internship" />
+                  <label for="contract-internship">Stage</label>
+                </div>
+                <div class="chip">
+                  <input type="checkbox" id="contract-any" name="contractType" value="any" />
+                  <label for="contract-any">Maakt niet uit</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Hoe wil je werken?</label>
+              <div class="chip-group">
+                <div class="chip">
+                  <input type="checkbox" id="work-office" name="workForm" value="office" />
+                  <label for="work-office">Op kantoor</label>
+                </div>
+                <div class="chip">
+                  <input type="checkbox" id="work-remote" name="workForm" value="remote" />
+                  <label for="work-remote">Thuiswerken</label>
+                </div>
+                <div class="chip">
+                  <input type="checkbox" id="work-hybrid" name="workForm" value="hybrid" />
+                  <label for="work-hybrid">Hybride</label>
+                </div>
+                <div class="chip">
+                  <input type="checkbox" id="work-onsite" name="workForm" value="onsite" />
+                  <label for="work-onsite">Op locatie</label>
+                </div>
+              </div>
+            </div>
+
+            <% if (typeof error !=='undefined' ) { %>
+              <div class="error">
+                <%= error %>
+              </div>
+              <% } %>
+
+                <button type="submit" class="btn">Profiel aanmaken</button>
+
+          </section>
+
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/js/create-profile.js"></script>
+
+  <%- include("../partials/foot") %>
