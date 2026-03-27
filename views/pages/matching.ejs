@@ -1,85 +1,110 @@
 <%- include("../partials/header") %>
 
-<main class="matching-page">
+  <main class="matching-page">
 
-  <section class="hero">
-    <h1>Matching</h1>
-    <p>Bekijk vacatures en laat ons weten of je geïnteresseerd bent!</p>
-  </section>
+    <section class="hero">
+      <h1>Matching</h1>
+      <p>Bekijk vacatures en laat ons weten of je geïnteresseerd bent!</p>
+    </section>
 
-  <section class="carousel">
+    <section class="carousel">
 
-    <button class="previous-button">&#8592;</button>
+      <button class="previous-button">
+        <span class="material-symbols-outlined">
+          arrow_back
+        </span>
+      </button>
 
-    <% vacancies.forEach(function(vacancy) { %>
+      <% vacancies.forEach(function(vacancy) { %>
 
-      <div class="vacancy-card">
 
-        <button
-          class="favorite-button"
-          data-title="<%= vacancy.title %>"
-          data-company="<%= vacancy.company.display_name %>"
-          data-location="<%= vacancy.location.display_name %>"
-        >
-          <span class="material-symbols-outlined favorite-icon">
-            favorite
-          </span>
-        </button>
+        <div class="vacancy-card">
 
-        <div class="card-info">
-          <h2><%= vacancy.title %></h2>
-          <p class="company"><%= vacancy.company.display_name %></p>
-          <p class="location"><%= vacancy.location.display_name %></p>
-          <p class="category"><%= vacancy.category.label %></p>
+          <div class="card-info">
 
-          <% if (vacancy.contract_time) { %>
-            <p class="contract"><%= vacancy.contract_time === 'full_time' ? 'Voltijd' : 'Deeltijd' %></p>
-          <% } %>
+            <div class="card-title-row">
+              <h2>
+                <%= vacancy.title %>
+              </h2>
+              <button class="favorite-button" data-title="<%= vacancy.title %>" data-company="<%= vacancy.company %>"
+                data-location="<%= vacancy.location %>">
+                <span class="material-symbols-outlined favorite-icon">
+                  favorite
+                </span>
+              </button>
+            </div>
 
-          <% if (vacancy.salary_min && vacancy.salary_max) { %>
-            <p class="salary">€<%= vacancy.salary_min %> - €<%= vacancy.salary_max %> per jaar</p>
-          <% } %>
+            <p class="company">
+              <%= vacancy.company %>
+            </p>
+            <p class="location">
+              <%= vacancy.location %>
+            </p>
+            <p class="category">
+              <%= vacancy.category %>
+            </p>
 
-          <button class="more-info-button">Meer informatie</button>
-        </div>
 
-        <div class="popup">
-          <div class="popup-content">
-            <button class="close-button">&#10005;</button>
-            <h2><%= vacancy.title %></h2>
-            <p class="company"><%= vacancy.company.display_name %></p>
-            <p class="location"><%= vacancy.location.display_name %></p>
-            <p class="description"><%= vacancy.description %></p>
+            <% if (vacancy.contract_time) { %>
+              <p class="contract">
+                <%= vacancy.contract_time==='full_time' ? 'Voltijd' : 'Deeltijd' %>
+              </p>
+              <% } %>
+
+                <% if (vacancy.salary_min && vacancy.salary_max) { %>
+                  <p class="salary">€<%= vacancy.salary_min %> - €<%= vacancy.salary_max %> per jaar</p>
+                  <% } %>
           </div>
+
+          <div class="popup">
+            <div class="popup-content">
+              <button class="close-button"> <span class="material-symbols-outlined">close
+                </span> </button>
+              <h2>
+                <%= vacancy.title %>
+              </h2>
+              <p class="company">
+                <%= vacancy.company %>
+              </p>
+              <p class="location">
+                <%= vacancy.location %>
+              </p>
+              <p class="description">
+                <%= vacancy.description %>
+              </p>
+            </div>
+          </div>
+
+          <div class="card-buttons">
+            <button class="no-button" data-vacancy-id="<%= vacancy._id %>" data-vacancy-title="<%= vacancy.title %>"
+              data-company="<%= vacancy.company %>">
+              &#10005;
+            </button>
+            <button class="yes-button" data-vacancy-id="<%= vacancy._id %>" data-vacancy-title="<%= vacancy.title %>"
+              data-company="<%= vacancy.company %>">
+              &#10003;
+            </button>
+          </div>
+
         </div>
 
-        <div class="card-buttons">
-          <button class="no-button"
-            data-vacancy-id="<%= vacancy.id %>"
-            data-vacancy-title="<%= vacancy.title %>"
-            data-company="<%= vacancy.company.display_name %>">
-            &#10005;
+        <% }) %>
+
+          <div class="end-card">
+            <p>Je hebt alle vacatures bekeken!</p>
+          </div>
+
+          <button class="next-button">
+            <span class="material-symbols-outlined">arrow_forward</span>
           </button>
-          <button class="yes-button"
-            data-vacancy-id="<%= vacancy.id %>"
-            data-vacancy-title="<%= vacancy.title %>"
-            data-company="<%= vacancy.company.display_name %>">
-            &#10003;
-          </button>
-        </div>
 
-      </div>
 
-    <% }) %>
+    </section>
 
-    <button class="next-button">&#8594;</button>
+    <p id="feedbackMessage" class="feedback-message"></p>
 
-  </section>
+  </main>
 
-  <p id="feedbackMessage" class="feedback-message"></p>
+  <script src="/js/matching.js"></script>
 
-</main>
-
-<script src="/js/matching.js"></script>
-
-<%- include("../partials/footer") %>
+  <%- include("../partials/footer") %>

@@ -103,3 +103,28 @@
   align-self: flex-end;
   color: var(--text-gray);
 }
+
+.favorite-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.favorite-button .favorite-icon {
+  color: var(--text-gray);
+  transition: color 0.2s;
+}
+
+.favorite-button:hover .favorite-icon {
+  color: red;
+}
+
+.favorite-button.active .favorite-icon {
+  color: red;
+}
+
+.matching-page .previous-button .material-symbols-outlined,
+.matching-page .next-button .material-symbols-outlined {
+  font-size: 1.5rem;
+}

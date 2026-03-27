@@ -17,14 +17,17 @@ function goToPrev() {
     showCard(currentIndex)
   }
 }
-
 function goToNext() {
   if (currentIndex < cards.length - 1) {
     currentIndex = currentIndex + 1
     showCard(currentIndex)
+  } else {
+    cards.forEach(function hideCard(card) {
+      card.style.display = 'none'
+    })
+    document.querySelector('.end-card').style.display = 'flex'
   }
 }
-
 async function sendReaction(vacancyId, vacancyTitle, company, reaction) {
   try {
     const response = await fetch('/match-reaction', {
@@ -70,6 +73,11 @@ document.querySelectorAll('.close-button').forEach(function addCloseListener(but
   button.addEventListener('click', function handleCloseClick() {
     const popup = button.closest('.popup')
     popup.classList.remove('active')
+  })
+})
+document.querySelectorAll('.favorite-button').forEach(function addFavoriteListener(button) {
+  button.addEventListener('click', function handleFavoriteClick() {
+    button.classList.toggle('active')
   })
 })
 showCard(currentIndex)
