@@ -1,6 +1,6 @@
 .hero{
     background-image: url('/images/wave-horizontal.png');
-    background-size: cover;
+    background-size: 100% 100%;
     background-position: top center;
     background-repeat: no-repeat;
     display: flex;
@@ -14,12 +14,13 @@
 .hero h1{
   font-size: 3.5rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--white);
   margin-bottom: 1.3rem;
   margin-top: 5rem;
 }
 
 .hero p{
   font-size: 1.6rem;
-  color: #ffffff;
+  color: var(--white);
 }
+
