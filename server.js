@@ -220,17 +220,6 @@ async function handleCreateProfile(req, res) {
   }
 }
 
-async function handleCreateProfile(req, res) {
-  try {
-
-  } catch (err) {
-    console.error("Fout bij profiel aanmaken:", err)
-    res
-      .status(500)
-      .render("pages/createProfile", { error: "Er ging iets mis, probeer het opnieuw" })
-  }
-}
-
 // Mehmet - Favorites
 function showFavorites(req, res) {
   res.render("pages/favorites")
