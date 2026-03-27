@@ -25,3 +25,81 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
   cursor: pointer;
 }
+
+.matching-page .more-info-button {
+  background: none;
+  border: 1px solid var(--orange);
+  color: var(--orange);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  width: fit-content;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.matching-page .more-info-button:hover {
+  background-color: var(--orange);
+  color: var(--white);
+}
+
+.matching-page .no-button,
+.matching-page .yes-button {
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.matching-page .no-button {
+  background-color: #ff4444;
+  color: var(--white);
+}
+
+.matching-page .yes-button {
+  background-color: #44bb44;
+  color: var(--white);
+}
+
+.matching-page .no-button:hover {
+  background-color: #cc0000;
+  transform: scale(1.1);
+}
+
+.matching-page .yes-button:hover {
+  background-color: #228822;
+  transform: scale(1.1);
+}
+
+.matching-page .previous-button,
+.matching-page .next-button {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--orange);
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--orange);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.matching-page .previous-button:hover,
+.matching-page .next-button:hover {
+  background-color: var(--orange);
+  color: var(--white);
+}
+
+.matching-page .close-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  align-self: flex-end;
+  color: var(--text-gray);
+}

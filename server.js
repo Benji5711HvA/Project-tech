@@ -9,6 +9,7 @@ const { MongoClient, ObjectId } = require("mongodb")
 const URI = process.env.URI
 const client = new MongoClient(URI)
 let usersCollection
+let reactionsCollection
 
 // App setup
 const app = express()
@@ -59,19 +60,18 @@ app.get("/", home)
 // Benjamin - Account
 app.get("/register", showRegister)
 app.post("/register", handleRegister)
-
 app.get("/login", showLogin)
 app.post("/login", handleLogin)
-
 app.post("/logout", handleLogout)
-
 app.get("/createProfile", isLoggedIn, showCreateProfile)
+app.post("/createProfile", isLoggedIn, handleCreateProfile)
 
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
 
 // Sanna - Matching
 app.get("/matching", isLoggedIn, showMatching)
+app.post("/match-reaction", isLoggedIn, handleMatchReaction)
 
 // Functions
 function home(req, res) {
@@ -161,14 +161,61 @@ function showCreateProfile(req, res) {
   res.render("pages/createProfile", { user: req.session.user })
 }
 
+async function handleCreateProfile(req, res) {
+  try {
+
+  } catch (err) {
+    console.error("Fout bij profiel aanmaken:", err)
+    res
+      .status(500)
+      .render("pages/createProfile", { error: "Er ging iets mis, probeer het opnieuw" })
+  }
+}
+
 // Mehmet - Favorites
 function showFavorites(req, res) {
   res.render("pages/favorites")
 }
 
 // Sanna - Matching
-function showMatching(req, res) {
-  res.render("pages/matching")
+async function showMatching(req, res) {
+  try {
+    const response = await fetch(
+      "https://api.adzuna.com/v1/api/jobs/nl/search/1?app_id=" +
+      process.env.ADZUNA_APP_ID +
+      "&app_key=" +
+      process.env.ADZUNA_APP_KEY +
+      "&results_per_page=20"
+    )
+    const data = await response.json()
+    res.render("pages/matching", { vacancies: data.results })
+  } catch (err) {
+    console.error("Fout bij ophalen vacatures:", err)
+    res.status(500).render("pages/matching", { vacancies: [] })
+  }
+}
+async function handleMatchReaction(req, res) {
+  try {
+    const userId = req.session.user.id
+    const { vacancyId, vacancyTitle, company, reaction } = req.body
+
+    // Alleen opslaan als de gebruiker interesse heeft
+    if (reaction === 'yes') {
+      await reactionsCollection.insertOne({
+        userId,
+        vacancyId,
+        vacancyTitle,
+        company,
+        reaction,
+        status: "in behandeling"
+      })
+    }
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error("Fout bij opslaan reactie:", err)
+    res.status(500).json({ success: false })
+  }
 }
 
 // Start server
@@ -179,6 +226,7 @@ async function startServer() {
 
     const db = client.db(process.env.DB_NAME)
     usersCollection = db.collection("users")
+    reactionsCollection = db.collection("reactions")
 
     app.listen(3000, () => {
       console.log("Server draait op http://localhost:3000")

@@ -26,7 +26,6 @@ nav{
     display: flex;
     gap: 3rem;
     list-style: none;
-    margin-right: 60rem;
 }
 
 .nav-rechts {
