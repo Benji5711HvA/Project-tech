@@ -63,8 +63,9 @@ app.post("/register", handleRegister)
 app.get("/login", showLogin)
 app.post("/login", handleLogin)
 app.post("/logout", handleLogout)
-app.get("/createProfile", isLoggedIn, showCreateProfile)
-app.post("/createProfile", isLoggedIn, handleCreateProfile)
+
+app.get("/create-profile", isLoggedIn, showCreateProfile)
+app.post("/create-profile", isLoggedIn, handleCreateProfile)
 
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
@@ -138,7 +139,11 @@ async function handleLogin(req, res) {
       email: user.email,
     }
 
-    res.redirect("/createProfile")
+    if (!user.firstName) {
+      res.redirect("/create-profile")
+    } else {
+      res.redirect("/matching")
+    }
   } catch (err) {
     console.error("Fout bij inloggen:", err)
     res
@@ -158,7 +163,61 @@ function handleLogout(req, res) {
 }
 
 function showCreateProfile(req, res) {
-  res.render("pages/createProfile", { user: req.session.user })
+  res.render("pages/create-profile", { user: req.session.user })
+}
+
+async function handleCreateProfile(req, res) {
+  try {
+    const {
+      firstName,
+      lastName,
+      birthDate,
+      streetName,
+      houseNumber,
+      zipCode,
+      city,
+      bio,
+      sector,
+      location,
+      salary,
+      education,
+      experience,
+      hoursPerWeek,
+      contractType,
+      workForm,
+    } = req.body
+
+    await usersCollection.updateOne(
+      { _id: new ObjectId(req.session.user.id) },
+      {
+        $set: {
+          firstName,
+          lastName,
+          birthDate,
+          streetName,
+          houseNumber,
+          zipCode,
+          city,
+          bio,
+          sector,
+          location,
+          salary,
+          education,
+          experience,
+          hoursPerWeek,
+          contractType,
+          workForm,
+        },
+      },
+    )
+
+    res.redirect("/matching")
+  } catch (err) {
+    console.error("Fout bij profiel aanmaken:", err)
+    res.status(500).render("pages/create-profile", {
+      error: "Er ging iets mis, probeer het opnieuw",
+    })
+  }
 }
 
 async function handleCreateProfile(req, res) {

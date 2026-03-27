@@ -42,6 +42,36 @@
   background: var(--white);
 }
 
+textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: var(--input-bg);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  outline: none;
+  resize: none;
+  height: 6rem;
+}
+
+textarea::placeholder {
+  color: #9ca3af;
+}
+
+textarea:focus {
+  border-color: var(--orange);
+  background: var(--white);
+}
+
+.teller {
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--text-gray);
+  margin-top: 0.25rem;
+}
+
 .error {
   background: var(--error-bg);
   color: var(--error-text);
