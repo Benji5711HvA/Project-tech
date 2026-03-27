@@ -10,6 +10,7 @@ const URI = process.env.URI
 const client = new MongoClient(URI)
 let usersCollection
 let reactionsCollection
+let vacanciesCollection
 
 // App setup
 const app = express()
@@ -228,15 +229,8 @@ function showFavorites(req, res) {
 // Sanna - Matching
 async function showMatching(req, res) {
   try {
-    const response = await fetch(
-      "https://api.adzuna.com/v1/api/jobs/nl/search/1?app_id=" +
-      process.env.ADZUNA_APP_ID +
-      "&app_key=" +
-      process.env.ADZUNA_APP_KEY +
-      "&results_per_page=20"
-    )
-    const data = await response.json()
-    res.render("pages/matching", { vacancies: data.results })
+    const vacancies = await vacanciesCollection.find({}).toArray()
+    res.render("pages/matching", { vacancies })
   } catch (err) {
     console.error("Fout bij ophalen vacatures:", err)
     res.status(500).render("pages/matching", { vacancies: [] })
@@ -275,6 +269,7 @@ async function startServer() {
     const db = client.db(process.env.DB_NAME)
     usersCollection = db.collection("users")
     reactionsCollection = db.collection("reactions")
+    vacanciesCollection = db.collection("vacancies")
 
     app.listen(3000, () => {
       console.log("Server draait op http://localhost:3000")
