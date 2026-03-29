@@ -68,6 +68,9 @@ app.post("/logout", handleLogout)
 app.get("/create-profile", isLoggedIn, showCreateProfile)
 app.post("/create-profile", isLoggedIn, handleCreateProfile)
 
+app.get("/create-company-profile", isLoggedIn, showCreateCompanyProfile)
+// app.post("/create-company-profile", isLoggedIn, handleCreateCompanyProfile)
+
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
 
@@ -87,7 +90,7 @@ function showRegister(req, res) {
 
 async function handleRegister(req, res) {
   try {
-    const { email, password, confirmPassword } = req.body
+    const { email, password, confirmPassword, role } = req.body
 
     const error = validateRegistration(email, password, confirmPassword)
     if (error) return res.status(400).render("pages/register", { error })
@@ -102,7 +105,7 @@ async function handleRegister(req, res) {
 
     // Het is verboden om plain text wachtwoorden op te slaan, dus we hashen het wachtwoord voordat we het in de database opslaan
     const hashedPassword = await hashPassword(password)
-    await usersCollection.insertOne({ email, password: hashedPassword })
+    await usersCollection.insertOne({ email, password: hashedPassword, role })
 
     res.redirect("/login")
   } catch (err) {
@@ -140,10 +143,18 @@ async function handleLogin(req, res) {
       email: user.email,
     }
 
-    if (!user.firstName) {
-      res.redirect("/create-profile")
+    if (user.role === "company") {
+      if (!user.companyName) {
+        res.redirect("/create-company-profile")
+      } else {
+        res.redirect("/add-vacancy")
+      }
     } else {
-      res.redirect("/matching")
+      if (!user.firstName) {
+        res.redirect("/create-profile")
+      } else {
+        res.redirect("/matching")
+      }
     }
   } catch (err) {
     console.error("Fout bij inloggen:", err)
@@ -221,6 +232,10 @@ async function handleCreateProfile(req, res) {
   }
 }
 
+function showCreateCompanyProfile(req, res) {
+  res.render("pages/create-company-profile", { user: req.session.user })
+}
+
 // Mehmet - Favorites
 function showFavorites(req, res) {
   res.render("pages/favorites")
@@ -242,14 +257,14 @@ async function handleMatchReaction(req, res) {
     const { vacancyId, vacancyTitle, company, reaction } = req.body
 
     // Alleen opslaan als de gebruiker interesse heeft
-    if (reaction === 'yes') {
+    if (reaction === "yes") {
       await reactionsCollection.insertOne({
         userId,
         vacancyId,
         vacancyTitle,
         company,
         reaction,
-        status: "in behandeling"
+        status: "in behandeling",
       })
     }
 
