@@ -3,6 +3,8 @@ require("dotenv").config()
 const express = require("express")
 const session = require("express-session")
 const bcrypt = require("bcryptjs")
+const multer = require("multer")
+const upload = multer({ dest: "static/upload/" })
 const { MongoClient, ObjectId } = require("mongodb")
 
 // Database setup
@@ -69,7 +71,7 @@ app.get("/create-profile", isLoggedIn, showCreateProfile)
 app.post("/create-profile", isLoggedIn, handleCreateProfile)
 
 app.get("/create-company-profile", isLoggedIn, showCreateCompanyProfile)
-// app.post("/create-company-profile", isLoggedIn, handleCreateCompanyProfile)
+app.post("/create-company-profile", isLoggedIn, upload.single("logo"), handleCreateCompanyProfile)
 
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
@@ -233,7 +235,35 @@ async function handleCreateProfile(req, res) {
 }
 
 function showCreateCompanyProfile(req, res) {
-  res.render("pages/create-company-profile", { user: req.session.user })
+  res.render("pages/create-company-profile")
+}
+
+async function handleCreateCompanyProfile(req, res) {
+  try {
+    const { companyName, sector, companySize, website, description } = req.body
+    const logo = req.file ? req.file.filename : null
+
+    await usersCollection.updateOne(
+      { _id: new ObjectId(req.session.user.id) },
+      {
+        $set: {
+          companyName,
+          sector,
+          companySize,
+          website,
+          description,
+          logo,
+        },
+      },
+    )
+
+    res.redirect("/add-vacancy")
+  } catch (err) {
+    console.error("Fout bij bedrijfsprofiel aanmaken:", err)
+    res.status(500).render("pages/create-company-profile", {
+      error: "Er ging iets mis, probeer het opnieuw",
+    })
+  }
 }
 
 // Mehmet - Favorites
