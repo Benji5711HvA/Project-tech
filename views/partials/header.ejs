@@ -2,23 +2,29 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Header</title>
-    <link rel="stylesheet" href="/css/output.css">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Header</title>
+  <link rel="stylesheet" href="/css/output.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
 
 <body>
 
-    <nav>
-        <div class="nav-logo">Collego</div>
-        <ul class="nav-links">
-            <li><a href="#" class="active">Home</a></li>
-            <li><a href="#">Ontdekken</a></li>
-            <li><a href="#">Vacatures</a></li>
-        </ul>
-        <div class="nav-right">
-            <button class="btn-small">Inloggen</button>
-        </div>
-    </nav>
+  <nav>
+    <div class="nav-logo">Collego</div>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#">Ontdekken</a></li>
+      <li><a href="#">Vacatures</a></li>
+    </ul>
+    <div class="nav-right">
+      <% if (user) { %>
+      <form action="/logout" method="POST">
+        <button type="submit" class="btn-small">Uitloggen</button>
+      </form>
+      <% } else { %>
+      <a href="/login"><button class="btn-small">Inloggen</button></a>
+      <% } %>
+    </div>
+  </nav>

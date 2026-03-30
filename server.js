@@ -33,6 +33,10 @@ app.use(
     },
   }),
 )
+app.use((req, res, next) => {
+  res.locals.user = req.session.user
+  next()
+})
 
 // deze middleware checkt of de gebruiker is ingelogd, je wilt niet dat iemand die niet is ingelogd toegnang heeft tot bepaalde routes, zoals het profiel aanmaken of de favorieten pagina
 function isLoggedIn(req, res, next) {
@@ -72,6 +76,9 @@ app.post("/create-profile", isLoggedIn, handleCreateProfile)
 
 app.get("/create-company-profile", isLoggedIn, showCreateCompanyProfile)
 app.post("/create-company-profile", isLoggedIn, upload.single("logo"), handleCreateCompanyProfile)
+
+app.get("/add-vacancy", isLoggedIn, showAddVacancy)
+app.post("/add-vacancy", isLoggedIn, handleAddVacancy)
 
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
@@ -143,6 +150,8 @@ async function handleLogin(req, res) {
     req.session.user = {
       id: user._id.toString(),
       email: user.email,
+      role: user.role,
+      companyName: user.companyName || null
     }
 
     if (user.role === "company") {
@@ -177,7 +186,7 @@ function handleLogout(req, res) {
 }
 
 function showCreateProfile(req, res) {
-  res.render("pages/create-profile", { user: req.session.user })
+  res.render("pages/create-profile")
 }
 
 async function handleCreateProfile(req, res) {
@@ -261,6 +270,35 @@ async function handleCreateCompanyProfile(req, res) {
   } catch (err) {
     console.error("Fout bij bedrijfsprofiel aanmaken:", err)
     res.status(500).render("pages/create-company-profile", {
+      error: "Er ging iets mis, probeer het opnieuw",
+    })
+  }
+}
+
+function showAddVacancy(req, res) {
+  res.render("pages/add-vacancy")
+}
+
+async function handleAddVacancy(req, res) {
+  try {
+    const { title, category, location, salary, hoursPerWeek, contractType, description } = req.body
+
+    await vacanciesCollection.insertOne({
+      companyId: req.session.user.id,
+      title,
+      category,
+      location,
+      salary,
+      hoursPerWeek,
+      contractType,
+      description,
+      createdAt: new Date()
+    })
+
+    res.redirect("/add-vacancy")
+  } catch (err) {
+    console.error("Fout bij vacature toevoegen:", err)
+    res.status(500).render("pages/add-vacancy", {
       error: "Er ging iets mis, probeer het opnieuw",
     })
   }
