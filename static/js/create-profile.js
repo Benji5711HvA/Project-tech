@@ -1,5 +1,5 @@
-function updateTeller(length) {
-  document.querySelector(".teller").textContent = length + "/200"
+function updateCounter(length) {
+  document.querySelector(".counter").textContent = length + "/200"
 }
 
 function nextStep() {
@@ -17,3 +17,25 @@ function nextStep() {
   document.getElementById("step2").style.display = "block"
   document.getElementById("progress-bar2").classList.add("active")
 }
+
+async function lookupAddress() {
+  const zipCode = document.getElementById("zipCode").value
+  const houseNumber = document.getElementById("houseNumber").value
+
+  if (!zipCode || !houseNumber) return
+
+  const response = await fetch(`/api/address?zipCode=${zipCode}&houseNumber=${houseNumber}`)
+  const data = await response.json()
+
+  if (data.street && data.city) {
+    document.getElementById("streetName").value = data.street
+    document.getElementById("city").value = data.city
+  }
+}
+
+function addAddressLookup(input) {
+  input.addEventListener("change", lookupAddress)
+}
+
+addAddressLookup(document.getElementById("zipCode"))
+addAddressLookup(document.getElementById("houseNumber"))

@@ -121,8 +121,8 @@
 
       <div class="field">
         <label for="description">Beschrijving</label>
-        <textarea id="description" name="description" maxlength="1000" oninput="updateTeller(this.value.length)" placeholder="Beschrijf de functie, taken en vereisten..." required></textarea>
-        <p class="teller">0/1000</p>
+        <textarea id="description" name="description" maxlength="1000" oninput="updateCounter(this.value.length)" placeholder="Beschrijf de functie, taken en vereisten..." required></textarea>
+        <p class="counter">0/1000</p>
       </div>
 
       <% if (typeof error !== 'undefined') { %>
