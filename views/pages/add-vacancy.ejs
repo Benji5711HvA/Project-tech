@@ -65,14 +65,14 @@
       </div>
 
       <div class="field">
-        <label for="location">Locatie</label>
-        <input type="text" id="location" name="location" placeholder="Bijv. Amsterdam" required />
+        <label for="salary">Salaris <span class="optional">(bruto per maand, optioneel)</span></label>
+        <input type="number" id="salary" name="salary" placeholder="Bijv. 3500" />
+        <p class="salary-hint" id="salaryHint">Kies een vakgebied voor een salarissuggistie</p>
       </div>
 
       <div class="field">
-        <label for="salary">Salaris <span class="optional">(bruto per jaar, optioneel)</span></label>
-        <input type="number" id="salary" name="salary" placeholder="Bijv. 45000" />
-        <p class="salary-hint" id="salaryHint">Kies een vakgebied voor een salarissuggistie</p>
+        <label for="location">Locatie</label>
+        <input type="text" id="location" name="location" placeholder="Bijv. Amsterdam" required />
       </div>
 
       <div class="field">
@@ -126,7 +126,7 @@
       </div>
 
       <% if (typeof error !== 'undefined') { %>
-        <div class="error"><%= error %></div>
+      <div class="error"><%= error %></div>
       <% } %>
 
       <button type="submit" class="btn">Vacature plaatsen</button>

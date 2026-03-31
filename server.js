@@ -80,6 +80,8 @@ app.post("/create-company-profile", isLoggedIn, upload.single("logo"), handleCre
 app.get("/add-vacancy", isLoggedIn, showAddVacancy)
 app.post("/add-vacancy", isLoggedIn, handleAddVacancy)
 
+app.get("/api/salary-hint", isLoggedIn, getSalaryHint)
+
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
 
@@ -301,6 +303,19 @@ async function handleAddVacancy(req, res) {
     res.status(500).render("pages/add-vacancy", {
       error: "Er ging iets mis, probeer het opnieuw",
     })
+  }
+}
+
+async function getSalaryHint(req, res) {
+  try {
+    const { category } = req.query
+    const response = await fetch(`https://api.adzuna.com/v1/api/jobs/nl/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_APP_KEY}&category=${category}&results_per_page=1`)
+    const data = await response.json()
+    const monthlySalary = Math.round(data.mean / 12)
+    res.json({ salaryPerMonth: monthlySalary })
+  } catch (err) {
+    console.error("Fout bij ophalen salary hint:", err)
+    res.json({ salaryPerMonth: null })
   }
 }
 
