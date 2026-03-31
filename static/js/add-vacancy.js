@@ -1,5 +1,5 @@
-function updateTeller(length) {
-  document.querySelector(".teller").textContent = length + "/1000"
+function updateCounter(length) {
+  document.querySelector(".counter").textContent = length + "/1000"
 }
 
 const categoryCards = document.querySelectorAll(".sector-card input[type='radio']")

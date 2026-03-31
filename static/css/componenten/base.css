@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=search');
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=search");
 
 * {
   margin: 0;
@@ -15,10 +15,14 @@
 
   --text-dark: #1a1a2e;
   --text-gray: #6b7280;
-  
+
   --input-bg: #f3f4f6;
 
   --checked-card-bg: #fff6f0;
+
+  --success-bg: #f0faf4;
+  --success-text: #1a7f4b;
+  --success-border: #a3d9b8;
 
   --error-bg: #fff0f0;
   --error-text: #e53e3e;

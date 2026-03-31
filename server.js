@@ -33,10 +33,13 @@ app.use(
     },
   }),
 )
-app.use((req, res, next) => {
+
+function setLocals(req, res, next) {
   res.locals.user = req.session.user
   next()
-})
+}
+
+app.use(setLocals)
 
 // deze middleware checkt of de gebruiker is ingelogd, je wilt niet dat iemand die niet is ingelogd toegnang heeft tot bepaalde routes, zoals het profiel aanmaken of de favorieten pagina
 function isLoggedIn(req, res, next) {
@@ -81,6 +84,8 @@ app.get("/add-vacancy", isLoggedIn, showAddVacancy)
 app.post("/add-vacancy", isLoggedIn, handleAddVacancy)
 
 app.get("/api/salary-hint", isLoggedIn, getSalaryHint)
+
+app.get("/api/address", isLoggedIn, handleAddressLookup)
 
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
@@ -199,6 +204,7 @@ async function handleCreateProfile(req, res) {
       birthDate,
       streetName,
       houseNumber,
+      houseAddition,
       zipCode,
       city,
       bio,
@@ -221,6 +227,7 @@ async function handleCreateProfile(req, res) {
           birthDate,
           streetName,
           houseNumber,
+          houseAddition,
           zipCode,
           city,
           bio,
@@ -316,6 +323,32 @@ async function getSalaryHint(req, res) {
   } catch (err) {
     console.error("Fout bij ophalen salary hint:", err)
     res.json({ salaryPerMonth: null })
+  }
+}
+
+async function handleAddressLookup(req, res) {
+  try {
+    const { zipCode, houseNumber } = req.query
+
+    if (!zipCode || !houseNumber) {
+      return res.status(400).json({ error: "Postcode en huisnummer zijn verplicht" })
+    }
+
+    const response = await fetch(`https://postcode.tech/api/v1/postcode/full?postcode=${zipCode}&number=${houseNumber}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.POSTCODE_API_TOKEN}`,
+      },
+    })
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Adres niet gevonden" })
+    }
+
+    const data = await response.json()
+    res.json(data)
+  } catch (err) {
+    console.error("Fout bij ophalen adres:", err)
+    res.status(500).json({ error: "Er ging iets mis bij het ophalen" })
   }
 }
 

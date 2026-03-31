@@ -117,8 +117,8 @@
 
         <div class="field">
           <label for="description">Over ons <span class="optional">(optioneel)</span></label>
-          <textarea id="description" name="description" maxlength="300" oninput="updateTeller(this.value.length)" placeholder="Vertel kort over je bedrijf, cultuur en wat jullie doen..."></textarea>
-          <p class="teller">0/300</p>
+          <textarea id="description" name="description" maxlength="300" oninput="updateCounter(this.value.length)" placeholder="Vertel kort over je bedrijf, cultuur en wat jullie doen..."></textarea>
+          <p class="counter">0/300</p>
         </div>
 
         <% if (typeof error !=='undefined' ) { %>
