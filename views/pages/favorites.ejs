@@ -1,15 +1,67 @@
 <%- include('../partials/header') %>
-    <main class="favorites-pages">
+<main class="favorites-page">
 
-        <section class="hero">
-            <h1>Favorieten</h1>
-            <p>Hier kun je al je favoriete vacatures terug zien!</p>
-        </section>
+  <section class="hero">
+    <h1>Dashboard</h1>
+    <p>Hier kun je al je opgeslagen en favoriete vacatures terug zien!</p>
+  </section>
 
-        <section class="favorites-section">
-            <div id="vacaturesCards" class="favorites-grid"> </div>
-        </section>
-        
-    </main>
-    <script src="/js/favorite.js"></script>
-    <%- include('../partials/footer') %>
+  <section class="favorites-section">
+
+    <div class="toggle-container">
+      <div class="toggle">
+        <button id="btn-opgeslagen" class="toggle-btn actief">Opgeslagen</button>
+        <button id="btn-favorieten" class="toggle-btn">Favorieten</button>
+      </div>
+    </div>
+
+    <div id="tab-opgeslagen" class="tab">
+      <% if (savedVacancies.length === 0) { %>
+        <div class="zero-state">
+          <p class="zero-state-tekst">Nog geen opgeslagen vacatures. Ga op zoek naar jouw droombaan!</p>
+          <a href="/matching" class="zero-state-knop">Zoek vacatures</a>
+        </div>
+      <% } else { %>
+        <div class="favorites-grid">
+          <% savedVacancies.forEach(function(vacature) { %>
+            <div class="vacature-kaart" id="kaart-<%= vacature._id %>">
+              <h2 class="vacature-titel"><%= vacature.vacancyTitle %></h2>
+              <p class="vacature-bedrijf"><%= vacature.company %></p>
+              <span class="vacature-status"><%= vacature.status %></span>
+              <button class="verwijder-knop" data-id="<%= vacature._id %>">
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+
+    <div id="tab-favorieten" class="tab verborgen">
+      <% if (favoriteVacancies.length === 0) { %>
+        <div class="zero-state">
+          <p class="zero-state-tekst">Je lijst is leeg. Tijd om te ontdekken wat er voor jou is!</p>
+          <a href="/matching" class="zero-state-knop">Zoek vacatures</a>
+        </div>
+      <% } else { %>
+        <div class="favorites-grid">
+          <% favoriteVacancies.forEach(function(vacature) { %>
+            <div class="vacature-kaart" id="kaart-<%= vacature._id %>">
+              <h2 class="vacature-titel"><%= vacature.vacancyTitle %></h2>
+              <p class="vacature-bedrijf"><%= vacature.company %></p>
+              <span class="vacature-status"><%= vacature.status %></span>
+              <button class="verwijder-knop" data-id="<%= vacature._id %>">
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+
+  </section>
+
+</main>
+
+<script src="/js/favorite.js"></script>
+<%- include('../partials/footer') %>
