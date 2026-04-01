@@ -33,13 +33,10 @@ app.use(
     },
   }),
 )
-
-function setLocals(req, res, next) {
+app.use((req, res, next) => {
   res.locals.user = req.session.user
   next()
-}
-
-app.use(setLocals)
+})
 
 // deze middleware checkt of de gebruiker is ingelogd, je wilt niet dat iemand die niet is ingelogd toegnang heeft tot bepaalde routes, zoals het profiel aanmaken of de favorieten pagina
 function isLoggedIn(req, res, next) {
@@ -83,31 +80,9 @@ app.post("/create-company-profile", isLoggedIn, upload.single("logo"), handleCre
 app.get("/add-vacancy", isLoggedIn, showAddVacancy)
 app.post("/add-vacancy", isLoggedIn, handleAddVacancy)
 
-app.get("/api/salary-hint", isLoggedIn, getSalaryHint)
-
-app.get("/api/address", isLoggedIn, handleAddressLookup)
-
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
-app.delete("/favorites/:id", isLoggedIn, deleteFavorite)
 
-// Verwijder een favoriet zodat de gebruiker zijn lijst kan opschonen
-async function deleteFavorite(req, res) {
-  try {
-    const vacatureId = req.params.id
-
-    // Alleen verwijderen als het echt van de ingelogde gebruiker is
-    await reactionsCollection.deleteOne({
-      _id: new ObjectId(vacatureId),
-      userId: req.session.user.id
-    })
-
-    res.json({ success: true })
-  } catch (err) {
-    console.error("Fout bij verwijderen favoriet:", err)
-    res.status(500).json({ success: false })
-  }
-}
 
 // Sanna - Matching
 app.get("/matching", isLoggedIn, showMatching)
@@ -223,7 +198,6 @@ async function handleCreateProfile(req, res) {
       birthDate,
       streetName,
       houseNumber,
-      houseAddition,
       zipCode,
       city,
       bio,
@@ -246,7 +220,6 @@ async function handleCreateProfile(req, res) {
           birthDate,
           streetName,
           houseNumber,
-          houseAddition,
           zipCode,
           city,
           bio,
@@ -332,60 +305,19 @@ async function handleAddVacancy(req, res) {
   }
 }
 
-async function getSalaryHint(req, res) {
-  try {
-    const { category } = req.query
-    const response = await fetch(`https://api.adzuna.com/v1/api/jobs/nl/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_APP_KEY}&category=${category}&results_per_page=1`)
-    const data = await response.json()
-    const monthlySalary = Math.round(data.mean / 12)
-    res.json({ salaryPerMonth: monthlySalary })
-  } catch (err) {
-    console.error("Fout bij ophalen salary hint:", err)
-    res.json({ salaryPerMonth: null })
-  }
-}
-
-async function handleAddressLookup(req, res) {
-  try {
-    const { zipCode, houseNumber } = req.query
-
-    if (!zipCode || !houseNumber) {
-      return res.status(400).json({ error: "Postcode en huisnummer zijn verplicht" })
-    }
-
-    const response = await fetch(`https://postcode.tech/api/v1/postcode/full?postcode=${zipCode}&number=${houseNumber}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.POSTCODE_API_TOKEN}`,
-      },
-    })
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: "Adres niet gevonden" })
-    }
-
-    const data = await response.json()
-    res.json(data)
-  } catch (err) {
-    console.error("Fout bij ophalen adres:", err)
-    res.status(500).json({ error: "Er ging iets mis bij het ophalen" })
-  }
-}
-
 // Mehmet - Favorieten ophalen voor de ingelogde gebruiker
 async function showFavorites(req, res) {
   try {
     const userId = req.session.user.id
 
-    // Sollicitaties ophalen waar de gebruiker op heeft gesolliciteerd
     const savedVacancies = await reactionsCollection.find({
       userId: userId,
-      reaction: "yes"
+      reaction: "saved"
     }).toArray()
 
-    // Favorieten ophalen waar de gebruiker het hartje heeft geklikt
     const favoriteVacancies = await reactionsCollection.find({
       userId: userId,
-      reaction: "favorite"
+      reaction: "yes"
     }).toArray()
 
     res.render("pages/favorites", { savedVacancies, favoriteVacancies })

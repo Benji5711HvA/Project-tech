@@ -63,9 +63,7 @@
 
 .account-right .container {
   width: 100%;
-  max-width: 33em;
-  margin: auto;
-  padding: 2rem 0;
+  max-width: 30em;
 }
 
 .account-right h1 {

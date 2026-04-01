@@ -1,0 +1,17 @@
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .stat-nummer {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--white);
+  }
+  
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--white);
+    opacity: 0.8;
+    text-transform: uppercase;
+  }
