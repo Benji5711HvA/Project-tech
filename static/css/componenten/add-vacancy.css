@@ -1,0 +1,36 @@
+.add-vacancy-page {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.add-vacancy-page h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.add-vacancy-page h1 span {
+  color: var(--orange);
+}
+
+.add-vacancy-page .subtitle {
+  color: var(--text-gray);
+  font-size: 0.9rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.5;
+}
+
+.add-vacancy-page .salary-hint {
+  font-size: 0.8rem;
+  color: var(--text-gray);
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+}
+
+.add-vacancy-page .salary-hint span {
+  color: var(--orange);
+  font-weight: 600;
+}

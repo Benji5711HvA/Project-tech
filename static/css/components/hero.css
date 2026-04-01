@@ -21,5 +21,40 @@
 
 .hero p{
   font-size: 1.6rem;
-  color: #ffffff;
+  color: var(--white);
+}
+
+.hero-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 6rem;
+  gap: 2rem;
+}
+
+.hero-tekst {
+  max-width: 600px;
+  text-align: center;
+}
+
+.hero-tekst h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.hero-tekst p {
+  color: var(--white);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.hero-knoppen {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: center;
 }

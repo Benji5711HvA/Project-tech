@@ -4,7 +4,9 @@
 @import "componenten/forms.css";
 @import "componenten/nav.css";
 @import "componenten/footer.css";
-@import "componenten/createProfile.css";
+@import "componenten/create-profile.css";
 @import "componenten/favorite.css";
 @import "componenten/matching.css";
 @import "componenten/hero.css";
+@import "componenten/add-vacancy.css";
+@import "componenten/index.css";
