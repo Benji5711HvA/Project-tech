@@ -89,6 +89,25 @@ app.get("/api/address", isLoggedIn, handleAddressLookup)
 
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
+app.delete("/favorites/:id", isLoggedIn, deleteFavorite)
+
+// Verwijder een favoriet zodat de gebruiker zijn lijst kan opschonen
+async function deleteFavorite(req, res) {
+  try {
+    const vacatureId = req.params.id
+
+    // Alleen verwijderen als het echt van de ingelogde gebruiker is
+    await reactionsCollection.deleteOne({
+      _id: new ObjectId(vacatureId),
+      userId: req.session.user.id
+    })
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error("Fout bij verwijderen favoriet:", err)
+    res.status(500).json({ success: false })
+  }
+}
 
 // Sanna - Matching
 app.get("/matching", isLoggedIn, showMatching)
@@ -352,23 +371,21 @@ async function handleAddressLookup(req, res) {
   }
 }
 
-// Mehmet - Favorites
-function showFavorites(req, res) {
-  res.render("pages/favorites")
-}
-
+// Mehmet - Favorieten ophalen voor de ingelogde gebruiker
 async function showFavorites(req, res) {
   try {
     const userId = req.session.user.id
 
+    // Sollicitaties ophalen waar de gebruiker op heeft gesolliciteerd
     const savedVacancies = await reactionsCollection.find({
       userId: userId,
-      reaction: "saved"
+      reaction: "yes"
     }).toArray()
 
+    // Favorieten ophalen waar de gebruiker het hartje heeft geklikt
     const favoriteVacancies = await reactionsCollection.find({
       userId: userId,
-      reaction: "yes"
+      reaction: "favorite"
     }).toArray()
 
     res.render("pages/favorites", { savedVacancies, favoriteVacancies })
