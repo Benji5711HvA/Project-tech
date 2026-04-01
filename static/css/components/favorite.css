@@ -1,0 +1,151 @@
+/* Alleen padding voor de kaartjes sectie, niet de hele pagina */
+.favorites-section {
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  
+  /* Toggle in het midden van de pagina zetten */
+  .toggle-container {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+  }
+  
+  /* De toggle zelf */
+  .toggle {
+    background-color: var(--gray);
+    border-radius: 999px;
+    padding: 0.25rem;
+    display: flex;
+    gap: 0.25rem;
+  }
+  
+  /* Elke knop in de toggle */
+  .toggle-btn {
+    padding: 1rem 4rem;
+    border: none;
+    border-radius: 999px;
+    font-size: 1.3rem;
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--text-gray);
+    font-weight: 600;
+    outline: none;
+  }
+  
+  /* De actieve knop krijgt een witte achtergrond en oranje tekst */
+  .toggle-btn.actief {
+    background-color: var(--white);
+    color: var(--orange);
+  }
+  
+  /* Verberg een tab zodat alleen de actieve tab zichtbaar is */
+  .verborgen {
+    display: none;
+  }
+  
+  /* Het raster dat de kaartjes naast elkaar zet */
+  .favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2.5rem;
+    margin-top: 6rem;
+  }
+  
+  /* Kaart heeft relative nodig zodat de prullenbak absoluut gepositioneerd kan worden */
+  .vacature-kaart {
+    background-color: var(--white);
+    border: 1px solid var(--gray);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  
+  /* Kaartje beweegt iets omhoog als je eroverheen hoverd */
+  .vacature-kaart:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
+  }
+  
+  /* Vacature titel iets groter dan normale tekst */
+  .vacature-titel {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: var(--text-dark);
+  }
+  
+  /* Bedrijfsnaam in grijs zodat de titel meer opvalt */
+  .vacature-bedrijf {
+    color: var(--text-gray);
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+  
+  /* Statuslabel als pill onderaan het kaartje */
+  .vacature-status {
+    background-color: var(--checked-card-bg);
+    color: var(--orange);
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  
+  /* Prullenbak rechtsboven in het kaartje zodat het niet stoort */
+  .verwijder-knop {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+    background-color: transparent;
+    color: var(--error-text);
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+  }
+  
+  /* Prullenbak wordt iets donkerder als je eroverheen gaat */
+  .verwijder-knop:hover {
+    color: #c0392b;
+  }
+  
+  /* Zero state melding als er geen vacatures zijn */
+  .zero-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 4rem;
+    gap: 1rem;
+  }
+  
+  /* Tekst van de zero state */
+  .zero-state-tekst {
+    color: var(--text-gray);
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Knop om naar de matching pagina te gaan */
+  .zero-state-knop {
+    background-color: var(--orange);
+    color: var(--white);
+    padding: 1rem 3rem;
+    border-radius: 999px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  
+  /* Knop wordt iets donkerder als je eroverheen gaat */
+  .zero-state-knop:hover {
+    background-color: var(--orange-hover);
+  }
