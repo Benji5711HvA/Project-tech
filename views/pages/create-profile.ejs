@@ -43,6 +43,8 @@
             <input type="date" id="birthDate" name="birthDate" required />
           </div>
 
+          <hr class="divider" />
+
           <div class="field-row-three">
             <div class="field">
               <label for="zipCode">Postcode</label>
@@ -68,6 +70,8 @@
               <input type="text" id="city" name="city" placeholder="Bijv. Amsterdam" required />
             </div>
           </div>
+
+          <hr class="divider" />
 
           <div class="field">
             <label for="bio">Vertel kort iets over jezelf <span class="optional">(optioneel)</span></label>
@@ -144,13 +148,17 @@
             </div>
           </div>
 
+          <p id="sector-error" class="error" hidden>Selecteer minimaal één sector</p>
+
+          <hr class="divider" />
+
           <div class="field">
             <label for="location">In welke stad wil je werken?</label>
             <input type="text" id="location" name="location" placeholder="Bijv. Amsterdam, Rotterdam, Utrecht..." />
           </div>
 
           <div class="field">
-            <label>Minimaal salaris (bruto per maand, optioneel)</label>
+            <label>Minimaal salaris (bruto per maand)  <span class="optional">(optioneel)</span></label>
             <div class="chip-group">
               <div class="chip">
                 <input type="radio" id="salary-none" name="salary" value="" checked />
@@ -183,6 +191,8 @@
             </div>
           </div>
 
+          <hr class="divider" />
+
           <div class="field">
             <label for="education">Opleidingsniveau</label>
             <select id="education" name="education">
@@ -197,6 +207,8 @@
             </select>
           </div>
 
+          <p id="education-error" class="error" hidden>Selecteer je opleidingsniveau</p>
+
           <div class="field">
             <label for="experience">Jaren werkervaring</label>
             <select id="experience" name="experience">
@@ -210,11 +222,15 @@
             </select>
           </div>
 
+          <p id="experience-error" class="error" hidden>Selecteer je werkervaring</p>
+          
+          <hr class="divider" />
+          
           <div class="field">
             <label>Aantal uur per week</label>
             <div class="chip-group">
               <div class="chip">
-                <input type="radio" id="hours-8-16" name="hoursPerWeek" value="8-16" />
+                <input type="radio" id="hours-8-16" name="hoursPerWeek" value="8-16"/>
                 <label for="hours-8-16">8 - 16 uur</label>
               </div>
               <div class="chip">
@@ -232,8 +248,10 @@
             </div>
           </div>
 
+          <p id="hours-error" class="error" hidden>Selecteer het aantal uur per week</p>
+
           <div class="field">
-            <label>Type contract</label>
+            <label>Type contract <span class="optional">(optioneel)</span></label>
             <div class="chip-group">
               <div class="chip">
                 <input type="checkbox" id="contract-permanent" name="contractType" value="permanent" />
@@ -251,15 +269,11 @@
                 <input type="checkbox" id="contract-internship" name="contractType" value="internship" />
                 <label for="contract-internship">Stage</label>
               </div>
-              <div class="chip">
-                <input type="checkbox" id="contract-any" name="contractType" value="any" />
-                <label for="contract-any">Maakt niet uit</label>
-              </div>
             </div>
           </div>
 
           <div class="field">
-            <label>Hoe wil je werken?</label>
+            <label>Hoe wil je werken? <span class="optional">(optioneel)</span></label>
             <div class="chip-group">
               <div class="chip">
                 <input type="checkbox" id="work-office" name="workForm" value="office" />
