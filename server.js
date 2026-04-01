@@ -117,6 +117,8 @@ async function deleteFavorite(req, res) {
 // Sanna - Matching
 app.get("/matching", isLoggedIn, showMatching)
 app.post("/match-reaction", isLoggedIn, handleMatchReaction)
+app.get("/company-matches", isLoggedIn, showCompanyMatches)
+app.post("/update-status", isLoggedIn, updateMatchStatus)
 
 // Functions
 function home(req, res) {
@@ -446,15 +448,24 @@ async function showMatching(req, res) {
 async function handleMatchReaction(req, res) {
   try {
     const userId = req.session.user.id
-    const { vacancyId, vacancyTitle, company, reaction } = req.body
+    const { vacancyId, vacancyTitle, company, reaction, location, salary, hoursPerWeek, contractType } = req.body
 
-    // Alleen opslaan als de gebruiker interesse heeft
-    if (reaction === "yes") {
+    if (reaction === "yes" || reaction === "favorite") {
+     
+      const bestaandeReactie = await reactionsCollection.findOne({ userId, vacancyId, reaction })
+      if (bestaandeReactie) {
+        return res.json({ success: true })
+      }
+
       await reactionsCollection.insertOne({
         userId,
         vacancyId,
         vacancyTitle,
         company,
+        location,
+        salary,
+        hoursPerWeek,
+        contractType,
         reaction,
         status: "in behandeling",
       })
@@ -463,6 +474,47 @@ async function handleMatchReaction(req, res) {
     res.json({ success: true })
   } catch (err) {
     console.error("Fout bij opslaan reactie:", err)
+    res.status(500).json({ success: false })
+  }
+}
+
+// Bedrijf ziet wie heeft gereageerd op hun vacature
+async function showCompanyMatches(req, res) {
+  try {
+    const companyId = req.session.user.id
+
+    // Haal alle vacatures op van dit bedrijf
+    const vacancies = await vacanciesCollection.find({ companyId }).toArray()
+
+    // Haal alle reacties op die bij deze vacatures horen
+    const vacancyIds = vacancies.map(function getVacancyId(vacancy) {
+      return vacancy._id.toString()
+    })
+
+    const reactions = await reactionsCollection.find({
+      vacancyId: { $in: vacancyIds }
+    }).toArray()
+
+    res.render("pages/company-matches", { vacancies, reactions })
+  } catch (err) {
+    console.error("Fout bij ophalen matches:", err)
+    res.status(500).render("pages/company-matches", { vacancies: [], reactions: [] })
+  }
+}
+
+async function updateMatchStatus(req, res) {
+  try {
+    const { reactionId, status } = req.body
+
+    // Status updaten naar "gematcht" of "geweigerd"
+    await reactionsCollection.updateOne(
+      { _id: new ObjectId(reactionId) },
+      { $set: { status } }
+    )
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error("Fout bij updaten status:", err)
     res.status(500).json({ success: false })
   }
 }
