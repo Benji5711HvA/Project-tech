@@ -357,6 +357,27 @@ function showFavorites(req, res) {
   res.render("pages/favorites")
 }
 
+async function showFavorites(req, res) {
+  try {
+    const userId = req.session.user.id
+
+    const savedVacancies = await reactionsCollection.find({
+      userId: userId,
+      reaction: "saved"
+    }).toArray()
+
+    const favoriteVacancies = await reactionsCollection.find({
+      userId: userId,
+      reaction: "yes"
+    }).toArray()
+
+    res.render("pages/favorites", { savedVacancies, favoriteVacancies })
+  } catch (err) {
+    console.error("Fout bij ophalen favorieten:", err)
+    res.status(500).render("pages/favorites", { savedVacancies: [], favoriteVacancies: [] })
+  }
+}
+
 // Sanna - Matching
 async function showMatching(req, res) {
   try {
