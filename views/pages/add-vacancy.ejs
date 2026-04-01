@@ -1,0 +1,141 @@
+<%- include("../partials/header") %>
+
+<main class="add-vacancy-page">
+
+  <div class="add-vacancy-container">
+
+    <h1>Vacature <span>toevoegen</span></h1>
+    <p class="subtitle">Vul de details in van de vacature die je wilt plaatsen.</p>
+
+    <form action="/add-vacancy" method="POST">
+
+      <div class="field">
+        <label for="title">Vacaturetitel</label>
+        <input type="text" id="title" name="title" placeholder="Bijv. Software Developer" required />
+      </div>
+
+      <div class="field">
+        <label>Vakgebied</label>
+        <div class="sector-grid">
+          <div class="sector-card">
+            <input type="radio" id="cat-ict" name="category" value="it-jobs" />
+            <label for="cat-ict">ICT & Tech</label>
+          </div>
+          <div class="sector-card">
+            <input type="radio" id="cat-zorg" name="category" value="healthcare-nursing-jobs" />
+            <label for="cat-zorg">Zorg & Welzijn</label>
+          </div>
+          <div class="sector-card">
+            <input type="radio" id="cat-admin" name="category" value="admin-jobs" />
+            <label for="cat-admin">Administratie</label>
+          </div>
+          <div class="sector-card">
+            <input type="radio" id="cat-retail" name="category" value="retail-jobs" />
+            <label for="cat-retail">Retail & Verkoop</label>
+          </div>
+          <div class="sector-card">
+            <input type="radio" id="cat-horeca" name="category" value="hospitality-catering-jobs" />
+            <label for="cat-horeca">Horeca & Toerisme</label>
+          </div>
+          <div class="sector-card">
+            <input type="radio" id="cat-onderwijs" name="category" value="teaching-jobs" />
+            <label for="cat-onderwijs">Onderwijs</label>
+          </div>
+          <div class="sector-card">
+            <input type="radio" id="cat-logistiek" name="category" value="logistics-warehouse-jobs" />
+            <label for="cat-logistiek">Logistiek</label>
+          </div>
+          <div class="sector-card">
+            <input type="radio" id="cat-marketing" name="category" value="pr-advertising-marketing-jobs" />
+            <label for="cat-marketing">Marketing & Comm.</label>
+          </div>
+          <div class="sector-card">
+            <input type="radio" id="cat-techniek" name="category" value="manufacturing-jobs" />
+            <label for="cat-techniek">Techniek & Industrie</label>
+          </div>
+          <div class="sector-card">
+            <input type="radio" id="cat-finance" name="category" value="accounting-finance-jobs" />
+            <label for="cat-finance">Finance & Juridisch</label>
+          </div>
+          <div class="sector-card">
+            <input type="radio" id="cat-bouw" name="category" value="trade-construction-jobs" />
+            <label for="cat-bouw">Bouw & Infra</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="salary">Salaris <span class="optional">(bruto per maand, optioneel)</span></label>
+        <input type="number" id="salary" name="salary" placeholder="Bijv. 3500" />
+        <p class="salary-hint" id="salaryHint">Kies een vakgebied voor een salarissuggistie</p>
+      </div>
+
+      <div class="field">
+        <label for="location">Locatie</label>
+        <input type="text" id="location" name="location" placeholder="Bijv. Amsterdam" required />
+      </div>
+
+      <div class="field">
+        <label>Uren per week</label>
+        <div class="chip-group">
+          <div class="chip">
+            <input type="radio" id="hours-8-16" name="hoursPerWeek" value="8-16" />
+            <label for="hours-8-16">8 - 16 uur</label>
+          </div>
+          <div class="chip">
+            <input type="radio" id="hours-16-24" name="hoursPerWeek" value="16-24" />
+            <label for="hours-16-24">16 - 24 uur</label>
+          </div>
+          <div class="chip">
+            <input type="radio" id="hours-24-32" name="hoursPerWeek" value="24-32" />
+            <label for="hours-24-32">24 - 32 uur</label>
+          </div>
+          <div class="chip">
+            <input type="radio" id="hours-32-40" name="hoursPerWeek" value="32-40" />
+            <label for="hours-32-40">32 - 40 uur</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Contracttype</label>
+        <div class="chip-group">
+          <div class="chip">
+            <input type="checkbox" id="contract-permanent" name="contractType" value="permanent" />
+            <label for="contract-permanent">Vast contract</label>
+          </div>
+          <div class="chip">
+            <input type="checkbox" id="contract-temporary" name="contractType" value="temporary" />
+            <label for="contract-temporary">Tijdelijk contract</label>
+          </div>
+          <div class="chip">
+            <input type="checkbox" id="contract-freelance" name="contractType" value="freelance" />
+            <label for="contract-freelance">Freelance / ZZP</label>
+          </div>
+          <div class="chip">
+            <input type="checkbox" id="contract-internship" name="contractType" value="internship" />
+            <label for="contract-internship">Stage</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="description">Beschrijving</label>
+        <textarea id="description" name="description" maxlength="1000" oninput="updateCounter(this.value.length)" placeholder="Beschrijf de functie, taken en vereisten..." required></textarea>
+        <p class="counter">0/1000</p>
+      </div>
+
+      <% if (typeof error !== 'undefined') { %>
+      <div class="error"><%= error %></div>
+      <% } %>
+
+      <button type="submit" class="btn">Vacature plaatsen</button>
+
+    </form>
+  </div>
+
+</main>
+
+<script src="/js/add-vacancy.js"></script>
+
+<%- include("../partials/foot") %>

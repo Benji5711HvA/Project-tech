@@ -3,12 +3,16 @@ require("dotenv").config()
 const express = require("express")
 const session = require("express-session")
 const bcrypt = require("bcryptjs")
+const multer = require("multer")
+const upload = multer({ dest: "static/upload/" })
 const { MongoClient, ObjectId } = require("mongodb")
 
 // Database setup
 const URI = process.env.URI
 const client = new MongoClient(URI)
 let usersCollection
+let reactionsCollection
+let vacanciesCollection
 
 // App setup
 const app = express()
@@ -29,6 +33,13 @@ app.use(
     },
   }),
 )
+
+function setLocals(req, res, next) {
+  res.locals.user = req.session.user
+  next()
+}
+
+app.use(setLocals)
 
 // deze middleware checkt of de gebruiker is ingelogd, je wilt niet dat iemand die niet is ingelogd toegnang heeft tot bepaalde routes, zoals het profiel aanmaken of de favorieten pagina
 function isLoggedIn(req, res, next) {
@@ -59,19 +70,29 @@ app.get("/", home)
 // Benjamin - Account
 app.get("/register", showRegister)
 app.post("/register", handleRegister)
-
 app.get("/login", showLogin)
 app.post("/login", handleLogin)
-
 app.post("/logout", handleLogout)
 
-app.get("/createProfile", isLoggedIn, showCreateProfile)
+app.get("/create-profile", isLoggedIn, showCreateProfile)
+app.post("/create-profile", isLoggedIn, handleCreateProfile)
+
+app.get("/create-company-profile", isLoggedIn, showCreateCompanyProfile)
+app.post("/create-company-profile", isLoggedIn, upload.single("logo"), handleCreateCompanyProfile)
+
+app.get("/add-vacancy", isLoggedIn, showAddVacancy)
+app.post("/add-vacancy", isLoggedIn, handleAddVacancy)
+
+app.get("/api/salary-hint", isLoggedIn, getSalaryHint)
+
+app.get("/api/address", isLoggedIn, handleAddressLookup)
 
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
 
 // Sanna - Matching
 app.get("/matching", isLoggedIn, showMatching)
+app.post("/match-reaction", isLoggedIn, handleMatchReaction)
 
 // Functions
 function home(req, res) {
@@ -85,7 +106,7 @@ function showRegister(req, res) {
 
 async function handleRegister(req, res) {
   try {
-    const { email, password, confirmPassword } = req.body
+    const { email, password, confirmPassword, role } = req.body
 
     const error = validateRegistration(email, password, confirmPassword)
     if (error) return res.status(400).render("pages/register", { error })
@@ -100,7 +121,7 @@ async function handleRegister(req, res) {
 
     // Het is verboden om plain text wachtwoorden op te slaan, dus we hashen het wachtwoord voordat we het in de database opslaan
     const hashedPassword = await hashPassword(password)
-    await usersCollection.insertOne({ email, password: hashedPassword })
+    await usersCollection.insertOne({ email, password: hashedPassword, role })
 
     res.redirect("/login")
   } catch (err) {
@@ -136,9 +157,23 @@ async function handleLogin(req, res) {
     req.session.user = {
       id: user._id.toString(),
       email: user.email,
+      role: user.role,
+      companyName: user.companyName || null
     }
 
-    res.redirect("/createProfile")
+    if (user.role === "company") {
+      if (!user.companyName) {
+        res.redirect("/create-company-profile")
+      } else {
+        res.redirect("/add-vacancy")
+      }
+    } else {
+      if (!user.firstName) {
+        res.redirect("/create-profile")
+      } else {
+        res.redirect("/matching")
+      }
+    }
   } catch (err) {
     console.error("Fout bij inloggen:", err)
     res
@@ -158,7 +193,163 @@ function handleLogout(req, res) {
 }
 
 function showCreateProfile(req, res) {
-  res.render("pages/createProfile", { user: req.session.user })
+  res.render("pages/create-profile")
+}
+
+async function handleCreateProfile(req, res) {
+  try {
+    const {
+      firstName,
+      lastName,
+      birthDate,
+      streetName,
+      houseNumber,
+      houseAddition,
+      zipCode,
+      city,
+      bio,
+      sector,
+      location,
+      salary,
+      education,
+      experience,
+      hoursPerWeek,
+      contractType,
+      workForm,
+    } = req.body
+
+    await usersCollection.updateOne(
+      { _id: new ObjectId(req.session.user.id) },
+      {
+        $set: {
+          firstName,
+          lastName,
+          birthDate,
+          streetName,
+          houseNumber,
+          houseAddition,
+          zipCode,
+          city,
+          bio,
+          sector,
+          location,
+          salary,
+          education,
+          experience,
+          hoursPerWeek,
+          contractType,
+          workForm,
+        },
+      },
+    )
+
+    res.redirect("/matching")
+  } catch (err) {
+    console.error("Fout bij profiel aanmaken:", err)
+    res.status(500).render("pages/create-profile", {
+      error: "Er ging iets mis, probeer het opnieuw",
+    })
+  }
+}
+
+function showCreateCompanyProfile(req, res) {
+  res.render("pages/create-company-profile")
+}
+
+async function handleCreateCompanyProfile(req, res) {
+  try {
+    const { companyName, sector, companySize, website, description } = req.body
+    const logo = req.file ? req.file.filename : null
+
+    await usersCollection.updateOne(
+      { _id: new ObjectId(req.session.user.id) },
+      {
+        $set: {
+          companyName,
+          sector,
+          companySize,
+          website,
+          description,
+          logo,
+        },
+      },
+    )
+
+    res.redirect("/add-vacancy")
+  } catch (err) {
+    console.error("Fout bij bedrijfsprofiel aanmaken:", err)
+    res.status(500).render("pages/create-company-profile", {
+      error: "Er ging iets mis, probeer het opnieuw",
+    })
+  }
+}
+
+function showAddVacancy(req, res) {
+  res.render("pages/add-vacancy")
+}
+
+async function handleAddVacancy(req, res) {
+  try {
+    const { title, category, location, salary, hoursPerWeek, contractType, description } = req.body
+
+    await vacanciesCollection.insertOne({
+      companyId: req.session.user.id,
+      title,
+      category,
+      location,
+      salary,
+      hoursPerWeek,
+      contractType,
+      description,
+      createdAt: new Date()
+    })
+
+    res.redirect("/add-vacancy")
+  } catch (err) {
+    console.error("Fout bij vacature toevoegen:", err)
+    res.status(500).render("pages/add-vacancy", {
+      error: "Er ging iets mis, probeer het opnieuw",
+    })
+  }
+}
+
+async function getSalaryHint(req, res) {
+  try {
+    const { category } = req.query
+    const response = await fetch(`https://api.adzuna.com/v1/api/jobs/nl/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_APP_KEY}&category=${category}&results_per_page=1`)
+    const data = await response.json()
+    const monthlySalary = Math.round(data.mean / 12)
+    res.json({ salaryPerMonth: monthlySalary })
+  } catch (err) {
+    console.error("Fout bij ophalen salary hint:", err)
+    res.json({ salaryPerMonth: null })
+  }
+}
+
+async function handleAddressLookup(req, res) {
+  try {
+    const { zipCode, houseNumber } = req.query
+
+    if (!zipCode || !houseNumber) {
+      return res.status(400).json({ error: "Postcode en huisnummer zijn verplicht" })
+    }
+
+    const response = await fetch(`https://postcode.tech/api/v1/postcode/full?postcode=${zipCode}&number=${houseNumber}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.POSTCODE_API_TOKEN}`,
+      },
+    })
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Adres niet gevonden" })
+    }
+
+    const data = await response.json()
+    res.json(data)
+  } catch (err) {
+    console.error("Fout bij ophalen adres:", err)
+    res.status(500).json({ error: "Er ging iets mis bij het ophalen" })
+  }
 }
 
 // Mehmet - Favorites
@@ -167,8 +358,37 @@ function showFavorites(req, res) {
 }
 
 // Sanna - Matching
-function showMatching(req, res) {
-  res.render("pages/matching")
+async function showMatching(req, res) {
+  try {
+    const vacancies = await vacanciesCollection.find({}).toArray()
+    res.render("pages/matching", { vacancies })
+  } catch (err) {
+    console.error("Fout bij ophalen vacatures:", err)
+    res.status(500).render("pages/matching", { vacancies: [] })
+  }
+}
+async function handleMatchReaction(req, res) {
+  try {
+    const userId = req.session.user.id
+    const { vacancyId, vacancyTitle, company, reaction } = req.body
+
+    // Alleen opslaan als de gebruiker interesse heeft
+    if (reaction === "yes") {
+      await reactionsCollection.insertOne({
+        userId,
+        vacancyId,
+        vacancyTitle,
+        company,
+        reaction,
+        status: "in behandeling",
+      })
+    }
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error("Fout bij opslaan reactie:", err)
+    res.status(500).json({ success: false })
+  }
 }
 // Start server
 async function startServer() {
@@ -178,6 +398,8 @@ async function startServer() {
 
     const db = client.db(process.env.DB_NAME)
     usersCollection = db.collection("users")
+    reactionsCollection = db.collection("reactions")
+    vacanciesCollection = db.collection("vacancies")
 
     app.listen(3000, () => {
       console.log("Server draait op http://localhost:3000")
