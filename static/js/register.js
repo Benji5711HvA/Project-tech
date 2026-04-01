@@ -12,3 +12,8 @@ function updateSlider() {
 radios.forEach(radio => {
   radio.addEventListener('change', updateSlider)
 })
+
+const selectedRole = document.querySelector('input[name="role"]:checked')
+if (selectedRole && selectedRole.value === 'company') {
+  slider.classList.add('company')
+}

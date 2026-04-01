@@ -1,47 +1,47 @@
 <%- include("../partials/head") %>
 
-  <main class="account">
+<main class="account">
 
-    <div class="account-left">
-      <img src="images/gradient-wave.png" alt="Collego illustratie" />
-      <span class="logo">Collego</span>
-      <div class="text">
-        <h2>Welkom terug!</h2>
-        <p>Log in en ontdek vacatures die aansluiten bij jouw ervaring en ambities.</p>
-      </div>
+  <div class="account-left">
+    <img src="images/gradient-wave.png" alt="Collego illustratie" />
+    <span class="logo">Collego</span>
+    <div class="text">
+      <h2>Welkom terug!</h2>
+      <p>Log in en ontdek vacatures die aansluiten bij jouw ervaring en ambities.</p>
     </div>
+  </div>
 
-    <section class="account-right">
-      <div class="container">
+  <section class="account-right">
+    <div class="container">
 
-        <h1>Log in bij <span>Collego</span></h1>
-        <p class="subtitle">Nog geen account? Registreer je gratis en start met matchen.</p>
+      <h1>Log in bij <span>Collego</span></h1>
+      <p class="subtitle">Nog geen account? Registreer je gratis en start met matchen.</p>
 
-        <form action="/login" method="POST">
+      <form action="/login" method="POST">
 
-          <div class="field">
-            <label for="email">Emailadres</label>
-            <input type="email" id="email" name="email" placeholder="voorbeeld@voorbeeld.nl" required />
-          </div>
+        <div class="field">
+          <label for="email">Emailadres</label>
+          <input type="email" id="email" name="email" placeholder="voorbeeld@voorbeeld.nl" value="<%= typeof email !== 'undefined' ? email : '' %>" required />
+        </div>
 
-          <div class="field">
-            <label for="password">Wachtwoord</label>
-            <input type="password" id="password" name="password" placeholder="Vul je wachtwoord in" required />
-          </div>
+        <div class="field">
+          <label for="password">Wachtwoord</label>
+          <input type="password" id="password" name="password" placeholder="Vul je wachtwoord in" required />
+        </div>
 
-          <% if (typeof error !=='undefined' ) { %>
-            <div class="error">
-              <%= error %>
-            </div>
-            <% } %>
+        <% if (typeof error !=='undefined' ) { %>
+        <div class="error">
+          <%= error %>
+        </div>
+        <% } %>
 
-              <button type="submit" class="btn">Inloggen</button>
-        </form>
+        <button type="submit" class="btn">Inloggen</button>
+      </form>
 
-        <p class="link">Nog geen account? <a href="/register">Registreer nu!</a></p>
+      <p class="link">Nog geen account? <a href="/register">Registreer nu!</a></p>
 
-      </div>
-    </section>
-  </main>
+    </div>
+  </section>
+</main>
 
-  <%- include("../partials/foot") %>
+<%- include("../partials/foot") %>

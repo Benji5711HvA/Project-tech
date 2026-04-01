@@ -78,7 +78,12 @@ app.get("/create-profile", isLoggedIn, showCreateProfile)
 app.post("/create-profile", isLoggedIn, handleCreateProfile)
 
 app.get("/create-company-profile", isLoggedIn, showCreateCompanyProfile)
-app.post("/create-company-profile", isLoggedIn, upload.single("logo"), handleCreateCompanyProfile)
+app.post(
+  "/create-company-profile",
+  isLoggedIn,
+  upload.single("logo"),
+  handleCreateCompanyProfile,
+)
 
 app.get("/add-vacancy", isLoggedIn, showAddVacancy)
 app.post("/add-vacancy", isLoggedIn, handleAddVacancy)
@@ -99,7 +104,7 @@ async function deleteFavorite(req, res) {
     // Alleen verwijderen als het echt van de ingelogde gebruiker is
     await reactionsCollection.deleteOne({
       _id: new ObjectId(vacatureId),
-      userId: req.session.user.id
+      userId: req.session.user.id,
     })
 
     res.json({ success: true })
@@ -122,7 +127,11 @@ function home(req, res) {
 
 // Benjamin - Account
 function showRegister(req, res) {
-  res.render("pages/register")
+  res.render("pages/register", {
+    error: undefined,
+    email: undefined,
+    role: undefined,
+  })
 }
 
 async function handleRegister(req, res) {
@@ -130,14 +139,17 @@ async function handleRegister(req, res) {
     const { email, password, confirmPassword, role } = req.body
 
     const error = validateRegistration(email, password, confirmPassword)
-    if (error) return res.status(400).render("pages/register", { error })
+    if (error)
+      return res.status(400).render("pages/register", { error, email, role })
 
     // Voorkom duplicate accounts met hetzelfde emailadres
     const existingUser = await usersCollection.findOne({ email })
     if (existingUser) {
-      return res
-        .status(400)
-        .render("pages/register", { error: "E-mailadres is al in gebruik" })
+      return res.status(400).render("pages/register", {
+        error: "E-mailadres is al in gebruik",
+        email,
+        role,
+      })
     }
 
     // Het is verboden om plain text wachtwoorden op te slaan, dus we hashen het wachtwoord voordat we het in de database opslaan
@@ -149,12 +161,14 @@ async function handleRegister(req, res) {
     console.error("Fout bij registreren:", err)
     res.status(500).render("pages/register", {
       error: "Er ging iets mis, probeer het opnieuw",
+      email,
+      role,
     })
   }
 }
 
 function showLogin(req, res) {
-  res.render("pages/login")
+  res.render("pages/login", { error: undefined, email: undefined })
 }
 
 async function handleLogin(req, res) {
@@ -163,23 +177,25 @@ async function handleLogin(req, res) {
 
     const user = await usersCollection.findOne({ email })
     if (!user) {
-      return res
-        .status(400)
-        .render("pages/login", { error: "Verkeerd e-mailadres of wachtwoord" })
+      return res.status(400).render("pages/login", {
+        error: "Verkeerd e-mailadres of wachtwoord",
+        email,
+      })
     }
 
     const passwordMatches = await verifyPassword(password, user.password)
     if (!passwordMatches) {
-      return res
-        .status(400)
-        .render("pages/login", { error: "Verkeerd e-mailadres of wachtwoord" })
+      return res.status(400).render("pages/login", {
+        error: "Verkeerd e-mailadres of wachtwoord",
+        email,
+      })
     }
 
     req.session.user = {
       id: user._id.toString(),
       email: user.email,
       role: user.role,
-      companyName: user.companyName || null
+      companyName: user.companyName || null,
     }
 
     if (user.role === "company") {
@@ -197,9 +213,10 @@ async function handleLogin(req, res) {
     }
   } catch (err) {
     console.error("Fout bij inloggen:", err)
-    res
-      .status(500)
-      .render("pages/login", { error: "Er ging iets mis, probeer het opnieuw" })
+    res.status(500).render("pages/login", {
+      error: "Er ging iets mis, probeer het opnieuw",
+      email,
+    })
   }
 }
 
@@ -311,7 +328,15 @@ function showAddVacancy(req, res) {
 
 async function handleAddVacancy(req, res) {
   try {
-    const { title, category, location, salary, hoursPerWeek, contractType, description } = req.body
+    const {
+      title,
+      category,
+      location,
+      salary,
+      hoursPerWeek,
+      contractType,
+      description,
+    } = req.body
 
     await vacanciesCollection.insertOne({
       companyId: req.session.user.id,
@@ -322,7 +347,7 @@ async function handleAddVacancy(req, res) {
       hoursPerWeek,
       contractType,
       description,
-      createdAt: new Date()
+      createdAt: new Date(),
     })
 
     res.redirect("/add-vacancy")
@@ -337,7 +362,9 @@ async function handleAddVacancy(req, res) {
 async function getSalaryHint(req, res) {
   try {
     const { category } = req.query
-    const response = await fetch(`https://api.adzuna.com/v1/api/jobs/nl/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_APP_KEY}&category=${category}&results_per_page=1`)
+    const response = await fetch(
+      `https://api.adzuna.com/v1/api/jobs/nl/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_APP_KEY}&category=${category}&results_per_page=1`,
+    )
     const data = await response.json()
     const monthlySalary = Math.round(data.mean / 12)
     res.json({ salaryPerMonth: monthlySalary })
@@ -352,14 +379,19 @@ async function handleAddressLookup(req, res) {
     const { zipCode, houseNumber } = req.query
 
     if (!zipCode || !houseNumber) {
-      return res.status(400).json({ error: "Postcode en huisnummer zijn verplicht" })
+      return res
+        .status(400)
+        .json({ error: "Postcode en huisnummer zijn verplicht" })
     }
 
-    const response = await fetch(`https://postcode.tech/api/v1/postcode/full?postcode=${zipCode}&number=${houseNumber}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.POSTCODE_API_TOKEN}`,
+    const response = await fetch(
+      `https://postcode.tech/api/v1/postcode/full?postcode=${zipCode}&number=${houseNumber}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.POSTCODE_API_TOKEN}`,
+        },
       },
-    })
+    )
 
     if (!response.ok) {
       return res.status(response.status).json({ error: "Adres niet gevonden" })
@@ -379,21 +411,27 @@ async function showFavorites(req, res) {
     const userId = req.session.user.id
 
     // Sollicitaties ophalen waar de gebruiker op heeft gesolliciteerd
-    const savedVacancies = await reactionsCollection.find({
-      userId: userId,
-      reaction: "yes"
-    }).toArray()
+    const savedVacancies = await reactionsCollection
+      .find({
+        userId: userId,
+        reaction: "yes",
+      })
+      .toArray()
 
     // Favorieten ophalen waar de gebruiker het hartje heeft geklikt
-    const favoriteVacancies = await reactionsCollection.find({
-      userId: userId,
-      reaction: "favorite"
-    }).toArray()
+    const favoriteVacancies = await reactionsCollection
+      .find({
+        userId: userId,
+        reaction: "favorite",
+      })
+      .toArray()
 
     res.render("pages/favorites", { savedVacancies, favoriteVacancies })
   } catch (err) {
     console.error("Fout bij ophalen favorieten:", err)
-    res.status(500).render("pages/favorites", { savedVacancies: [], favoriteVacancies: [] })
+    res
+      .status(500)
+      .render("pages/favorites", { savedVacancies: [], favoriteVacancies: [] })
   }
 }
 
