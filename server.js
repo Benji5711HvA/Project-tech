@@ -390,7 +390,6 @@ async function handleMatchReaction(req, res) {
     res.status(500).json({ success: false })
   }
 }
-
 // Start server
 async function startServer() {
   try {
