@@ -1,34 +1,86 @@
-const cards = document.querySelectorAll('.vacancy-card')
-const previousButton = document.querySelector('.previous-button')
-const nextButton = document.querySelector('.next-button')
-const feedbackMessage = document.getElementById('feedbackMessage')
-let currentIndex = 0
+const cards = document.querySelectorAll(".vacancy-card")
+const wisFilters = document.getElementById("wisFilters")
 
-function showCard(index) {
-  cards.forEach(function hideCard(card) {
-    card.style.display = 'none'
-  })
-  cards[index].style.display = 'flex'
+const activeFilters = {
+  category: [],
+  hours: [],
+  contract: []
 }
 
-function goToPrev() {
-  if (currentIndex > 0) {
-    currentIndex = currentIndex - 1
-    showCard(currentIndex)
-  }
-}
-function goToNext() {
-  if (currentIndex < cards.length - 1) {
-    currentIndex = currentIndex + 1
-    showCard(currentIndex)
-  } else {
-    cards.forEach(function hideCard(card) {
-      card.style.display = 'none'
+document.querySelectorAll(".filter-btn").forEach(function addDropdownListener(btn) {
+  btn.addEventListener("click", function handleDropdownClick() {
+    const filterKey = btn.dataset.filter
+    const dropdown = document.getElementById("dropdown-" + filterKey)
+
+    document.querySelectorAll(".filter-dropdown").forEach(function closeOthers(el) {
+      if (el !== dropdown) {
+        el.classList.remove("active")
+      }
     })
-    document.querySelector('.end-card').style.display = 'flex'
+
+    dropdown.classList.toggle("active")
+  })
+})
+
+document.addEventListener("click", function handleOutsideClick(event) {
+  const clickedInsideFilter = event.target.closest(".filter-group")
+  if (!clickedInsideFilter) {
+    document.querySelectorAll(".filter-dropdown").forEach(function closeDropdown(el) {
+      el.classList.remove("active")
+    })
   }
+})
+
+document.querySelectorAll(".filter-checkbox").forEach(function addCheckboxListener(checkbox) {
+  checkbox.addEventListener("change", function handleCheckboxChange() {
+    const filterKey = checkbox.dataset.filter
+    const value = checkbox.value
+
+    if (checkbox.checked) {
+      activeFilters[filterKey].push(value)
+    } else {
+      activeFilters[filterKey] = activeFilters[filterKey].filter(function removeValue(v) {
+        return v !== value
+      })
+    }
+
+    applyFilters()
+  })
+})
+
+function applyFilters() {
+  cards.forEach(function checkCard(card) {
+    const cardCategory = card.dataset.category || ""
+    const cardHours = card.dataset.hours || ""
+    const cardContract = card.dataset.contract || ""
+
+    const categoryKlopt = activeFilters.category.length === 0 || activeFilters.category.includes(cardCategory)
+    const hoursKlopt = activeFilters.hours.length === 0 || activeFilters.hours.includes(cardHours)
+    const contractKlopt = activeFilters.contract.length === 0 || activeFilters.contract.includes(cardContract)
+
+    if (categoryKlopt && hoursKlopt && contractKlopt) {
+      card.style.display = "flex"
+    } else {
+      card.style.display = "none"
+    }
+  })
 }
-async function sendReaction(vacancyId, vacancyTitle, company, reaction) {
+
+wisFilters.addEventListener("click", function handleWisFilters() {
+  Object.keys(activeFilters).forEach(function resetFilter(key) {
+    activeFilters[key] = []
+  })
+
+  document.querySelectorAll(".filter-checkbox").forEach(function uncheckAll(cb) {
+    cb.checked = false
+  })
+
+  cards.forEach(function showAll(card) {
+    card.style.display = "flex"
+  })
+})
+
+async function sendReaction(vacancyId, vacancyTitle, company, reaction, location, salary, hoursPerWeek, contractType, card) {
   try {
     const response = await fetch('/match-reaction', {
       method: 'POST',

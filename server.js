@@ -75,18 +75,43 @@ app.get("/create-profile", isLoggedIn, showCreateProfile)
 app.post("/create-profile", isLoggedIn, handleCreateProfile)
 
 app.get("/create-company-profile", isLoggedIn, showCreateCompanyProfile)
-app.post("/create-company-profile", isLoggedIn, upload.single("logo"), handleCreateCompanyProfile)
+app.post(
+  "/create-company-profile",
+  isLoggedIn,
+  upload.single("logo"),
+  handleCreateCompanyProfile,
+)
 
 app.get("/add-vacancy", isLoggedIn, showAddVacancy)
 app.post("/add-vacancy", isLoggedIn, handleAddVacancy)
 
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
+app.delete("/favorites/:id", isLoggedIn, deleteFavorite)
 
+// Verwijder een favoriet zodat de gebruiker zijn lijst kan opschonen
+async function deleteFavorite(req, res) {
+  try {
+    const vacatureId = req.params.id
+
+    // Alleen verwijderen als het echt van de ingelogde gebruiker is
+    await reactionsCollection.deleteOne({
+      _id: new ObjectId(vacatureId),
+      userId: req.session.user.id,
+    })
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error("Fout bij verwijderen favoriet:", err)
+    res.status(500).json({ success: false })
+  }
+}
 
 // Sanna - Matching
 app.get("/matching", isLoggedIn, showMatching)
 app.post("/match-reaction", isLoggedIn, handleMatchReaction)
+app.get("/company-matches", isLoggedIn, showCompanyMatches)
+app.post("/update-status", isLoggedIn, updateMatchStatus)
 
 // Functions
 function home(req, res) {
@@ -95,7 +120,11 @@ function home(req, res) {
 
 // Benjamin - Account
 function showRegister(req, res) {
-  res.render("pages/register")
+  res.render("pages/register", {
+    error: undefined,
+    email: undefined,
+    role: undefined,
+  })
 }
 
 async function handleRegister(req, res) {
@@ -103,14 +132,17 @@ async function handleRegister(req, res) {
     const { email, password, confirmPassword, role } = req.body
 
     const error = validateRegistration(email, password, confirmPassword)
-    if (error) return res.status(400).render("pages/register", { error })
+    if (error)
+      return res.status(400).render("pages/register", { error, email, role })
 
     // Voorkom duplicate accounts met hetzelfde emailadres
     const existingUser = await usersCollection.findOne({ email })
     if (existingUser) {
-      return res
-        .status(400)
-        .render("pages/register", { error: "E-mailadres is al in gebruik" })
+      return res.status(400).render("pages/register", {
+        error: "E-mailadres is al in gebruik",
+        email,
+        role,
+      })
     }
 
     // Het is verboden om plain text wachtwoorden op te slaan, dus we hashen het wachtwoord voordat we het in de database opslaan
@@ -122,12 +154,14 @@ async function handleRegister(req, res) {
     console.error("Fout bij registreren:", err)
     res.status(500).render("pages/register", {
       error: "Er ging iets mis, probeer het opnieuw",
+      email,
+      role,
     })
   }
 }
 
 function showLogin(req, res) {
-  res.render("pages/login")
+  res.render("pages/login", { error: undefined, email: undefined })
 }
 
 async function handleLogin(req, res) {
@@ -136,23 +170,25 @@ async function handleLogin(req, res) {
 
     const user = await usersCollection.findOne({ email })
     if (!user) {
-      return res
-        .status(400)
-        .render("pages/login", { error: "Verkeerd e-mailadres of wachtwoord" })
+      return res.status(400).render("pages/login", {
+        error: "Verkeerd e-mailadres of wachtwoord",
+        email,
+      })
     }
 
     const passwordMatches = await verifyPassword(password, user.password)
     if (!passwordMatches) {
-      return res
-        .status(400)
-        .render("pages/login", { error: "Verkeerd e-mailadres of wachtwoord" })
+      return res.status(400).render("pages/login", {
+        error: "Verkeerd e-mailadres of wachtwoord",
+        email,
+      })
     }
 
     req.session.user = {
       id: user._id.toString(),
       email: user.email,
       role: user.role,
-      companyName: user.companyName || null
+      companyName: user.companyName || null,
     }
 
     if (user.role === "company") {
@@ -170,9 +206,10 @@ async function handleLogin(req, res) {
     }
   } catch (err) {
     console.error("Fout bij inloggen:", err)
-    res
-      .status(500)
-      .render("pages/login", { error: "Er ging iets mis, probeer het opnieuw" })
+    res.status(500).render("pages/login", {
+      error: "Er ging iets mis, probeer het opnieuw",
+      email,
+    })
   }
 }
 
@@ -282,7 +319,15 @@ function showAddVacancy(req, res) {
 
 async function handleAddVacancy(req, res) {
   try {
-    const { title, category, location, salary, hoursPerWeek, contractType, description } = req.body
+    const {
+      title,
+      category,
+      location,
+      salary,
+      hoursPerWeek,
+      contractType,
+      description,
+    } = req.body
 
     await vacanciesCollection.insertOne({
       companyId: req.session.user.id,
@@ -293,7 +338,7 @@ async function handleAddVacancy(req, res) {
       hoursPerWeek,
       contractType,
       description,
-      createdAt: new Date()
+      createdAt: new Date(),
     })
 
     res.redirect("/add-vacancy")
@@ -305,25 +350,79 @@ async function handleAddVacancy(req, res) {
   }
 }
 
+async function getSalaryHint(req, res) {
+  try {
+    const { category } = req.query
+    const response = await fetch(
+      `https://api.adzuna.com/v1/api/jobs/nl/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_APP_KEY}&category=${category}&results_per_page=1`,
+    )
+    const data = await response.json()
+    const monthlySalary = Math.round(data.mean / 12)
+    res.json({ salaryPerMonth: monthlySalary })
+  } catch (err) {
+    console.error("Fout bij ophalen salary hint:", err)
+    res.json({ salaryPerMonth: null })
+  }
+}
+
+async function handleAddressLookup(req, res) {
+  try {
+    const { zipCode, houseNumber } = req.query
+
+    if (!zipCode || !houseNumber) {
+      return res
+        .status(400)
+        .json({ error: "Postcode en huisnummer zijn verplicht" })
+    }
+
+    const response = await fetch(
+      `https://postcode.tech/api/v1/postcode/full?postcode=${zipCode}&number=${houseNumber}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.POSTCODE_API_TOKEN}`,
+        },
+      },
+    )
+
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "Adres niet gevonden" })
+    }
+
+    const data = await response.json()
+    res.json(data)
+  } catch (err) {
+    console.error("Fout bij ophalen adres:", err)
+    res.status(500).json({ error: "Er ging iets mis bij het ophalen" })
+  }
+}
+
 // Mehmet - Favorieten ophalen voor de ingelogde gebruiker
 async function showFavorites(req, res) {
   try {
     const userId = req.session.user.id
 
-    const savedVacancies = await reactionsCollection.find({
-      userId: userId,
-      reaction: "saved"
-    }).toArray()
+    // Sollicitaties ophalen waar de gebruiker op heeft gesolliciteerd
+    const savedVacancies = await reactionsCollection
+      .find({
+        userId: userId,
+        reaction: "yes",
+      })
+      .toArray()
 
-    const favoriteVacancies = await reactionsCollection.find({
-      userId: userId,
-      reaction: "yes"
-    }).toArray()
+    // Favorieten ophalen waar de gebruiker het hartje heeft geklikt
+    const favoriteVacancies = await reactionsCollection
+      .find({
+        userId: userId,
+        reaction: "favorite",
+      })
+      .toArray()
 
     res.render("pages/favorites", { savedVacancies, favoriteVacancies })
   } catch (err) {
     console.error("Fout bij ophalen favorieten:", err)
-    res.status(500).render("pages/favorites", { savedVacancies: [], favoriteVacancies: [] })
+    res
+      .status(500)
+      .render("pages/favorites", { savedVacancies: [], favoriteVacancies: [] })
   }
 }
 
@@ -340,15 +439,24 @@ async function showMatching(req, res) {
 async function handleMatchReaction(req, res) {
   try {
     const userId = req.session.user.id
-    const { vacancyId, vacancyTitle, company, reaction } = req.body
+    const { vacancyId, vacancyTitle, company, reaction, location, salary, hoursPerWeek, contractType } = req.body
 
-    // Alleen opslaan als de gebruiker interesse heeft
-    if (reaction === "yes") {
+    if (reaction === "yes" || reaction === "favorite") {
+     
+      const bestaandeReactie = await reactionsCollection.findOne({ userId, vacancyId, reaction })
+      if (bestaandeReactie) {
+        return res.json({ success: true })
+      }
+
       await reactionsCollection.insertOne({
         userId,
         vacancyId,
         vacancyTitle,
         company,
+        location,
+        salary,
+        hoursPerWeek,
+        contractType,
         reaction,
         status: "in behandeling",
       })
@@ -360,6 +468,48 @@ async function handleMatchReaction(req, res) {
     res.status(500).json({ success: false })
   }
 }
+
+// Bedrijf ziet wie heeft gereageerd op hun vacature
+async function showCompanyMatches(req, res) {
+  try {
+    const companyId = req.session.user.id
+
+    // Haal alle vacatures op van dit bedrijf
+    const vacancies = await vacanciesCollection.find({ companyId }).toArray()
+
+    // Haal alle reacties op die bij deze vacatures horen
+    const vacancyIds = vacancies.map(function getVacancyId(vacancy) {
+      return vacancy._id.toString()
+    })
+
+    const reactions = await reactionsCollection.find({
+      vacancyId: { $in: vacancyIds }
+    }).toArray()
+
+    res.render("pages/company-matches", { vacancies, reactions })
+  } catch (err) {
+    console.error("Fout bij ophalen matches:", err)
+    res.status(500).render("pages/company-matches", { vacancies: [], reactions: [] })
+  }
+}
+
+async function updateMatchStatus(req, res) {
+  try {
+    const { reactionId, status } = req.body
+
+    // Status updaten naar "gematcht" of "geweigerd"
+    await reactionsCollection.updateOne(
+      { _id: new ObjectId(reactionId) },
+      { $set: { status } }
+    )
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error("Fout bij updaten status:", err)
+    res.status(500).json({ success: false })
+  }
+}
+
 // Start server
 async function startServer() {
   try {

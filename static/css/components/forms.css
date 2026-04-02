@@ -1,17 +1,24 @@
 .field {
-  margin-bottom: 1.50rem;
+  margin-bottom: 2rem;
 }
 
 .field-row-two {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .field-row-three {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
   gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.field-row-two .field,
+.field-row-three .field {
+  margin-bottom: 0;
 }
 
 .field label {
@@ -88,7 +95,8 @@ textarea:focus {
   border-radius: 100px;
   padding: 0.75rem 1rem;
   font-size: 0.85rem;
-  margin-bottom: 1.25rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 .role-tabs {
@@ -191,4 +199,16 @@ textarea:focus {
 
 #zipCode {
   text-transform: uppercase;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--gray);
+  margin: 2.5rem 0;
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--text-gray);
+  font-size: 0.8rem;
 }

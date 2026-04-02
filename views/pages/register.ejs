@@ -1,71 +1,69 @@
 <%- include("../partials/head") %>
 
-  <main class="account">
+<main class="account">
 
-    <div class="account-left">
-      <img src="images/gradient-wave.png" alt="Collego illustratie" />
-      <span class="logo">Collego</span>
-      <div class="text">
-        <h2>Klaar voor een<br>nieuwe stap?</h2>
-        <p>Maak een account aan en vind vacatures die passen bij jouw ervaring en ambities.</p>
-      </div>
+  <div class="account-left">
+    <img src="images/gradient-wave.png" alt="Collego illustratie" />
+    <span class="logo">Collego</span>
+    <div class="text">
+      <h2>Klaar voor een<br>nieuwe stap?</h2>
+      <p>Maak een account aan en vind vacatures die passen bij jouw ervaring en ambities.</p>
     </div>
+  </div>
 
-    <section class="account-right">
-      <div class="container">
+  <section class="account-right">
+    <div class="container">
 
-        <h1>Registreer bij <span>Collego</span></h1>
-        <p class="subtitle">Maak een gratis account aan en ontdek vacatures die bij jou passen.</p>
+      <h1>Registreer bij <span>Collego</span></h1>
+      <p class="subtitle">Maak een gratis account aan en ontdek vacatures die bij jou passen.</p>
 
-        <form action="/register" method="POST">
+      <form action="/register" method="POST">
 
-          <div class="field">
-            <div class="role-tabs">
-              <div class="role-slider" id="roleSlider"></div>
-              <div class="role-tab">
-                <input type="radio" id="role-user" name="role" value="user" checked />
-                <label for="role-user">Werkzoekende</label>
-              </div>
-              <div class="role-tab">
-                <input type="radio" id="role-company" name="role" value="company" />
-                <label for="role-company">Bedrijf</label>
-              </div>
+        <div class="field">
+          <div class="role-tabs">
+            <div class="role-slider" id="roleSlider"></div>
+            <div class="role-tab">
+              <input type="radio" id="role-user" name="role" value="user" <%= typeof role === 'undefined' || role === 'user' ? 'checked' : '' %> />
+              <label for="role-user">Werkzoekende</label>
+            </div>
+            <div class="role-tab">
+              <input type="radio" id="role-company" name="role" value="company" <%= role === 'company' ? 'checked' : '' %> />
+              <label for="role-company">Bedrijf</label>
             </div>
           </div>
+        </div>
 
-          <div class="field">
-            <label for="email">Emailadres</label>
-            <input type="email" id="email" name="email" placeholder="voorbeeld@voorbeeld.nl" required />
-          </div>
+        <div class="field">
+          <label for="email">Emailadres</label>
+          <input type="email" id="email" name="email" placeholder="voorbeeld@voorbeeld.nl" value="<%= typeof email !== 'undefined' ? email : '' %>" required />
+        </div>
 
-          <div class="field">
-            <label for="password">Wachtwoord</label>
-            <input type="password" id="password" name="password" placeholder="Minimaal 8 tekens" minlength="8"
-              required />
-          </div>
+        <div class="field">
+          <label for="password">Wachtwoord</label>
+          <input type="password" id="password" name="password" placeholder="Minimaal 8 tekens" minlength="8" required />
+        </div>
 
-          <div class="field">
-            <label for="confirmPassword">Herhaal wachtwoord</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Bevestig je wachtwoord"
-              minlength="8" required />
-          </div>
+        <div class="field">
+          <label for="confirmPassword">Herhaal wachtwoord</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Bevestig je wachtwoord" minlength="8" required />
+        </div>
 
-          <% if (typeof error !=='undefined' ) { %>
-            <div class="error">
-              <%= error %>
-            </div>
-            <% } %>
+        <% if (typeof error !=='undefined' ) { %>
+        <div class="error">
+          <%= error %>
+        </div>
+        <% } %>
 
-              <button type="submit" class="btn">Registreren</button>
-        </form>
+        <button type="submit" class="btn">Registreren</button>
+      </form>
 
-        <p class="link">Heb je al een account? <a href="/login">Log in</a></p>
+      <p class="link">Heb je al een account? <a href="/login">Log in nu!</a></p>
 
-      </div>
-    </section>
+    </div>
+  </section>
 
-  </main>
+</main>
 
-  <script src="/js/register.js"></script>
+<script src="/js/register.js"></script>
 
-  <%- include("../partials/foot") %>
+<%- include("../partials/foot") %>

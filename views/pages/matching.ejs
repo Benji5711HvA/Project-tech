@@ -7,13 +7,80 @@
       <p>Bekijk vacatures en laat ons weten of je geïnteresseerd bent!</p>
     </section>
 
-    <section class="carousel">
+    <section class="filters">
+      <div class="filters-inner">
 
-      <button class="previous-button">
-        <span class="material-symbols-outlined">
-          arrow_back
-        </span>
-      </button>
+        <div class="filter-group">
+          <button class="filter-btn" data-filter="category">
+            Vakgebied <span class="material-symbols-outlined">expand_more</span>
+          </button>
+          <div class="filter-dropdown" id="dropdown-category">
+            <label><input type="checkbox" class="filter-checkbox" data-filter="category" value="it-jobs" /> ICT &amp; Tech</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="category" value="healthcare-nursing-jobs" /> Zorg &amp; Welzijn</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="category" value="admin-jobs" /> Administratie</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="category" value="retail-jobs" /> Retail &amp; Verkoop</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="category" value="hospitality-catering-jobs" /> Horeca &amp; Toerisme</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="category" value="teaching-jobs" /> Onderwijs</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="category" value="logistics-warehouse-jobs" /> Logistiek</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="category" value="pr-advertising-marketing-jobs" /> Marketing &amp; Comm.</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="category" value="manufacturing-jobs" /> Techniek &amp; Industrie</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="category" value="accounting-finance-jobs" /> Finance &amp; Juridisch</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="category" value="trade-construction-jobs" /> Bouw &amp; Infra</label>
+          </div>
+        </div>
+
+        <div class="filter-divider"></div>
+
+        <div class="filter-group">
+          <button class="filter-btn" data-filter="education">
+            Opleidingsniveau <span class="material-symbols-outlined">expand_more</span>
+          </button>
+          <div class="filter-dropdown" id="dropdown-education">
+            <label><input type="checkbox" class="filter-checkbox" data-filter="education" value="vmbo" /> Middelbaar onderwijs</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="education" value="mbo12" /> MBO niveau 1 of 2</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="education" value="mbo34" /> MBO niveau 3 of 4</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="education" value="hbo" /> HBO Bachelor</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="education" value="wo" /> WO Bachelor</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="education" value="master" /> HBO/WO Master</label>
+          </div>
+        </div>
+
+        <div class="filter-divider"></div>
+
+        <div class="filter-group">
+          <button class="filter-btn" data-filter="hours">
+            Uren per week <span class="material-symbols-outlined">expand_more</span>
+          </button>
+          <div class="filter-dropdown" id="dropdown-hours">
+            <label><input type="checkbox" class="filter-checkbox" data-filter="hours" value="8-16" /> 8 - 16 uur</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="hours" value="16-24" /> 16 - 24 uur</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="hours" value="24-32" /> 24 - 32 uur</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="hours" value="32-40" /> 32 - 40 uur</label>
+          </div>
+        </div>
+
+        <div class="filter-divider"></div>
+
+        <div class="filter-group">
+          <button class="filter-btn" data-filter="contract">
+            Soort dienstverband <span class="material-symbols-outlined">expand_more</span>
+          </button>
+          <div class="filter-dropdown" id="dropdown-contract">
+            <label><input type="checkbox" class="filter-checkbox" data-filter="contract" value="permanent" /> Vast contract</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="contract" value="temporary" /> Tijdelijk contract</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="contract" value="freelance" /> Freelance / ZZP</label>
+            <label><input type="checkbox" class="filter-checkbox" data-filter="contract" value="internship" /> Stage</label>
+          </div>
+        </div>
+
+        <button class="filter-clear" id="wisFilters">
+          <span class="material-symbols-outlined">delete</span> Wis filters
+        </button>
+
+      </div>
+    </section>
+
+    <section class="vacancies-list">
 
       <% vacancies.forEach(function(vacancy) { %>
 
