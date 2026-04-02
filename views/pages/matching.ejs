@@ -121,8 +121,6 @@
               </button>
             </div>
 
-            <p class="feedback-message"></p>
-
             <p class="company"><%= vacancy.company %></p>
             <p class="location"><%= vacancy.location %></p>
 
@@ -196,6 +194,11 @@
       <% }) %>
 
     </section>
+
+    <div class="toast" id="toast">
+      <p class="toast-titel" id="toast-titel"></p>
+      <p class="toast-bericht" id="toast-bericht"></p>
+    </div>
 
   </main>
 

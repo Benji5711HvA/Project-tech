@@ -157,13 +157,23 @@ wisFilters.addEventListener("click", function handleWisFilters() {
     cb.checked = false
   })
 
-  cards.forEach(function showAll(card) {
+  document.querySelectorAll(".vacancy-card").forEach(function showAll(card) {
     card.style.display = "flex"
     card.querySelectorAll(".card-tag").forEach(function resetTag(tag) {
       tag.classList.remove("active-filter")
     })
   })
 })
+
+function toonToast(titel, bericht) {
+  const toast = document.getElementById("toast")
+  document.getElementById("toast-titel").textContent = titel
+  document.getElementById("toast-bericht").textContent = bericht
+  toast.classList.add("zichtbaar")
+  setTimeout(function verbergToast() {
+    toast.classList.remove("zichtbaar")
+  }, 4000)
+}
 
 async function sendReaction(vacancyId, vacancyTitle, company, reaction, location, salary, hoursPerWeek, contractType, card) {
   try {
@@ -174,11 +184,30 @@ async function sendReaction(vacancyId, vacancyTitle, company, reaction, location
     })
     const result = await response.json()
     if (result.success) {
-      const feedback = card.querySelector(".feedback-message")
-      feedback.textContent = reaction === "yes" ? "Opgeslagen!" : reaction === "favorite" ? "Favoriet!" : "Overgeslagen"
-      setTimeout(function clearFeedback() {
-        feedback.textContent = ""
-      }, 800)
+      if (reaction === "yes") {
+        toonToast(
+          "Aanvraag verstuurd!",
+          `Je hebt gereageerd op de vacature ${vacancyTitle} bij ${company}. Je kunt de status volgen via je dashboard.`
+        )
+        card.classList.add("verdwijnen")
+        setTimeout(function verwijderKaart() {
+          card.remove()
+        }, 400)
+      } else if (reaction === "no") {
+        toonToast(
+          "Vacature overgeslagen",
+          `Je hebt de vacature ${vacancyTitle} bij ${company} overgeslagen.`
+        )
+        card.classList.add("verdwijnen")
+        setTimeout(function verwijderKaart() {
+          card.remove()
+        }, 400)
+      } else if (reaction === "favorite") {
+        toonToast(
+          "Toegevoegd aan favorieten!",
+          `${vacancyTitle} bij ${company} is opgeslagen in je favorieten.`
+        )
+      }
     }
   } catch (error) {
     console.error("Fout bij versturen reactie:", error)
