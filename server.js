@@ -42,7 +42,6 @@ function setLocals(req, res, next) {
 
 app.use(setLocals)
 
-// deze middleware checkt of de gebruiker is ingelogd, je wilt niet dat iemand die niet is ingelogd toegnang heeft tot bepaalde routes, zoals het profiel aanmaken of de favorieten pagina
 function isLoggedIn(req, res, next) {
   if (req.session.user) return next()
   return res.redirect("/login")
@@ -96,30 +95,11 @@ app.get("/add-vacancy", isLoggedIn, showAddVacancy)
 app.post("/add-vacancy", isLoggedIn, handleAddVacancy)
 
 app.get("/api/salary-hint", isLoggedIn, getSalaryHint)
-
 app.get("/api/address", isLoggedIn, handleAddressLookup)
 
 // Mehmet - Favorites
 app.get("/favorites", isLoggedIn, showFavorites)
 app.delete("/favorites/:id", isLoggedIn, deleteFavorite)
-
-// Verwijder een favoriet zodat de gebruiker zijn lijst kan opschonen
-async function deleteFavorite(req, res) {
-  try {
-    const vacatureId = req.params.id
-
-    // Alleen verwijderen als het echt van de ingelogde gebruiker is
-    await reactionsCollection.deleteOne({
-      _id: new ObjectId(vacatureId),
-      userId: req.session.user.id,
-    })
-
-    res.json({ success: true })
-  } catch (err) {
-    console.error("Fout bij verwijderen favoriet:", err)
-    res.status(500).json({ success: false })
-  }
-}
 
 // Sanna - Matching
 app.get("/matching", isLoggedIn, showMatching)
@@ -149,7 +129,6 @@ async function handleRegister(req, res) {
     if (error)
       return res.status(400).render("pages/register", { error, email, role })
 
-    // Voorkom duplicate accounts met hetzelfde emailadres
     const existingUser = await usersCollection.findOne({ email })
     const existingCompany = await companiesCollection.findOne({ email })
     if (existingUser || existingCompany) {
@@ -160,7 +139,6 @@ async function handleRegister(req, res) {
       })
     }
 
-    // Het is verboden om plain text wachtwoorden op te slaan, dus we hashen het wachtwoord voordat we het in de database opslaan
     const hashedPassword = await hashPassword(password)
 
     // Hier willen we checken of het account dat wordt geregistreerd een bedrijf is of een gewone gebruiker, en op basis daarvan willen we het in de juiste collectie opslaan
@@ -367,6 +345,7 @@ async function handleAddVacancy(req, res) {
 
     await vacanciesCollection.insertOne({
       companyId: req.session.user.id,
+      company: req.session.user.companyName,
       title,
       category,
       location,
@@ -407,9 +386,7 @@ async function handleAddressLookup(req, res) {
     const { zipCode, houseNumber } = req.query
 
     if (!zipCode || !houseNumber) {
-      return res
-        .status(400)
-        .json({ error: "Postcode en huisnummer zijn verplicht" })
+      return res.status(400).json({ error: "Postcode en huisnummer zijn verplicht" })
     }
 
     const response = await fetch(
@@ -433,46 +410,94 @@ async function handleAddressLookup(req, res) {
   }
 }
 
-// Mehmet - Favorieten ophalen voor de ingelogde gebruiker
+// Mehmet - Favorieten
 async function showFavorites(req, res) {
   try {
     const userId = req.session.user.id
 
-    // Sollicitaties ophalen waar de gebruiker op heeft gesolliciteerd
     const savedVacancies = await reactionsCollection
-      .find({
-        userId: userId,
-        reaction: "yes",
-      })
+      .find({ userId: userId, reaction: "yes" })
       .toArray()
 
-    // Favorieten ophalen waar de gebruiker het hartje heeft geklikt
     const favoriteVacancies = await reactionsCollection
-      .find({
-        userId: userId,
-        reaction: "favorite",
-      })
+      .find({ userId: userId, reaction: "favorite" })
       .toArray()
 
     res.render("pages/favorites", { savedVacancies, favoriteVacancies })
   } catch (err) {
     console.error("Fout bij ophalen favorieten:", err)
-    res
-      .status(500)
-      .render("pages/favorites", { savedVacancies: [], favoriteVacancies: [] })
+    res.status(500).render("pages/favorites", { savedVacancies: [], favoriteVacancies: [] })
+  }
+}
+
+async function deleteFavorite(req, res) {
+  try {
+    const vacatureId = req.params.id
+
+    await reactionsCollection.deleteOne({
+      _id: new ObjectId(vacatureId),
+      userId: req.session.user.id,
+    })
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error("Fout bij verwijderen favoriet:", err)
+    res.status(500).json({ success: false })
   }
 }
 
 // Sanna - Matching
 async function showMatching(req, res) {
   try {
+    const user = await usersCollection.findOne({
+      _id: new ObjectId(req.session.user.id)
+    })
+
     const vacancies = await vacanciesCollection.find({}).toArray()
-    res.render("pages/matching", { vacancies })
+
+    const labels = {
+      category: {
+        "it-jobs": "ICT & Tech",
+        "healthcare-nursing-jobs": "Zorg & Welzijn",
+        "admin-jobs": "Administratie",
+        "retail-jobs": "Retail & Verkoop",
+        "hospitality-catering-jobs": "Horeca & Toerisme",
+        "teaching-jobs": "Onderwijs",
+        "logistics-warehouse-jobs": "Logistiek",
+        "pr-advertising-marketing-jobs": "Marketing & Comm.",
+        "manufacturing-jobs": "Techniek & Industrie",
+        "accounting-finance-jobs": "Finance & Juridisch",
+        "trade-construction-jobs": "Bouw & Infra"
+      },
+      contract: {
+        "permanent": "Vast contract",
+        "temporary": "Tijdelijk contract",
+        "freelance": "Freelance / ZZP",
+        "internship": "Stage"
+      },
+      education: {
+        "vmbo": "Middelbaar onderwijs",
+        "mbo12": "MBO niveau 1 of 2",
+        "mbo34": "MBO niveau 3 of 4",
+        "hbo": "HBO Bachelor",
+        "wo": "WO Bachelor",
+        "master": "HBO/WO Master"
+      }
+    }
+
+    vacancies.forEach(function vertaalVacature(vacancy) {
+      vacancy.categoryLabel = labels.category[vacancy.category] || vacancy.category
+      vacancy.contractLabel = labels.contract[vacancy.contractType] || vacancy.contractType
+      vacancy.educationLabel = labels.education[vacancy.education] || vacancy.education
+    })
+
+    res.render("pages/matching", { vacancies, user })
   } catch (err) {
     console.error("Fout bij ophalen vacatures:", err)
-    res.status(500).render("pages/matching", { vacancies: [] })
+    res.status(500).render("pages/matching", { vacancies: [], user: null })
   }
 }
+
 async function handleMatchReaction(req, res) {
   try {
     const userId = req.session.user.id
@@ -488,11 +513,7 @@ async function handleMatchReaction(req, res) {
     } = req.body
 
     if (reaction === "yes" || reaction === "favorite") {
-      const bestaandeReactie = await reactionsCollection.findOne({
-        userId,
-        vacancyId,
-        reaction,
-      })
+      const bestaandeReactie = await reactionsCollection.findOne({ userId, vacancyId, reaction })
       if (bestaandeReactie) {
         return res.json({ success: true })
       }
@@ -518,15 +539,12 @@ async function handleMatchReaction(req, res) {
   }
 }
 
-// Bedrijf ziet wie heeft gereageerd op hun vacature
 async function showCompanyMatches(req, res) {
   try {
     const companyId = req.session.user.id
 
-    // Haal alle vacatures op van dit bedrijf
     const vacancies = await vacanciesCollection.find({ companyId }).toArray()
 
-    // Haal alle reacties op die bij deze vacatures horen
     const vacancyIds = vacancies.map(function getVacancyId(vacancy) {
       return vacancy._id.toString()
     })
@@ -550,7 +568,6 @@ async function updateMatchStatus(req, res) {
   try {
     const { reactionId, status } = req.body
 
-    // Status updaten naar "gematcht" of "geweigerd"
     await reactionsCollection.updateOne(
       { _id: new ObjectId(reactionId) },
       { $set: { status } },
