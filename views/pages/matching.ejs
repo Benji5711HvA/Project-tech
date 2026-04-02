@@ -8,7 +8,21 @@
     </section>
 
     <section class="filters">
+      <div id="user-prefs"
+        data-sector="<%= user && user.sector ? user.sector : '' %>"
+        data-education="<%= user && user.education ? user.education : '' %>"
+        data-hours="<%= user && user.hoursPerWeek ? user.hoursPerWeek : '' %>"
+        data-contract="<%= user && user.contractType ? user.contractType : '' %>"
+        style="display: none;">
+      </div>
       <div class="filters-inner">
+
+        <button class="voorkeuren-filter-btn" id="voorkeurenFilter">
+          <span class="material-symbols-outlined">person</span>
+          Mijn voorkeuren
+        </button>
+
+        <div class="filter-divider"></div>
 
         <div class="filter-group">
           <button class="filter-btn" data-filter="category">
@@ -95,9 +109,9 @@
 
             <div class="card-title-row">
               <h2><%= vacancy.title %></h2>
-              <button class="favorite-button" 
+              <button class="favorite-button"
                 data-vacancy-id="<%= vacancy._id %>"
-                data-vacancy-title="<%= vacancy.title %>" 
+                data-vacancy-title="<%= vacancy.title %>"
                 data-company="<%= vacancy.company %>"
                 data-location="<%= vacancy.location %>"
                 data-salary="<%= vacancy.salary %>"
@@ -111,19 +125,33 @@
 
             <p class="company"><%= vacancy.company %></p>
             <p class="location"><%= vacancy.location %></p>
-            <p class="category"><%= vacancy.category %></p>
-
-            <% if (vacancy.hoursPerWeek) { %>
-              <p class="hours"><%= vacancy.hoursPerWeek %></p>
-            <% } %>
-
-            <% if (vacancy.contractType) { %>
-              <p class="contract"><%= vacancy.contractType %></p>
-            <% } %>
 
             <% if (vacancy.salary) { %>
               <p class="salary">€<%= vacancy.salary %> per maand</p>
             <% } %>
+
+            <div class="card-tags">
+              <% if (vacancy.category) { %>
+                <span class="card-tag" data-filter-type="category" data-filter-value="<%= vacancy.category %>">
+                  <%= vacancy.categoryLabel %>
+                </span>
+              <% } %>
+              <% if (vacancy.hoursPerWeek) { %>
+                <span class="card-tag" data-filter-type="hours" data-filter-value="<%= vacancy.hoursPerWeek %>">
+                  <%= vacancy.hoursPerWeek %> uur/week
+                </span>
+              <% } %>
+              <% if (vacancy.contractType) { %>
+                <span class="card-tag" data-filter-type="contract" data-filter-value="<%= vacancy.contractType %>">
+                  <%= vacancy.contractLabel %>
+                </span>
+              <% } %>
+              <% if (vacancy.education) { %>
+                <span class="card-tag" data-filter-type="education" data-filter-value="<%= vacancy.education %>">
+                  <%= vacancy.educationLabel %>
+                </span>
+              <% } %>
+            </div>
 
           </div>
 
@@ -140,8 +168,8 @@
           </div>
 
           <div class="card-buttons">
-            <button class="no-button" 
-              data-vacancy-id="<%= vacancy._id %>" 
+            <button class="no-button"
+              data-vacancy-id="<%= vacancy._id %>"
               data-vacancy-title="<%= vacancy.title %>"
               data-company="<%= vacancy.company %>"
               data-location="<%= vacancy.location %>"
@@ -151,8 +179,8 @@
               &#10005;
             </button>
             <button class="more-info-button">Meer info</button>
-            <button class="yes-button" 
-              data-vacancy-id="<%= vacancy._id %>" 
+            <button class="yes-button"
+              data-vacancy-id="<%= vacancy._id %>"
               data-vacancy-title="<%= vacancy.title %>"
               data-company="<%= vacancy.company %>"
               data-location="<%= vacancy.location %>"
@@ -173,4 +201,4 @@
 
   <script src="/js/matching.js"></script>
 
-  <%- include("../partials/footer") %>
+<%- include("../partials/footer") %>
