@@ -76,7 +76,12 @@ app.post("/login", handleLogin)
 app.post("/logout", handleLogout)
 
 app.get("/create-profile", isLoggedIn, showCreateProfile)
-app.post("/create-profile", isLoggedIn, handleCreateProfile)
+app.post(
+  "/create-profile",
+  isLoggedIn,
+  upload.single("cv"),
+  handleCreateProfile,
+)
 
 app.get("/create-company-profile", isLoggedIn, showCreateCompanyProfile)
 app.post(
@@ -85,6 +90,7 @@ app.post(
   upload.single("logo"),
   handleCreateCompanyProfile,
 )
+
 
 app.get("/add-vacancy", isLoggedIn, showAddVacancy)
 app.post("/add-vacancy", isLoggedIn, handleAddVacancy)
@@ -273,6 +279,8 @@ async function handleCreateProfile(req, res) {
       workForm,
     } = req.body
 
+    const cv = req.file ? req.file.filename : null
+
     await usersCollection.updateOne(
       { _id: new ObjectId(req.session.user.id) },
       {
@@ -294,6 +302,7 @@ async function handleCreateProfile(req, res) {
           hoursPerWeek,
           contractType,
           workForm,
+          cv,
         },
       },
     )
@@ -352,6 +361,7 @@ async function handleAddVacancy(req, res) {
       salary,
       hoursPerWeek,
       contractType,
+      workForm,
       description,
     } = req.body
 
@@ -363,6 +373,7 @@ async function handleAddVacancy(req, res) {
       salary,
       hoursPerWeek,
       contractType,
+      workForm,
       description,
       createdAt: new Date(),
     })

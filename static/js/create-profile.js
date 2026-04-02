@@ -2,6 +2,12 @@ function updateCounter(length) {
   document.querySelector('.counter').textContent = length + '/200'
 }
 
+function cvSelected(input) {
+  if (input.files && input.files[0]) {
+    document.getElementById('cvFilename').textContent = input.files[0].name
+  }
+}
+
 function nextStep() {
   const step1 = document.getElementById('step1')
   const inputs = step1.querySelectorAll('input[required]')
