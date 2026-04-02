@@ -1,11 +1,65 @@
 const cards = document.querySelectorAll(".vacancy-card")
 const wisFilters = document.getElementById("wisFilters")
+const voorkeurenBtn = document.getElementById("voorkeurenFilter")
 
 const activeFilters = {
   category: [],
   hours: [],
-  contract: []
+  contract: [],
+  education: []
 }
+
+let voorkeurenActief = false
+
+function laadGebruikersVoorkeuren() {
+  const prefs = document.getElementById("user-prefs")
+  if (!prefs) return
+
+  const sector = prefs.dataset.sector
+  const education = prefs.dataset.education
+  const hours = prefs.dataset.hours
+  const contract = prefs.dataset.contract
+
+  if (sector) {
+    activeFilters.category.push(sector)
+    const cb = document.querySelector(`.filter-checkbox[data-filter="category"][value="${sector}"]`)
+    if (cb) cb.checked = true
+  }
+  if (education) {
+    activeFilters.education.push(education)
+    const cb = document.querySelector(`.filter-checkbox[data-filter="education"][value="${education}"]`)
+    if (cb) cb.checked = true
+  }
+  if (hours) {
+    activeFilters.hours.push(hours)
+    const cb = document.querySelector(`.filter-checkbox[data-filter="hours"][value="${hours}"]`)
+    if (cb) cb.checked = true
+  }
+  if (contract) {
+    activeFilters.contract.push(contract)
+    const cb = document.querySelector(`.filter-checkbox[data-filter="contract"][value="${contract}"]`)
+    if (cb) cb.checked = true
+  }
+
+  applyFilters()
+}
+
+voorkeurenBtn.addEventListener("click", function handleVoorkeurenClick() {
+  voorkeurenActief = !voorkeurenActief
+  voorkeurenBtn.classList.toggle("active", voorkeurenActief)
+
+  if (voorkeurenActief) {
+    laadGebruikersVoorkeuren()
+  } else {
+    Object.keys(activeFilters).forEach(function resetKey(key) {
+      activeFilters[key] = []
+    })
+    document.querySelectorAll(".filter-checkbox").forEach(function uncheck(cb) {
+      cb.checked = false
+    })
+    applyFilters()
+  }
+})
 
 document.querySelectorAll(".filter-btn").forEach(function addDropdownListener(btn) {
   btn.addEventListener("click", function handleDropdownClick() {
@@ -49,24 +103,52 @@ document.querySelectorAll(".filter-checkbox").forEach(function addCheckboxListen
 })
 
 function applyFilters() {
+  const geenFiltersActief =
+    activeFilters.category.length === 0 &&
+    activeFilters.hours.length === 0 &&
+    activeFilters.contract.length === 0 &&
+    activeFilters.education.length === 0
+
   cards.forEach(function checkCard(card) {
     const cardCategory = card.dataset.category || ""
     const cardHours = card.dataset.hours || ""
     const cardContract = card.dataset.contract || ""
+    const cardEducation = card.dataset.education || ""
 
-    const categoryKlopt = activeFilters.category.length === 0 || activeFilters.category.includes(cardCategory)
-    const hoursKlopt = activeFilters.hours.length === 0 || activeFilters.hours.includes(cardHours)
-    const contractKlopt = activeFilters.contract.length === 0 || activeFilters.contract.includes(cardContract)
-
-    if (categoryKlopt && hoursKlopt && contractKlopt) {
+    if (geenFiltersActief) {
       card.style.display = "flex"
+    } else if (voorkeurenActief) {
+      const eenMatch =
+        activeFilters.category.includes(cardCategory) ||
+        activeFilters.hours.includes(cardHours) ||
+        activeFilters.contract.includes(cardContract) ||
+        activeFilters.education.includes(cardEducation)
+
+      card.style.display = eenMatch ? "flex" : "none"
     } else {
-      card.style.display = "none"
+      const categoryKlopt = activeFilters.category.length === 0 || activeFilters.category.includes(cardCategory)
+      const hoursKlopt = activeFilters.hours.length === 0 || activeFilters.hours.includes(cardHours)
+      const contractKlopt = activeFilters.contract.length === 0 || activeFilters.contract.includes(cardContract)
+
+      card.style.display = categoryKlopt && hoursKlopt && contractKlopt ? "flex" : "none"
     }
+
+    card.querySelectorAll(".card-tag").forEach(function updateTag(tag) {
+      const type = tag.dataset.filterType
+      const value = tag.dataset.filterValue
+      if (activeFilters[type] && activeFilters[type].includes(value)) {
+        tag.classList.add("active-filter")
+      } else {
+        tag.classList.remove("active-filter")
+      }
+    })
   })
 }
 
 wisFilters.addEventListener("click", function handleWisFilters() {
+  voorkeurenActief = false
+  voorkeurenBtn.classList.remove("active")
+
   Object.keys(activeFilters).forEach(function resetFilter(key) {
     activeFilters[key] = []
   })
@@ -77,6 +159,9 @@ wisFilters.addEventListener("click", function handleWisFilters() {
 
   cards.forEach(function showAll(card) {
     card.style.display = "flex"
+    card.querySelectorAll(".card-tag").forEach(function resetTag(tag) {
+      tag.classList.remove("active-filter")
+    })
   })
 })
 
