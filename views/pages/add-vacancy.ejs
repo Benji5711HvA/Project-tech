@@ -7,12 +7,14 @@
     <h1>Vacature <span>toevoegen</span></h1>
     <p class="subtitle">Vul de details in van de vacature die je wilt plaatsen.</p>
 
-    <form action="/add-vacancy" method="POST">
+    <form id="vacancy-form" action="/add-vacancy" method="POST">
 
       <div class="field">
         <label for="title">Vacaturetitel</label>
         <input type="text" id="title" name="title" placeholder="Bijv. Software Developer" required />
       </div>
+
+      <hr class="divider" />
 
       <div class="field">
         <label>Vakgebied</label>
@@ -64,11 +66,15 @@
         </div>
       </div>
 
+      <p id="category-error" class="error" hidden>Selecteer een vakgebied</p>
+
       <div class="field">
-        <label for="salary">Salaris <span class="optional">(bruto per maand, optioneel)</span></label>
+        <label for="salary">Salaris (Bruto per maand) <span class="optional">(optioneel)</span></label>
         <input type="number" id="salary" name="salary" placeholder="Bijv. 3500" />
         <p class="salary-hint" id="salaryHint">Kies een vakgebied voor een salarissuggistie</p>
       </div>
+
+      <hr class="divider" />
 
       <div class="field">
         <label for="location">Locatie</label>
@@ -97,8 +103,10 @@
         </div>
       </div>
 
+      <p id="hours-error" class="error" hidden>Selecteer het aantal uur per week</p>
+
       <div class="field">
-        <label>Contracttype</label>
+        <label>Contracttype <span class="optional">(optioneel)</span></label>
         <div class="chip-group">
           <div class="chip">
             <input type="checkbox" id="contract-permanent" name="contractType" value="permanent" />
@@ -118,6 +126,8 @@
           </div>
         </div>
       </div>
+
+      <hr class="divider" />
 
       <div class="field">
         <label for="description">Beschrijving</label>
