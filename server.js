@@ -11,6 +11,7 @@ const { MongoClient, ObjectId } = require("mongodb")
 const URI = process.env.URI
 const client = new MongoClient(URI)
 let usersCollection
+let companiesCollection
 let reactionsCollection
 let vacanciesCollection
 
@@ -74,7 +75,12 @@ app.post("/login", handleLogin)
 app.post("/logout", handleLogout)
 
 app.get("/create-profile", isLoggedIn, showCreateProfile)
-app.post("/create-profile", isLoggedIn, handleCreateProfile)
+app.post(
+  "/create-profile",
+  isLoggedIn,
+  upload.single("cv"),
+  handleCreateProfile,
+)
 
 app.get("/create-company-profile", isLoggedIn, showCreateCompanyProfile)
 app.post(
@@ -83,6 +89,7 @@ app.post(
   upload.single("logo"),
   handleCreateCompanyProfile,
 )
+
 
 app.get("/add-vacancy", isLoggedIn, showAddVacancy)
 app.post("/add-vacancy", isLoggedIn, handleAddVacancy)
@@ -123,7 +130,8 @@ async function handleRegister(req, res) {
       return res.status(400).render("pages/register", { error, email, role })
 
     const existingUser = await usersCollection.findOne({ email })
-    if (existingUser) {
+    const existingCompany = await companiesCollection.findOne({ email })
+    if (existingUser || existingCompany) {
       return res.status(400).render("pages/register", {
         error: "E-mailadres is al in gebruik",
         email,
@@ -132,7 +140,13 @@ async function handleRegister(req, res) {
     }
 
     const hashedPassword = await hashPassword(password)
-    await usersCollection.insertOne({ email, password: hashedPassword, role })
+
+    // Hier willen we checken of het account dat wordt geregistreerd een bedrijf is of een gewone gebruiker, en op basis daarvan willen we het in de juiste collectie opslaan
+    if (role === "company") {
+      await companiesCollection.insertOne({ email, password: hashedPassword })
+    } else {
+      await usersCollection.insertOne({ email, password: hashedPassword })
+    }
 
     res.redirect("/login")
   } catch (err) {
@@ -146,18 +160,25 @@ async function handleRegister(req, res) {
 }
 
 function showLogin(req, res) {
-  res.render("pages/login", { error: undefined, email: undefined })
+  res.render("pages/login", {
+    error: undefined,
+    email: undefined,
+    role: undefined,
+  })
 }
 
 async function handleLogin(req, res) {
   try {
-    const { email, password } = req.body
+    const { email, password, role } = req.body
 
-    const user = await usersCollection.findOne({ email })
+    const collection =
+      role === "company" ? companiesCollection : usersCollection
+    const user = await collection.findOne({ email })
     if (!user) {
       return res.status(400).render("pages/login", {
         error: "Verkeerd e-mailadres of wachtwoord",
         email,
+        role,
       })
     }
 
@@ -166,17 +187,18 @@ async function handleLogin(req, res) {
       return res.status(400).render("pages/login", {
         error: "Verkeerd e-mailadres of wachtwoord",
         email,
+        role,
       })
     }
 
     req.session.user = {
       id: user._id.toString(),
       email: user.email,
-      role: user.role,
+      role: role,
       companyName: user.companyName || null,
     }
 
-    if (user.role === "company") {
+    if (role === "company") {
       if (!user.companyName) {
         res.redirect("/create-company-profile")
       } else {
@@ -194,6 +216,7 @@ async function handleLogin(req, res) {
     res.status(500).render("pages/login", {
       error: "Er ging iets mis, probeer het opnieuw",
       email,
+      role,
     })
   }
 }
@@ -234,6 +257,8 @@ async function handleCreateProfile(req, res) {
       workForm,
     } = req.body
 
+    const cv = req.file ? req.file.filename : null
+
     await usersCollection.updateOne(
       { _id: new ObjectId(req.session.user.id) },
       {
@@ -255,6 +280,7 @@ async function handleCreateProfile(req, res) {
           hoursPerWeek,
           contractType,
           workForm,
+          cv,
         },
       },
     )
@@ -277,7 +303,7 @@ async function handleCreateCompanyProfile(req, res) {
     const { companyName, sector, companySize, website, description } = req.body
     const logo = req.file ? req.file.filename : null
 
-    await usersCollection.updateOne(
+    await companiesCollection.updateOne(
       { _id: new ObjectId(req.session.user.id) },
       {
         $set: {
@@ -313,6 +339,7 @@ async function handleAddVacancy(req, res) {
       salary,
       hoursPerWeek,
       contractType,
+      workForm,
       description,
     } = req.body
 
@@ -325,6 +352,7 @@ async function handleAddVacancy(req, res) {
       salary,
       hoursPerWeek,
       contractType,
+      workForm,
       description,
       createdAt: new Date(),
     })
@@ -473,7 +501,16 @@ async function showMatching(req, res) {
 async function handleMatchReaction(req, res) {
   try {
     const userId = req.session.user.id
-    const { vacancyId, vacancyTitle, company, reaction, location, salary, hoursPerWeek, contractType } = req.body
+    const {
+      vacancyId,
+      vacancyTitle,
+      company,
+      reaction,
+      location,
+      salary,
+      hoursPerWeek,
+      contractType,
+    } = req.body
 
     if (reaction === "yes" || reaction === "favorite") {
       const bestaandeReactie = await reactionsCollection.findOne({ userId, vacancyId, reaction })
@@ -512,14 +549,18 @@ async function showCompanyMatches(req, res) {
       return vacancy._id.toString()
     })
 
-    const reactions = await reactionsCollection.find({
-      vacancyId: { $in: vacancyIds }
-    }).toArray()
+    const reactions = await reactionsCollection
+      .find({
+        vacancyId: { $in: vacancyIds },
+      })
+      .toArray()
 
     res.render("pages/company-matches", { vacancies, reactions })
   } catch (err) {
     console.error("Fout bij ophalen matches:", err)
-    res.status(500).render("pages/company-matches", { vacancies: [], reactions: [] })
+    res
+      .status(500)
+      .render("pages/company-matches", { vacancies: [], reactions: [] })
   }
 }
 
@@ -529,7 +570,7 @@ async function updateMatchStatus(req, res) {
 
     await reactionsCollection.updateOne(
       { _id: new ObjectId(reactionId) },
-      { $set: { status } }
+      { $set: { status } },
     )
 
     res.json({ success: true })
@@ -547,6 +588,7 @@ async function startServer() {
 
     const db = client.db(process.env.DB_NAME)
     usersCollection = db.collection("users")
+    companiesCollection = db.collection("companies")
     reactionsCollection = db.collection("reactions")
     vacanciesCollection = db.collection("vacancies")
 

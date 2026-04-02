@@ -24,6 +24,8 @@
           <input type="text" id="companyName" name="companyName" placeholder="Bijv. Zorgwerk B.V." required />
         </div>
 
+        <hr class="divider" />
+
         <div class="field">
           <label>Tot welke sector behoort jouw bedrijf?</label>
           <div class="sector-grid">
@@ -74,6 +76,10 @@
           </div>
         </div>
 
+        <p id="sector-error" class="error" hidden>Selecteer een sector</p>
+
+        <hr class="divider" />
+
         <div class="field">
           <label for="website">Website <span class="optional">(optioneel)</span></label>
           <input type="url" id="website" name="website" placeholder="https://www.jouwbedrijf.nl" />
@@ -104,6 +110,10 @@
             </div>
           </div>
         </div>
+
+        <p id="size-error" class="error" hidden>Selecteer een bedrijfsgrootte</p>
+
+        <hr class="divider" />
 
         <div class="field">
           <label for="logo">Bedrijfslogo <span class="optional">(optioneel)</span></label>
