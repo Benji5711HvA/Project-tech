@@ -1,3 +1,4 @@
+
 .btn {
   width: 100%;
   padding: 1rem;
@@ -26,53 +27,57 @@
   cursor: pointer;
 }
 
-.matching-page .more-info-button {
-  background: none;
-  border: 0.0625rem solid var(--orange);
-  color: var(--orange);
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  width: fit-content;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.matching-page .more-info-button:hover {
-  background-color: var(--orange);
-  color: var(--white);
-}
-
 .matching-page .no-button,
 .matching-page .yes-button {
-  width: 3.75rem;
-  height: 3.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border: none;
   border-radius: 50%;
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
 }
 
 .matching-page .no-button {
-  background-color: #ff4444;
-  color: var(--white);
-}
-
-.matching-page .yes-button {
-  background-color: #44bb44;
-  color: var(--white);
+  background-color: #fff0f0;
+  color: #e53e3e;
+  border: 0.0625rem solid #fca5a5;
 }
 
 .matching-page .no-button:hover {
-  background-color: #cc0000;
-  transform: scale(1.1);
+  background-color: #e53e3e;
+  color: var(--white);
+  transform: scale(1.05);
+}
+
+.matching-page .yes-button {
+  background-color: #f0faf4;
+  color: #1a7f4b;
+  border: 0.0625rem solid #a3d9b8;
 }
 
 .matching-page .yes-button:hover {
-  background-color: #228822;
-  transform: scale(1.1);
+  background-color: #1a7f4b;
+  color: var(--white);
+  transform: scale(1.05);
+}
+
+.matching-page .more-info-button {
+  background: none;
+  border: 0.0625rem solid var(--gray);
+  color: var(--text-gray);
+  padding: 0.5rem 1.2rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  margin-top: 0.5rem;
+  width: fit-content;
+}
+
+.matching-page .more-info-button:hover {
+  border-color: var(--orange);
+  color: var(--orange);
 }
 
 .matching-page .previous-button,
@@ -86,7 +91,6 @@
   font-size: 1.2rem;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
-  flex-shrink: 0;
 }
 
 .matching-page .previous-button:hover,
@@ -94,99 +98,6 @@
   background-color: var(--orange);
   color: var(--white);
 }
-
-.matching-page .close-button {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  align-self: flex-end;
-  color: var(--text-gray);
-}
-
-.favorite-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.favorite-button .favorite-icon {
-  color: var(--text-gray);
-  transition: color 0.2s;
-}
-
-.favorite-button:hover .favorite-icon {
-  color: red;
-}
-
-.favorite-button.active .favorite-icon {
-  color: red;
-}
-
-.matching-page .previous-button .material-symbols-outlined,
-.matching-page .next-button .material-symbols-outlined {
-  font-size: 1.5rem;
-}
-
-.matching-page .more-info-button {
-  background: none;
-  border: 0.0625rem solid var(--orange);
-  color: var(--orange);
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-  margin-top: 0.5rem;
-  width: fit-content;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.matching-page .more-info-button:hover {
-  background-color: var(--orange);
-  color: var(--white);
-}
-
-.matching-page .no-button,
-.matching-page .yes-button {
-  width: 3.75rem;
-  height: 3.75rem;
-  border: none;
-  border-radius: 50%;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s;
-}
-
-.matching-page .no-button {
-  background-color: #ff4444;
-  color: var(--white);
-}
-
-.matching-page .yes-button {
-  background-color: #44bb44;
-  color: var(--white);
-}
-
-.matching-page .no-button:hover {
-  background-color: #cc0000;
-  transform: scale(1.1);
-}
-
-.matching-page .yes-button:hover {
-  background-color: #228822;
-  transform: scale(1.1);
-}
-
-.matching-page .close-button {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  align-self: flex-end;
-  color: var(--text-gray);
-}
-
 .favorite-button {
   background: none;
   border: none;
@@ -195,17 +106,26 @@
 }
 
 .favorite-icon {
-  font-size: 2.5rem;
-  color: var(--text-gray);
+  font-size: 1.6rem;
+  color: var(--gray);
   transition: color 0.2s;
 }
 
 .favorite-button:hover .favorite-icon {
-  color: red;
+  color: #e53e3e;
 }
 
 .favorite-button.active .favorite-icon {
-  color: red;
+  color: #e53e3e;
+}
+
+.matching-page .close-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  align-self: flex-end;
+  color: var(--text-gray);
 }
 
 .matching-page .voorkeuren-filter-btn {
@@ -218,7 +138,6 @@
   padding: 0.4rem 1rem;
   border-radius: 2rem;
   font-size: 0.9rem;
-  font-family: inherit;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
