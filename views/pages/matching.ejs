@@ -3,8 +3,8 @@
   <main class="matching-page">
 
     <section class="hero">
-      <h1>Matching</h1>
-      <p>Bekijk vacatures en laat ons weten of je geïnteresseerd bent!</p>
+      <h1>Vacatures</h1>
+      <p>Bekijk vacatures die bij jou passen en reageer met één klik!</p>
     </section>
 
     <section class="filters">
@@ -93,35 +93,48 @@
 
       </div>
     </section>
-
+<section class="uitleg-balk">
+  <div class="uitleg-stap">
+    <span class="material-symbols-outlined uitleg-icon">check_circle</span>
+    <p>Klik op de groene knop om te reageren. Jouw cv wordt direct naar het bedrijf gestuurd.</p>
+  </div>
+  <div class="uitleg-stap">
+    <span class="material-symbols-outlined uitleg-icon">favorite</span>
+    <p>Sla vacatures op om ze later terug te vinden.</p>
+  </div>
+  <div class="uitleg-stap">
+    <span class="material-symbols-outlined uitleg-icon">dashboard</span>
+    <p>Volg je sollicitaties via je dashboard. Matcht het bedrijf ook? Dan nemen ze zsm contact op!</p>
+  </div>
+</section>
     <section class="vacancies-list">
 
       <% vacancies.forEach(function(vacancy) { %>
 
-        <div class="vacancy-card"
-          data-category="<%= vacancy.category %>"
-          data-education="<%= vacancy.education || '' %>"
-          data-hours="<%= vacancy.hoursPerWeek || '' %>"
-          data-contract="<%= vacancy.contractType || '' %>"
-        >
+       <div class="vacancy-card"
+  data-category="<%= vacancy.category %>"
+  data-education="<%= vacancy.education || '' %>"
+  data-hours="<%= vacancy.hoursPerWeek || '' %>"
+  data-contract="<%= vacancy.contractType || '' %>"
+>
 
-          <div class="card-info">
+  <button class="favorite-button"
+    data-vacancy-id="<%= vacancy._id %>"
+    data-vacancy-title="<%= vacancy.title %>"
+    data-company="<%= vacancy.company %>"
+    data-location="<%= vacancy.location %>"
+    data-salary="<%= vacancy.salary %>"
+    data-hours-per-week="<%= vacancy.hoursPerWeek %>"
+    data-contract-type="<%= vacancy.contractType %>">
+    <span class="material-symbols-outlined favorite-icon">favorite</span>
+  </button>
+
+  <div class="card-info">
 
             <div class="card-title-row">
               <h2><%= vacancy.title %></h2>
-              <button class="favorite-button"
-                data-vacancy-id="<%= vacancy._id %>"
-                data-vacancy-title="<%= vacancy.title %>"
-                data-company="<%= vacancy.company %>"
-                data-location="<%= vacancy.location %>"
-                data-salary="<%= vacancy.salary %>"
-                data-hours-per-week="<%= vacancy.hoursPerWeek %>"
-                data-contract-type="<%= vacancy.contractType %>">
-                <span class="material-symbols-outlined favorite-icon">favorite</span>
-              </button>
+            
             </div>
-
-            <p class="feedback-message"></p>
 
             <p class="company"><%= vacancy.company %></p>
             <p class="location"><%= vacancy.location %></p>
@@ -152,7 +165,7 @@
                 </span>
               <% } %>
             </div>
-
+              <button class="more-info-button">Meer info</button>
           </div>
 
           <div class="popup">
@@ -178,7 +191,7 @@
               data-contract-type="<%= vacancy.contractType %>">
               &#10005;
             </button>
-            <button class="more-info-button">Meer info</button>
+            
             <button class="yes-button"
               data-vacancy-id="<%= vacancy._id %>"
               data-vacancy-title="<%= vacancy.title %>"
@@ -196,6 +209,11 @@
       <% }) %>
 
     </section>
+
+    <div class="toast" id="toast">
+      <p class="toast-titel" id="toast-titel"></p>
+      <p class="toast-bericht" id="toast-bericht"></p>
+    </div>
 
   </main>
 
