@@ -107,7 +107,7 @@ app.post("/add-vacancy", isLoggedIn, isCompany, handleAddVacancy)
 app.get("/api/salary-hint", isLoggedIn, getSalaryHint)
 app.get("/api/address", isLoggedIn, handleAddressLookup)
 
-// Mehmet - Favorites
+// Mehmet - Favorieten
 app.get("/favorites", isLoggedIn, showFavorites)
 app.delete("/favorites/:id", isLoggedIn, deleteFavorite)
 
@@ -454,10 +454,11 @@ async function showFavorites(req, res) {
 
 async function deleteFavorite(req, res) {
   try {
-    const vacatureId = req.params.id
+    // Haal het vacature id op uit de url parameters
+    const vacancyId = req.params.id
 
     await reactionsCollection.deleteOne({
-      _id: new ObjectId(vacatureId),
+      _id: new ObjectId(vacancyId),
       userId: req.session.user.id,
     })
 
