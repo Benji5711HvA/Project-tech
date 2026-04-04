@@ -47,6 +47,16 @@ function isLoggedIn(req, res, next) {
   return res.redirect("/login")
 }
 
+function isUser(req, res, next) {
+  if (req.session.user && req.session.user.role === 'user') return next()
+  return res.redirect('/')
+}
+
+function isCompany(req, res, next) {
+  if (req.session.user && req.session.user.role === 'company') return next()
+  return res.redirect('/')
+}
+
 // Hulp functies
 async function hashPassword(password) {
   const salt = await bcrypt.genSalt(10)
@@ -74,7 +84,7 @@ app.get("/login", showLogin)
 app.post("/login", handleLogin)
 app.post("/logout", handleLogout)
 
-app.get("/create-profile", isLoggedIn, showCreateProfile)
+app.get("/create-profile", isLoggedIn, isUser, showCreateProfile)
 app.post(
   "/create-profile",
   isLoggedIn,
@@ -82,7 +92,7 @@ app.post(
   handleCreateProfile,
 )
 
-app.get("/create-company-profile", isLoggedIn, showCreateCompanyProfile)
+app.get("/create-company-profile", isLoggedIn, isCompany, showCreateCompanyProfile)
 app.post(
   "/create-company-profile",
   isLoggedIn,
@@ -91,8 +101,8 @@ app.post(
 )
 
 
-app.get("/add-vacancy", isLoggedIn, showAddVacancy)
-app.post("/add-vacancy", isLoggedIn, handleAddVacancy)
+app.get("/add-vacancy", isLoggedIn, isCompany, showAddVacancy)
+app.post("/add-vacancy", isLoggedIn, isCompany, handleAddVacancy)
 
 app.get("/api/salary-hint", isLoggedIn, getSalaryHint)
 app.get("/api/address", isLoggedIn, handleAddressLookup)
@@ -102,10 +112,10 @@ app.get("/favorites", isLoggedIn, showFavorites)
 app.delete("/favorites/:id", isLoggedIn, deleteFavorite)
 
 // Sanna - Matching
-app.get("/matching", isLoggedIn, showMatching)
-app.post("/match-reaction", isLoggedIn, handleMatchReaction)
-app.get("/company-matches", isLoggedIn, showCompanyMatches)
-app.post("/update-status", isLoggedIn, updateMatchStatus)
+app.get("/matching", isLoggedIn, isUser, showMatching)
+app.post("/match-reaction", isLoggedIn, isUser, handleMatchReaction)
+app.get("/company-matches", isLoggedIn, isCompany, showCompanyMatches)
+app.post("/update-status", isLoggedIn, isUser, updateMatchStatus)
 
 // Functions
 function home(req, res) {
