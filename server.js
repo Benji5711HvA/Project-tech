@@ -231,7 +231,13 @@ function handleLogout(req, res) {
   })
 }
 
-function showCreateProfile(req, res) {
+async function showCreateProfile(req, res) {
+  const user = await usersCollection.findOne({ _id: new ObjectId(req.session.user.id) })
+  
+  if (user.firstName) {
+    return res.redirect("/matching")
+  }
+  
   res.render("pages/create-profile")
 }
 
@@ -294,7 +300,13 @@ async function handleCreateProfile(req, res) {
   }
 }
 
-function showCreateCompanyProfile(req, res) {
+async function showCreateCompanyProfile(req, res) {
+  const company = await companiesCollection.findOne({ _id: new ObjectId(req.session.user.id) })
+  
+  if (company.companyName) {
+    return res.redirect("/add-vacancy")
+  }
+  
   res.render("pages/create-company-profile")
 }
 
