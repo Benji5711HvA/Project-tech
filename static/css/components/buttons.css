@@ -199,3 +199,34 @@
 .zero-state-button:hover {
   background-color: var(--orange-hover);
 }
+
+.hero-button-primary {
+  background-color: var(--white);
+  color: var(--orange);
+  padding: 1.4rem 3rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1.4rem;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.hero-button-primary:hover {
+  background-color: var(--gray);
+}
+
+.hero-button-secondary {
+  background-color: transparent;
+  color: var(--white);
+  padding: 1.4rem 3rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1.4rem;
+  text-decoration: none;
+  border: 0.125rem solid var(--white);
+  transition: background-color 0.2s;
+}
+
+.hero-button-secondary:hover {
+  background-color: rgba(255 255 255 / 15%);
+}
