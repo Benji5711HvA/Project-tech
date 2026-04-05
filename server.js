@@ -454,10 +454,11 @@ async function showFavorites(req, res) {
 
 async function deleteFavorite(req, res) {
   try {
-    const vacatureId = req.params.id
+    // Haal het vacature id op uit de url parameters
+    const vacancyId = req.params.id
 
     await reactionsCollection.deleteOne({
-      _id: new ObjectId(vacatureId),
+      _id: new ObjectId(vacancyId),
       userId: req.session.user.id,
     })
 
@@ -467,7 +468,6 @@ async function deleteFavorite(req, res) {
     res.status(500).json({ success: false })
   }
 }
-
 // Sanna - Matching
 async function showMatching(req, res) {
   try {
