@@ -1,0 +1,63 @@
+.how-it-works {
+    padding: 12rem 8rem 6rem 8rem;
+}
+
+.how-it-works-label {
+    color: var(--orange);
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.how-it-works-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 3rem;
+}
+
+.how-it-works-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.how-it-works-card {
+    background-color: var(--white);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: 0 0.25rem 1.25rem rgb(0 0 0 / 6%);
+    border: 0.0625rem solid var(--gray);
+    min-height: 28rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.how-it-works-card:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 12%);
+    background-color: var(--checked-card-bg);
+}
+
+.how-it-works-card-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--orange);
+    margin-bottom: 1rem;
+}
+
+.how-it-works-card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 1.2rem;
+}
+
+.how-it-works-card-text {
+    font-size: 1.1rem;
+    color: var(--text-gray);
+}
