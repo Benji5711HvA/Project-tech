@@ -19,7 +19,7 @@
         <div class="progress-bar" id="progress-bar2"></div>
       </div>
 
-      <form action="/create-profile" method="POST">
+      <form action="/create-profile" method="POST" enctype="multipart/form-data">
 
         <section id="step1">
           <p class="step-label">Stap 1 van 2</p>
@@ -71,6 +71,16 @@
             <label for="bio">Vertel kort iets over jezelf <span class="optional">(optioneel)</span></label>
             <textarea id="bio" name="bio" maxlength="200" oninput="updateTeller(this.value.length)" placeholder="Schrijf hier een korte introductie..."></textarea>
             <p class="teller">0/200</p>
+          </div>
+
+          <div class="field">
+            <label for="cv">CV uploaden <span class="optional">(optioneel)</span></label>
+            <div class="file-upload">
+              <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx" onchange="cvSelected(this)" />
+              <p>Sleep je CV hierheen of <strong>klik om te uploaden</strong></p>
+              <p class="file-sub">PDF of Word - max 5MB</p>
+            </div>
+            <p class="file-name" id="cvFilename"></p>
           </div>
 
           <% if (typeof error !=='undefined' ) { %>
@@ -152,7 +162,7 @@
           </div>
 
           <div class="field">
-            <label>Minimaal salaris (bruto per maand)  <span class="optional">(optioneel)</span></label>
+            <label>Minimaal salaris (bruto per maand) <span class="optional">(optioneel)</span></label>
             <div class="chip-group">
               <div class="chip">
                 <input type="radio" id="salary-none" name="salary" value="" checked />
@@ -217,14 +227,14 @@
           </div>
 
           <p id="experience-error" class="error" hidden>Selecteer je werkervaring</p>
-          
+
           <hr class="divider" />
-          
+
           <div class="field">
             <label>Aantal uur per week</label>
             <div class="chip-group">
               <div class="chip">
-                <input type="radio" id="hours-8-16" name="hoursPerWeek" value="8-16"/>
+                <input type="radio" id="hours-8-16" name="hoursPerWeek" value="8-16" />
                 <label for="hours-8-16">8 - 16 uur</label>
               </div>
               <div class="chip">

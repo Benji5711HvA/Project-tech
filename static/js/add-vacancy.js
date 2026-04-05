@@ -24,3 +24,40 @@ function addEventToCard(card) {
 }
 
 categoryCards.forEach(addEventToCard)
+
+function validateForm(e) {
+  const category = document.querySelector('input[name="category"]:checked')
+  const hours = document.querySelector('input[name="hoursPerWeek"]:checked')
+
+  if (!category) {
+    e.preventDefault()
+    const errorEl = document.getElementById('category-error')
+    errorEl.hidden = false
+    errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    return
+  }
+
+  if (!hours) {
+    e.preventDefault()
+    const errorEl = document.getElementById('hours-error')
+    errorEl.hidden = false
+    errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    return
+  }
+}
+
+function hideCategoryError() {
+  document.getElementById('category-error').hidden = true
+}
+
+function hideHoursError() {
+  document.getElementById('hours-error').hidden = true
+}
+
+document.getElementById('vacancy-form').addEventListener('submit', validateForm)
+document.querySelectorAll('input[name="category"]').forEach(function(input) {
+  input.addEventListener('change', hideCategoryError)
+})
+document.querySelectorAll('input[name="hoursPerWeek"]').forEach(function(input) {
+  input.addEventListener('change', hideHoursError)
+})

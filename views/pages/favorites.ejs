@@ -10,9 +10,65 @@
 
     <div class="toggle-container">
       <div class="toggle">
-        <button id="btn-opgeslagen" class="toggle-btn actief">Opgeslagen</button>
+        <button id="btn-opgeslagen" class="toggle-btn active">Sollicitaties</button>
         <button id="btn-favorieten" class="toggle-btn">Favorieten</button>
       </div>
+    </div>
+
+    <div id="tab-opgeslagen" class="tab">
+      <% if (savedVacancies.length === 0) { %>
+        <div class="zero-state">
+          <p class="zero-state-text">Nog geen sollicitaties. Ga op zoek naar jouw droombaan!</p>
+          <a href="/matching" class="zero-state-button">Zoek vacatures</a>
+        </div>
+      <% } else { %>
+        <div class="favorites-grid">
+          <% savedVacancies.forEach(function(vacature) { %>
+            <div class="vacancy-card" id="card-<%= vacature._id %>">
+              <h2 class="vacancy-title"><%= vacature.vacancyTitle %></h2>
+              <p class="vacancy-company"><%= vacature.company %></p>
+              <% if (vacature.salary) { %><p class="vacancy-salary">€<%= vacature.salary %> per maand</p><% } %>
+              <div class="vacancy-tags">
+                <% if (vacature.location) { %><span class="vacancy-tag"><%= vacature.location %></span><% } %>
+                <% if (vacature.hoursPerWeek) { %><span class="vacancy-tag"><%= vacature.hoursPerWeek %> uur p/w</span><% } %>
+                <% if (vacature.contractType) { %><span class="vacancy-tag"><%= vacature.contractType %></span><% } %>
+              </div>
+              <% if (vacature.status) { %><span class="vacancy-status"><%= vacature.status %></span><% } %>
+              <button class="delete-button" data-id="<%= vacature._id %>">
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+
+    <div id="tab-favorieten" class="tab hidden">
+      <% if (favoriteVacancies.length === 0) { %>
+        <div class="zero-state">
+          <p class="zero-state-text">Je lijst is leeg. Tijd om te ontdekken wat er voor jou is!</p>
+          <a href="/matching" class="zero-state-button">Zoek vacatures</a>
+        </div>
+      <% } else { %>
+        <div class="favorites-grid">
+          <% favoriteVacancies.forEach(function(vacature) { %>
+            <div class="vacancy-card" id="card-<%= vacature._id %>">
+              <h2 class="vacancy-title"><%= vacature.vacancyTitle %></h2>
+              <p class="vacancy-company"><%= vacature.company %></p>
+              <% if (vacature.salary) { %><p class="vacancy-salary">€<%= vacature.salary %> per maand</p><% } %>
+              <div class="vacancy-tags">
+                <% if (vacature.location) { %><span class="vacancy-tag"><%= vacature.location %></span><% } %>
+                <% if (vacature.hoursPerWeek) { %><span class="vacancy-tag"><%= vacature.hoursPerWeek %> uur p/w</span><% } %>
+                <% if (vacature.contractType) { %><span class="vacancy-tag"><%= vacature.contractType %></span><% } %>
+              </div>
+              <% if (vacature.status) { %><span class="vacancy-status"><%= vacature.status %></span><% } %>
+              <button class="delete-button" data-id="<%= vacature._id %>">
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
     </div>
 
   </section>

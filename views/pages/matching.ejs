@@ -3,12 +3,26 @@
   <main class="matching-page">
 
     <section class="hero">
-      <h1>Matching</h1>
-      <p>Bekijk vacatures en laat ons weten of je geïnteresseerd bent!</p>
+      <h1>Vacatures</h1>
+      <p>Bekijk vacatures die bij jou passen en reageer met één klik!</p>
     </section>
 
     <section class="filters">
+      <div id="user-prefs"
+        data-sector="<%= user && user.sector ? user.sector : '' %>"
+        data-education="<%= user && user.education ? user.education : '' %>"
+        data-hours="<%= user && user.hoursPerWeek ? user.hoursPerWeek : '' %>"
+        data-contract="<%= user && user.contractType ? user.contractType : '' %>"
+        style="display: none;">
+      </div>
       <div class="filters-inner">
+
+        <button class="voorkeuren-filter-btn" id="voorkeurenFilter">
+          <span class="material-symbols-outlined">person</span>
+          Mijn voorkeuren
+        </button>
+
+        <div class="filter-divider"></div>
 
         <div class="filter-group">
           <button class="filter-btn" data-filter="category">
@@ -79,48 +93,79 @@
 
       </div>
     </section>
-
+<section class="uitleg-balk">
+  <div class="uitleg-stap">
+    <span class="material-symbols-outlined uitleg-icon">check_circle</span>
+    <p>Klik op de groene knop om te reageren. Jouw cv wordt direct naar het bedrijf gestuurd.</p>
+  </div>
+  <div class="uitleg-stap">
+    <span class="material-symbols-outlined uitleg-icon">favorite</span>
+    <p>Sla vacatures op om ze later terug te vinden.</p>
+  </div>
+  <div class="uitleg-stap">
+    <span class="material-symbols-outlined uitleg-icon">dashboard</span>
+    <p>Volg je sollicitaties via je dashboard. Matcht het bedrijf ook? Dan nemen ze zsm contact op!</p>
+  </div>
+</section>
     <section class="vacancies-list">
 
       <% vacancies.forEach(function(vacancy) { %>
 
+       <div class="vacancy-card"
+  data-category="<%= vacancy.category %>"
+  data-education="<%= vacancy.education || '' %>"
+  data-hours="<%= vacancy.hoursPerWeek || '' %>"
+  data-contract="<%= vacancy.contractType || '' %>"
+>
 
-        <div class="vacancy-card">
+  <button class="favorite-button"
+    data-vacancy-id="<%= vacancy._id %>"
+    data-vacancy-title="<%= vacancy.title %>"
+    data-company="<%= vacancy.company %>"
+    data-location="<%= vacancy.location %>"
+    data-salary="<%= vacancy.salary %>"
+    data-hours-per-week="<%= vacancy.hoursPerWeek %>"
+    data-contract-type="<%= vacancy.contractType %>">
+    <span class="material-symbols-outlined favorite-icon">favorite</span>
+  </button>
 
-          <div class="card-info">
+  <div class="card-info">
 
             <div class="card-title-row">
-              <h2>
-                <%= vacancy.title %>
-              </h2>
-              <button class="favorite-button" data-title="<%= vacancy.title %>" data-company="<%= vacancy.company %>"
-                data-location="<%= vacancy.location %>">
-                <span class="material-symbols-outlined favorite-icon">
-                  favorite
-                </span>
-              </button>
+              <h2><%= vacancy.title %></h2>
+            
             </div>
 
-            <p class="company">
-              <%= vacancy.company %>
-            </p>
-            <p class="location">
-              <%= vacancy.location %>
-            </p>
-            <p class="category">
-              <%= vacancy.category %>
-            </p>
+            <p class="company"><%= vacancy.company %></p>
+            <p class="location"><%= vacancy.location %></p>
 
+            <% if (vacancy.salary) { %>
+              <p class="salary">€<%= vacancy.salary %> per maand</p>
+            <% } %>
 
-            <% if (vacancy.contract_time) { %>
-              <p class="contract">
-                <%= vacancy.contract_time==='full_time' ? 'Voltijd' : 'Deeltijd' %>
-              </p>
+            <div class="card-tags">
+              <% if (vacancy.category) { %>
+                <span class="card-tag" data-filter-type="category" data-filter-value="<%= vacancy.category %>">
+                  <%= vacancy.categoryLabel %>
+                </span>
               <% } %>
-
-                <% if (vacancy.salary_min && vacancy.salary_max) { %>
-                  <p class="salary">€<%= vacancy.salary_min %> - €<%= vacancy.salary_max %> per jaar</p>
-                  <% } %>
+              <% if (vacancy.hoursPerWeek) { %>
+                <span class="card-tag" data-filter-type="hours" data-filter-value="<%= vacancy.hoursPerWeek %>">
+                  <%= vacancy.hoursPerWeek %> uur/week
+                </span>
+              <% } %>
+              <% if (vacancy.contractType) { %>
+                <span class="card-tag" data-filter-type="contract" data-filter-value="<%= vacancy.contractType %>">
+                  <%= vacancy.contractLabel %>
+                </span>
+              <% } %>
+              <% if (vacancy.education) { %>
+                <span class="card-tag" data-filter-type="education" data-filter-value="<%= vacancy.education %>">
+                  <%= vacancy.educationLabel %>
+                </span>
+              <% } %>
+            </div>
+              <button class="more-info-button">Meer info</button>
           </div>
 
           <div class="popup">
@@ -174,4 +219,4 @@
 
   <script src="/js/matching.js"></script>
 
-  <%- include("../partials/footer") %>
+<%- include("../partials/footer") %>
