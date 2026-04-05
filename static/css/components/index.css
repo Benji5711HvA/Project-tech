@@ -1,5 +1,5 @@
 .how-it-works {
-    padding: 12rem 8rem 6rem 8rem;
+    padding: 10rem 8rem 6rem 8rem;
 }
 
 .how-it-works-label {
@@ -37,12 +37,6 @@
     transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
 
-.how-it-works-card:hover {
-    transform: translateY(-0.25rem);
-    box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 12%);
-    background-color: var(--checked-card-bg);
-}
-
 .how-it-works-card-number {
     font-size: 3rem;
     font-weight: 800;
@@ -61,3 +55,61 @@
     font-size: 1.1rem;
     color: var(--text-gray);
 }
+
+.steps {
+    padding: 6rem 8rem;
+    background-color: var(--white);
+    position: relative;
+  }
+  
+  .steps-line {
+    position: absolute;
+    top: 9.5rem;
+    left: 8rem;
+    right: 8rem;
+    height: 0.1875rem;
+    background-color: var(--orange);
+    z-index: 0;
+  }
+  
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+  
+  
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .step-number {
+    width: 6rem;
+    height: 6rem;
+    background-color: var(--orange);
+    color: var(--white);
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+  }
+
+  .step-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+  }
+ 
+  .step-text {
+    font-size: 1rem;
+    color: var(--text-gray);
+  }
