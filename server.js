@@ -365,9 +365,11 @@ async function handleAddVacancy(req, res) {
       description,
     } = req.body
 
+    const company = await companiesCollection.findOne({ _id: new ObjectId(req.session.user.id) })
+
     await vacanciesCollection.insertOne({
       companyId: req.session.user.id,
-      company: req.session.user.companyName,
+      company: company.companyName,
       title,
       category,
       location,
