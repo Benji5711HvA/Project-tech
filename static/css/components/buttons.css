@@ -181,7 +181,7 @@
 }
 
 .delete-button:hover {
-  color: #c0392b;
+  color: var (--error-text);
 }
 
 .zero-state-button {
