@@ -107,8 +107,8 @@ app.post("/add-vacancy", isLoggedIn, isCompany, handleAddVacancy)
 app.get("/api/salary-hint", isLoggedIn, getSalaryHint)
 app.get("/api/address", isLoggedIn, handleAddressLookup)
 
-// Mehmet - Favorites
-app.get("/favorites", isLoggedIn, showFavorites)
+// Mehmet - Dashboard
+app.get("/dashboard", isLoggedIn, showDashboard)
 app.delete("/favorites/:id", isLoggedIn, deleteFavorite)
 
 // Sanna - Matching
@@ -434,8 +434,8 @@ async function handleAddressLookup(req, res) {
   }
 }
 
-// Mehmet - Favorieten
-async function showFavorites(req, res) {
+// Mehmet - Dashboard
+async function showDashboard(req, res) {
   try {
     const userId = req.session.user.id
 
@@ -447,10 +447,10 @@ async function showFavorites(req, res) {
       .find({ userId: userId, reaction: "favorite" })
       .toArray()
 
-    res.render("pages/favorites", { savedVacancies, favoriteVacancies })
+    res.render("pages/dashboard", { savedVacancies, favoriteVacancies })
   } catch (err) {
     console.error("Fout bij ophalen favorieten:", err)
-    res.status(500).render("pages/favorites", { savedVacancies: [], favoriteVacancies: [] })
+    res.status(500).render("pages/dashboard", { savedVacancies: [], favoriteVacancies: [] })
   }
 }
 

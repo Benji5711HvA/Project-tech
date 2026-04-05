@@ -1,7 +1,7 @@
 // Haal alle verwijder knoppen op zodat we ze klikbaar kunnen maken
 const deleteButtons = document.querySelectorAll('.delete-button')
-const btnOpgeslagen = document.getElementById('btn-opgeslagen')
-const btnFavorieten = document.getElementById('btn-favorieten')
+const btnSaved = document.getElementById('btn-saved')
+const btnFavorites = document.getElementById('btn-favorites')
 
 // Verwijder de favoriet op basis van het id van de knop
 function handleDeleteClick(button) {
@@ -22,38 +22,38 @@ if (deleteButtons.length > 0) {
 }
 
 // Laat het opgeslagen tabje zien als de gebruiker daarop klikt
-function handleOpgeslagenClick() {
-  showTab('opgeslagen')
+function handleSavedClick() {
+  showTab('saved')
 }
 
 // Laat het favorieten tabje zien als de gebruiker daarop klikt
-function handleFavorietenClick() {
-  showTab('favorieten')
+function handleFavoritesClick() {
+  showTab('favorites')
 }
 
-btnOpgeslagen.addEventListener('click', handleOpgeslagenClick)
-btnFavorieten.addEventListener('click', handleFavorietenClick)
+btnSaved.addEventListener('click', handleSavedClick)
+btnFavorites.addEventListener('click', handleFavoritesClick)
 
 // Wissel het zichtbare tabje op basis van wat de gebruiker aanklikt
 function showTab(tabName) {
-  const tabOpgeslagen = document.getElementById('tab-opgeslagen')
-  const tabFavorieten = document.getElementById('tab-favorieten')
+  const tabSaved = document.getElementById('tab-saved')
+  const tabFavorites = document.getElementById('tab-favorites')
 
   // Verberg eerst alles zodat we daarna alleen het juiste tabje kunnen laten zien
-  tabOpgeslagen.classList.add('hidden')
-  tabFavorieten.classList.add('hidden')
+  tabSaved.classList.add('hidden')
+  tabFavorites.classList.add('hidden')
 
   // Haal de actieve stijl weg zodat alleen de juiste knop oranje wordt
-  btnOpgeslagen.classList.remove('active')
-  btnFavorieten.classList.remove('active')
+  btnSaved.classList.remove('active')
+  btnFavorites.classList.remove('active')
 
   // Laat het juiste tabje zien en maak de bijbehorende knop actief
-  if (tabName === 'opgeslagen') {
-    tabOpgeslagen.classList.remove('hidden')
-    btnOpgeslagen.classList.add('active')
+  if (tabName === 'saved') {
+    tabSaved.classList.remove('hidden')
+    btnSaved.classList.add('active')
   } else {
-    tabFavorieten.classList.remove('hidden')
-    btnFavorieten.classList.add('active')
+    tabFavorites.classList.remove('hidden')
+    btnFavorites.classList.add('active')
   }
 }
 
@@ -76,8 +76,8 @@ async function deleteFavorite(id) {
       const cards = activeTab.querySelectorAll('.vacancy-card')
 
       // Bepaal de juiste tekst op basis van welke tab actief is
-      const isOpgeslagen = activeTab.id === 'tab-opgeslagen'
-      const zeroStateText = isOpgeslagen
+      const isSaved = activeTab.id === 'tab-saved'
+      const zeroStateText = isSaved
         ? 'Nog geen opgeslagen vacatures. Ga op zoek naar jouw droombaan!'
         : 'Je lijst is leeg. Tijd om te ontdekken wat er voor jou is!'
 
