@@ -89,7 +89,7 @@
             <p class="file-name" id="cvFilename"></p>
           </div>
 
-          <% if (typeof error !=='undefined' ) { %>
+          <% if (typeof error !== 'undefined') { %>
           <div class="error">
             <%= error %>
           </div>
@@ -108,51 +108,51 @@
             <label>Wat voor werk spreekt jou aan?</label>
             <div class="sector-grid">
               <div class="sector-card">
-                <input type="checkbox" id="sector-ict" name="sector" value="it-jobs" />
+                <input type="checkbox" id="sector-ict" name="sector" value="ICT & Tech" />
                 <label for="sector-ict">ICT & Tech</label>
               </div>
               <div class="sector-card">
-                <input type="checkbox" id="sector-zorg" name="sector" value="healthcare-nursing-jobs" />
+                <input type="checkbox" id="sector-zorg" name="sector" value="Zorg & Welzijn" />
                 <label for="sector-zorg">Zorg & Welzijn</label>
               </div>
               <div class="sector-card">
-                <input type="checkbox" id="sector-admin" name="sector" value="admin-jobs" />
+                <input type="checkbox" id="sector-admin" name="sector" value="Administratie" />
                 <label for="sector-admin">Administratie</label>
               </div>
               <div class="sector-card">
-                <input type="checkbox" id="sector-retail" name="sector" value="retail-jobs" />
+                <input type="checkbox" id="sector-retail" name="sector" value="Retail & Verkoop" />
                 <label for="sector-retail">Retail & Verkoop</label>
               </div>
               <div class="sector-card">
-                <input type="checkbox" id="sector-horeca" name="sector" value="hospitality-catering-jobs" />
+                <input type="checkbox" id="sector-horeca" name="sector" value="Horeca & Toerisme" />
                 <label for="sector-horeca">Horeca & Toerisme</label>
               </div>
               <div class="sector-card">
-                <input type="checkbox" id="sector-onderwijs" name="sector" value="teaching-jobs" />
+                <input type="checkbox" id="sector-onderwijs" name="sector" value="Onderwijs" />
                 <label for="sector-onderwijs">Onderwijs</label>
               </div>
               <div class="sector-card">
-                <input type="checkbox" id="sector-logistiek" name="sector" value="logistics-warehouse-jobs" />
+                <input type="checkbox" id="sector-logistiek" name="sector" value="Logistiek" />
                 <label for="sector-logistiek">Logistiek</label>
               </div>
               <div class="sector-card">
-                <input type="checkbox" id="sector-marketing" name="sector" value="pr-advertising-marketing-jobs" />
+                <input type="checkbox" id="sector-marketing" name="sector" value="Marketing & Communicatie" />
                 <label for="sector-marketing">Marketing & Comm.</label>
               </div>
               <div class="sector-card">
-                <input type="checkbox" id="sector-techniek" name="sector" value="industrial-jobs" />
+                <input type="checkbox" id="sector-techniek" name="sector" value="Techniek & Industrie" />
                 <label for="sector-techniek">Techniek & Industrie</label>
               </div>
               <div class="sector-card">
-                <input type="checkbox" id="sector-finance" name="sector" value="accounting-finance-jobs" />
+                <input type="checkbox" id="sector-finance" name="sector" value="Finance & Juridisch" />
                 <label for="sector-finance">Finance & Juridisch</label>
               </div>
               <div class="sector-card">
-                <input type="checkbox" id="sector-bouw" name="sector" value="construction-jobs" />
+                <input type="checkbox" id="sector-bouw" name="sector" value="Bouw & Infra" />
                 <label for="sector-bouw">Bouw & Infra</label>
               </div>
               <div class="sector-card">
-                <input type="checkbox" id="sector-any" name="sector" value="" />
+                <input type="checkbox" id="sector-any" name="sector" value="Maakt niet uit" />
                 <label for="sector-any">Maakt niet uit</label>
               </div>
             </div>
@@ -207,13 +207,13 @@
             <label for="education">Opleidingsniveau</label>
             <select id="education" name="education">
               <option value="" disabled selected>Selecteer jouw niveau</option>
-              <option value="vmbo">Middelbaar onderwijs (VMBO/HAVO/VWO)</option>
-              <option value="mbo12">MBO niveau 1 of 2</option>
-              <option value="mbo34">MBO niveau 3 of 4</option>
-              <option value="hbo">HBO Bachelor</option>
-              <option value="wo">WO Bachelor</option>
-              <option value="master">HBO/WO Master</option>
-              <option value="phd">PhD / Doctoraat</option>
+              <option value="Middelbaar onderwijs">Middelbaar onderwijs (VMBO/HAVO/VWO)</option>
+              <option value="MBO niveau 1 of 2">MBO niveau 1 of 2</option>
+              <option value="MBO niveau 3 of 4">MBO niveau 3 of 4</option>
+              <option value="HBO Bachelor">HBO Bachelor</option>
+              <option value="WO Bachelor">WO Bachelor</option>
+              <option value="HBO/WO Master">HBO/WO Master</option>
+              <option value="PhD / Doctoraat">PhD / Doctoraat</option>
             </select>
           </div>
 
@@ -223,12 +223,12 @@
             <label for="experience">Jaren werkervaring</label>
             <select id="experience" name="experience">
               <option value="" disabled selected>Selecteer je ervaring</option>
-              <option value="none">Geen ervaring (starter)</option>
-              <option value="less-than-1">Minder dan 1 jaar</option>
-              <option value="1-3">1 - 3 jaar</option>
-              <option value="3-5">3 - 5 jaar</option>
-              <option value="5-10">5 - 10 jaar</option>
-              <option value="10+">Meer dan 10 jaar</option>
+              <option value="Geen ervaring">Geen ervaring (starter)</option>
+              <option value="Minder dan 1 jaar">Minder dan 1 jaar</option>
+              <option value="1 - 3 jaar">1 - 3 jaar</option>
+              <option value="3 - 5 jaar">3 - 5 jaar</option>
+              <option value="5 - 10 jaar">5 - 10 jaar</option>
+              <option value="Meer dan 10 jaar">Meer dan 10 jaar</option>
             </select>
           </div>
 
@@ -264,19 +264,19 @@
             <label>Type contract <span class="optional">(optioneel)</span></label>
             <div class="chip-group">
               <div class="chip">
-                <input type="checkbox" id="contract-permanent" name="contractType" value="permanent" />
+                <input type="checkbox" id="contract-permanent" name="contractType" value="Vast contract" />
                 <label for="contract-permanent">Vast contract</label>
               </div>
               <div class="chip">
-                <input type="checkbox" id="contract-temporary" name="contractType" value="temporary" />
+                <input type="checkbox" id="contract-temporary" name="contractType" value="Tijdelijk contract" />
                 <label for="contract-temporary">Tijdelijk contract</label>
               </div>
               <div class="chip">
-                <input type="checkbox" id="contract-freelance" name="contractType" value="freelance" />
+                <input type="checkbox" id="contract-freelance" name="contractType" value="Freelance / ZZP" />
                 <label for="contract-freelance">Freelance / ZZP</label>
               </div>
               <div class="chip">
-                <input type="checkbox" id="contract-internship" name="contractType" value="internship" />
+                <input type="checkbox" id="contract-internship" name="contractType" value="Stage" />
                 <label for="contract-internship">Stage</label>
               </div>
             </div>
@@ -286,25 +286,25 @@
             <label>Hoe wil je werken? <span class="optional">(optioneel)</span></label>
             <div class="chip-group">
               <div class="chip">
-                <input type="checkbox" id="work-office" name="workForm" value="office" />
+                <input type="checkbox" id="work-office" name="workForm" value="Op kantoor" />
                 <label for="work-office">Op kantoor</label>
               </div>
               <div class="chip">
-                <input type="checkbox" id="work-remote" name="workForm" value="remote" />
+                <input type="checkbox" id="work-remote" name="workForm" value="Thuiswerken" />
                 <label for="work-remote">Thuiswerken</label>
               </div>
               <div class="chip">
-                <input type="checkbox" id="work-hybrid" name="workForm" value="hybrid" />
+                <input type="checkbox" id="work-hybrid" name="workForm" value="Hybride" />
                 <label for="work-hybrid">Hybride</label>
               </div>
               <div class="chip">
-                <input type="checkbox" id="work-onsite" name="workForm" value="onsite" />
+                <input type="checkbox" id="work-onsite" name="workForm" value="Op locatie" />
                 <label for="work-onsite">Op locatie</label>
               </div>
             </div>
           </div>
 
-          <% if (typeof error !=='undefined' ) { %>
+          <% if (typeof error !== 'undefined') { %>
           <div class="error">
             <%= error %>
           </div>

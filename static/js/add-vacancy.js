@@ -1,3 +1,17 @@
+const ADZUNA_CATEGORY_MAP = {
+  'ICT & Tech': 'it-jobs',
+  'Zorg & Welzijn': 'healthcare-nursing-jobs',
+  'Administratie': 'admin-jobs',
+  'Retail & Verkoop': 'retail-jobs',
+  'Horeca & Toerisme': 'hospitality-catering-jobs',
+  'Onderwijs': 'teaching-jobs',
+  'Logistiek': 'logistics-warehouse-jobs',
+  'Marketing & Communicatie': 'pr-advertising-marketing-jobs',
+  'Techniek & Industrie': 'manufacturing-jobs',
+  'Finance & Juridisch': 'accounting-finance-jobs',
+  'Bouw & Infra': 'trade-construction-jobs'
+}
+
 function updateCounter(length) {
   document.querySelector(".counter").textContent = length + "/1000"
 }
@@ -6,11 +20,12 @@ const categoryCards = document.querySelectorAll(".sector-card input[type='radio'
 const salaryHint = document.getElementById("salaryHint")
 
 async function fetchSalaryHint(event) {
-  const category = event.target.value
+  const selectedCategory = event.target.value
+  const adzunaCategory = ADZUNA_CATEGORY_MAP[selectedCategory]
 
   salaryHint.textContent = "Salaris ophalen..."
 
-  const response = await fetch("/api/salary-hint?category=" + category)
+  const response = await fetch("/api/salary-hint?category=" + adzunaCategory)
   const data = await response.json()
 
   if (data.salaryPerMonth) {
