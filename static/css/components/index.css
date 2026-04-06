@@ -113,3 +113,114 @@
     font-size: 1rem;
     color: var(--text-gray);
   }
+
+  .trending {
+    padding: 6rem 8rem;
+    background-color: var(--checked-card-bg);
+  }
+  
+  .trending-label {
+    color: var(--orange);
+    font-weight: 700;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .trending-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 3rem;
+  }
+  
+  .trending-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  
+  .trending-card {
+    background-color: var(--white);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: 0 0.25rem 1.25rem rgb(0 0 0 / 6%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .trending-tag {
+    background-color: var(--checked-card-bg);
+    color: var(--orange);
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    align-self: flex-start;
+  }
+  
+  .trending-card-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-top: 0.5rem;
+  }
+  
+  .trending-card-company {
+    font-size: 0.95rem;
+    color: var(--text-gray);
+  }
+  
+  .trending-card-location {
+    font-size: 0.95rem;
+    color: var(--text-gray);
+  }
+  
+  .trending-card-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: center;
+  }
+  
+  .trending-card-button-yes {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 999px;
+    background-color: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid var(--success-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    text-decoration: none;
+    font-weight: 700;
+    transition: background-color 0.2s;
+  }
+  
+  .trending-card-button-yes:hover {
+    background-color: var(--success-text);
+    color: var(--white);
+  }
+  
+  .trending-card-button-no {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 999px;
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    border: 1px solid var(--error-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    text-decoration: none;
+    font-weight: 700;
+    transition: background-color 0.2s;
+  }
+  
+  .trending-card-button-no:hover {
+    background-color: var(--error-text);
+    color: var(--white);
+  }

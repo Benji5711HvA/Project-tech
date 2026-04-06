@@ -122,9 +122,24 @@ app.post("/update-status", isLoggedIn, updateMatchStatus)
 app.get("/company-matching", isLoggedIn, isCompany, showCompanyMatching)
 app.post("/company-like", isLoggedIn, isCompany, handleCompanyLike)
 
-// Functions
-function home(req, res) {
-  res.render("pages/index")
+// Mehmet - Home
+
+// Haal 3 willekeurige vacatures op voor de trending sectie
+async function home(req, res) {
+  try {
+    const allVacancies = await vacanciesCollection.find({}).toArray()
+
+    const shuffled = allVacancies.sort(function shuffleVacancies() {
+      return Math.random() - 0.5
+    })
+
+    const trendingVacancies = shuffled.slice(0, 3)
+
+    res.render("pages/index", { trendingVacancies })
+  } catch (err) {
+    console.error("Fout bij ophalen vacatures:", err)
+    res.render("pages/index", { trendingVacancies: [] })
+  }
 }
 
 // Benjamin - Account
