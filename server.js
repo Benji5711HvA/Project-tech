@@ -118,7 +118,7 @@ app.post("/update-status", isLoggedIn, isUser, updateMatchStatus)
 
 // Functions
 function home(req, res) {
-  res.render("pages/index")
+  res.render("pages/index", { pageTitle: "Home - Collego" })
 }
 
 // Benjamin - Account
@@ -126,7 +126,8 @@ function showRegister(req, res) {
   res.render("pages/register", {
     error: undefined,
     email: undefined,
-    role: undefined,
+    role: req.query.role || "user",
+    pageTitle: "Registreren - Collego",
   })
 }
 
@@ -157,7 +158,7 @@ async function handleRegister(req, res) {
       await usersCollection.insertOne({ email, password: hashedPassword })
     }
 
-    res.redirect("/login")
+    res.redirect(`/login?role=${role}`)
   } catch (err) {
     console.error("Fout bij registreren:", err)
     res.status(500).render("pages/register", {
@@ -172,7 +173,8 @@ function showLogin(req, res) {
   res.render("pages/login", {
     error: undefined,
     email: undefined,
-    role: undefined,
+    role: req.query.role || "user",
+    pageTitle: "Inloggen - Collego",
   })
 }
 
@@ -247,7 +249,9 @@ async function showCreateProfile(req, res) {
     return res.redirect("/matching")
   }
   
-  res.render("pages/create-profile")
+  res.render("pages/create-profile", {
+    pageTitle: "Profiel aanmaken | Collego"
+  })
 }
 
 async function handleCreateProfile(req, res) {
@@ -316,7 +320,9 @@ async function showCreateCompanyProfile(req, res) {
     return res.redirect("/add-vacancy")
   }
   
-  res.render("pages/create-company-profile")
+  res.render("pages/create-company-profile"), {
+    pageTitle: "Bedrijfsprofiel aanmaken | Collego"
+  }
 }
 
 async function handleCreateCompanyProfile(req, res) {
@@ -346,7 +352,9 @@ async function handleCreateCompanyProfile(req, res) {
 }
 
 function showAddVacancy(req, res) {
-  res.render("pages/add-vacancy")
+  res.render("pages/add-vacancy"), {
+    pageTitle: "Vacature toevoegen | Collego"
+  }
 }
 
 async function handleAddVacancy(req, res) {
@@ -444,10 +452,12 @@ async function showDashboard(req, res) {
       .find({ userId: userId, reaction: "favorite" })
       .toArray()
 
-    res.render("pages/dashboard", { savedVacancies, favoriteVacancies })
+    res.render("pages/dashboard", { savedVacancies, favoriteVacancies }), {
+      pageTitle: "Dashboard | Collego"
+    }
   } catch (err) {
     console.error("Fout bij ophalen favorieten:", err)
-    res.status(500).render("pages/dashboard", { savedVacancies: [], favoriteVacancies: [] })
+    res.status(500).render("pages/dashboard", { savedVacancies: [], favoriteVacancies: [], pageTitle: "Dashboard | Collego" })
   }
 }
 
@@ -512,10 +522,12 @@ async function showMatching(req, res) {
       vacancy.educationLabel = labels.education[vacancy.education] || vacancy.education
     })
 
-    res.render("pages/matching", { vacancies, user })
+    res.render("pages/matching", { vacancies, user }), {
+      pageTitle: "Vacatures ontdekken | Collego"
+    }
   } catch (err) {
     console.error("Fout bij ophalen vacatures:", err)
-    res.status(500).render("pages/matching", { vacancies: [], user: null })
+    res.status(500).render("pages/matching", { vacancies: [], user: null, pageTitle: "Vacatures ontdekken | Collego" })
   }
 }
 
@@ -576,12 +588,14 @@ async function showCompanyMatches(req, res) {
       })
       .toArray()
 
-    res.render("pages/company-matches", { vacancies, reactions })
+    res.render("pages/company-matches", { vacancies, reactions }), {
+      pageTitle: "Match reacties | Collego"
+    }
   } catch (err) {
     console.error("Fout bij ophalen matches:", err)
     res
       .status(500)
-      .render("pages/company-matches", { vacancies: [], reactions: [] })
+      .render("pages/company-matches", { vacancies: [], reactions: [], pageTitle: "Match reacties | Collego" })
   }
 }
 
