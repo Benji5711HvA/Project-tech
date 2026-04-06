@@ -66,16 +66,16 @@
     <div class="trending-grid">
       <%# Loop door de trending vacatures die vanuit de server worden meegegeven %>
       <% for (const vacancy of trendingVacancies) { %>
-        <div class="trending-card">
-          <span class="trending-tag">Deeltijd</span>
-          <h3 class="trending-card-title"><%= vacancy.title %></h3>
-          <p class="trending-card-company"><%= vacancy.company %></p>
-          <p class="trending-card-location"><%= vacancy.location %></p>
-          <div class="trending-card-buttons">
-            <a href="/matching" class="trending-card-button-yes">&#10003;</a>
-            <a href="/matching" class="trending-card-button-no">&#10005;</a>
-          </div>
+      <div class="trending-card">
+        <span class="trending-tag">Deeltijd</span>
+        <h3 class="trending-card-title"><%= vacancy.title %></h3>
+        <p class="trending-card-company"><%= vacancy.company %></p>
+        <p class="trending-card-location"><%= vacancy.location %></p>
+        <div class="trending-card-buttons">
+          <a href="/matching" class="trending-card-button-yes">&#10003;</a>
+          <a href="/matching" class="trending-card-button-no">&#10005;</a>
         </div>
+      </div>
       <% } %>
     </div>
   </section>
