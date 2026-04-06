@@ -116,16 +116,6 @@
         <hr class="divider" />
 
         <div class="field">
-          <label for="logo">Bedrijfslogo <span class="optional">(optioneel)</span></label>
-          <div class="file-upload">
-            <input type="file" id="logo" name="logo" accept="image/*" onchange="logoSelected(this)" />
-            <p>Sleep je logo hierheen of <strong>klik om te uploaden</strong></p>
-            <p class="file-sub">PNG of JPG - max 2MB</p>
-          </div>
-          <p class="file-name" id="logoFilename"></p>
-        </div>
-
-        <div class="field">
           <label for="description">Over ons <span class="optional">(optioneel)</span></label>
           <textarea id="description" name="description" maxlength="300" oninput="updateCounter(this.value.length)" placeholder="Vertel kort over je bedrijf, cultuur en wat jullie doen..."></textarea>
           <p class="counter">0/300</p>

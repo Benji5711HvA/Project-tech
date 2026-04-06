@@ -96,7 +96,6 @@ app.get("/create-company-profile", isLoggedIn, isCompany, showCreateCompanyProfi
 app.post(
   "/create-company-profile",
   isLoggedIn,
-  upload.single("logo"),
   handleCreateCompanyProfile,
 )
 
@@ -323,7 +322,6 @@ async function showCreateCompanyProfile(req, res) {
 async function handleCreateCompanyProfile(req, res) {
   try {
     const { companyName, sector, companySize, website, description } = req.body
-    const logo = req.file ? req.file.filename : null
 
     await companiesCollection.updateOne(
       { _id: new ObjectId(req.session.user.id) },
@@ -334,7 +332,6 @@ async function handleCreateCompanyProfile(req, res) {
           companySize,
           website,
           description,
-          logo,
         },
       },
     )
