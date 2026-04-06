@@ -133,7 +133,6 @@ app.get("/company-matching", isLoggedIn, isCompany, showCompanyMatching)
 app.post("/company-like", isLoggedIn, isCompany, handleCompanyLike)
 
 // Mehmet - Home
-
 // Haal 3 willekeurige vacatures op voor de trending sectie
 async function home(req, res) {
   try {
@@ -559,8 +558,6 @@ async function showMatching(req, res) {
     res.status(500).render("pages/matching", { vacancies: [], user: null })
   }
 }
-
-
 
 async function showCompanyMatches(req, res) {
   try {
