@@ -1,7 +1,7 @@
 // alle kaarten ophalen
 const cards = document.querySelectorAll(".vacancy-card")
-const wisFilters = document.getElementById("wisFilters")
-const voorkeurenBtn = document.getElementById("voorkeurenFilter")
+const clearFiltersBtn = document.getElementById("wisFilters")
+const preferencesBtn = document.getElementById("voorkeurenFilter")
 
 // actieve filters bijhouden
 const activeFilters = {
@@ -11,10 +11,10 @@ const activeFilters = {
   education: []
 }
 
-let voorkeurenActief = false
+let preferencesActive = false
 
 // gebruikersvoorkeuren laden in de filters
-function laadGebruikersVoorkeuren() {
+function loadUserPreferences() {
   const prefs = document.getElementById("user-prefs")
   if (!prefs) return
 
@@ -48,12 +48,12 @@ function laadGebruikersVoorkeuren() {
 }
 
 // mijn voorkeuren knop aan/uitzetten
-voorkeurenBtn.addEventListener("click", function handleVoorkeurenClick() {
-  voorkeurenActief = !voorkeurenActief
-  voorkeurenBtn.classList.toggle("active", voorkeurenActief)
+preferencesBtn.addEventListener("click", function handlePreferencesClick() {
+  preferencesActive = !preferencesActive
+  preferencesBtn.classList.toggle("active", preferencesActive)
 
-  if (voorkeurenActief) {
-    laadGebruikersVoorkeuren()
+  if (preferencesActive) {
+    loadUserPreferences()
   } else {
     Object.keys(activeFilters).forEach(function resetKey(key) {
       activeFilters[key] = []
@@ -111,7 +111,7 @@ document.querySelectorAll(".filter-checkbox").forEach(function addCheckboxListen
 
 // kaarten tonen of verbergen op basis van filters
 function applyFilters() {
-  const geenFiltersActief =
+  const noActiveFilters =
     activeFilters.category.length === 0 &&
     activeFilters.hours.length === 0 &&
     activeFilters.contract.length === 0 &&
@@ -123,24 +123,24 @@ function applyFilters() {
     const cardContract = card.dataset.contract || ""
     const cardEducation = card.dataset.education || ""
 
-    if (geenFiltersActief) {
+    if (noActiveFilters) {
       card.style.display = "flex"
-    } else if (voorkeurenActief) {
+    } else if (preferencesActive) {
       // bij voorkeuren: kaart tonen als minstens 1 ding overeenkomt
-      const eenMatch =
+      const hasMatch =
         activeFilters.category.includes(cardCategory) ||
         activeFilters.hours.includes(cardHours) ||
         activeFilters.contract.includes(cardContract) ||
         activeFilters.education.includes(cardEducation)
 
-      card.style.display = eenMatch ? "flex" : "none"
+      card.style.display = hasMatch ? "flex" : "none"
     } else {
       // bij losse filters: alles moet kloppen
-      const categoryKlopt = activeFilters.category.length === 0 || activeFilters.category.includes(cardCategory)
-      const hoursKlopt = activeFilters.hours.length === 0 || activeFilters.hours.includes(cardHours)
-      const contractKlopt = activeFilters.contract.length === 0 || activeFilters.contract.includes(cardContract)
+      const categoryMatches = activeFilters.category.length === 0 || activeFilters.category.includes(cardCategory)
+      const hoursMatches = activeFilters.hours.length === 0 || activeFilters.hours.includes(cardHours)
+      const contractMatches = activeFilters.contract.length === 0 || activeFilters.contract.includes(cardContract)
 
-      card.style.display = categoryKlopt && hoursKlopt && contractKlopt ? "flex" : "none"
+      card.style.display = categoryMatches && hoursMatches && contractMatches ? "flex" : "none"
     }
 
     // tags oranje maken als ze overeenkomen met een filter
@@ -157,9 +157,9 @@ function applyFilters() {
 }
 
 // alle filters wissen
-wisFilters.addEventListener("click", function handleWisFilters() {
-  voorkeurenActief = false
-  voorkeurenBtn.classList.remove("active")
+clearFiltersBtn.addEventListener("click", function handleClearFilters() {
+  preferencesActive = false
+  preferencesBtn.classList.remove("active")
 
   Object.keys(activeFilters).forEach(function resetFilter(key) {
     activeFilters[key] = []
@@ -178,13 +178,13 @@ wisFilters.addEventListener("click", function handleWisFilters() {
 })
 
 // toast melding tonen
-function toonToast(titel, bericht) {
+function showToast(title, message) {
   const toast = document.getElementById("toast")
-  document.getElementById("toast-titel").textContent = titel
-  document.getElementById("toast-bericht").textContent = bericht
-  toast.classList.add("zichtbaar")
-  setTimeout(function verbergToast() {
-    toast.classList.remove("zichtbaar")
+  document.getElementById("toast-title").textContent = title
+  document.getElementById("toast-message").textContent = message
+  toast.classList.add("visible")
+  setTimeout(function hideToast() {
+    toast.classList.remove("visible")
   }, 4000)
 }
 
@@ -199,25 +199,25 @@ async function sendReaction(vacancyId, vacancyTitle, company, reaction, location
     const result = await response.json()
     if (result.success) {
       if (reaction === "yes") {
-        toonToast(
+        showToast(
           "Aanvraag verstuurd!",
           `Je hebt gereageerd op de vacature ${vacancyTitle} bij ${company}. Je kunt de status volgen via je dashboard.`
         )
-        card.classList.add("verdwijnen")
-        setTimeout(function verwijderKaart() {
+        card.classList.add("disappear")
+        setTimeout(function removeCard() {
           card.remove()
         }, 400)
       } else if (reaction === "no") {
-        toonToast(
+        showToast(
           "Vacature overgeslagen",
           `Je hebt de vacature ${vacancyTitle} bij ${company} overgeslagen.`
         )
-        card.classList.add("verdwijnen")
-        setTimeout(function verwijderKaart() {
+        card.classList.add("disappear")
+        setTimeout(function removeCard() {
           card.remove()
         }, 400)
       } else if (reaction === "favorite") {
-        toonToast(
+        showToast(
           "Toegevoegd aan favorieten!",
           `${vacancyTitle} bij ${company} is opgeslagen in je favorieten.`
         )
