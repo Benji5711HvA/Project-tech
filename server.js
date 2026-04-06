@@ -35,28 +35,6 @@ app.use(
   }),
 )
 
-function setLocals(req, res, next) {
-  res.locals.user = req.session.user
-  next()
-}
-
-app.use(setLocals)
-
-function isLoggedIn(req, res, next) {
-  if (req.session.user) return next()
-  return res.redirect("/login")
-}
-
-function isUser(req, res, next) {
-  if (req.session.user && req.session.user.role === 'user') return next()
-  return res.redirect('/')
-}
-
-function isCompany(req, res, next) {
-  if (req.session.user && req.session.user.role === 'company') return next()
-  return res.redirect('/')
-}
-
 // Hulp functies
 async function hashPassword(password) {
   const salt = await bcrypt.genSalt(10)
@@ -74,8 +52,41 @@ function validateRegistration(email, password, confirmPassword) {
   return null
 }
 
+const pageTitles = {
+  "/": "Home | Collego",
+  "/register": "Registreren | Collego",
+  "/login": "Inloggen | Collego",
+  "/create-profile": "Profiel aanmaken | Collego",
+  "/create-company-profile": "Bedrijfsprofiel aanmaken | Collego",
+  "/add-vacancy": "Vacature toevoegen | Collego",
+  "/dashboard": "Dashboard | Collego",
+  "/matching": "Vacatures ontdekken | Collego",
+  "/company-matches": "Match reacties | Collego",
+  "/company-matching": "Kandidaten | Collego",
+}
 
+function setLocals(req, res, next) {
+  res.locals.user = req.session.user
+  res.locals.pageTitle = pageTitles[req.path] || "Collego"
+  next()
+}
 
+app.use(setLocals)
+
+function isLoggedIn(req, res, next) {
+  if (req.session.user) return next()
+    return res.redirect("/login")
+}
+
+function isUser(req, res, next) {
+  if (req.session.user && req.session.user.role === 'user') return next()
+    return res.redirect('/')
+}
+
+function isCompany(req, res, next) {
+  if (req.session.user && req.session.user.role === 'company') return next()
+    return res.redirect('/')
+}
 
 // Routes
 app.get("/", home)
@@ -99,7 +110,6 @@ app.get("/create-company-profile", isLoggedIn, isCompany, showCreateCompanyProfi
 app.post(
   "/create-company-profile",
   isLoggedIn,
-  upload.single("logo"),
   handleCreateCompanyProfile,
 )
 
@@ -147,7 +157,7 @@ function showRegister(req, res) {
   res.render("pages/register", {
     error: undefined,
     email: undefined,
-    role: undefined,
+    role: req.query.role || "user",
   })
 }
 
@@ -178,7 +188,7 @@ async function handleRegister(req, res) {
       await usersCollection.insertOne({ email, password: hashedPassword })
     }
 
-    res.redirect("/login")
+    res.redirect(`/login?role=${role}`)
   } catch (err) {
     console.error("Fout bij registreren:", err)
     res.status(500).render("pages/register", {
@@ -193,7 +203,7 @@ function showLogin(req, res) {
   res.render("pages/login", {
     error: undefined,
     email: undefined,
-    role: undefined,
+    role: req.query.role || "user",
   })
 }
 
@@ -232,7 +242,7 @@ async function handleLogin(req, res) {
       if (!user.companyName) {
         res.redirect("/create-company-profile")
       } else {
-        res.redirect("/add-vacancy")
+        res.redirect("/company-matching")
       }
     } else {
       if (!user.firstName) {
@@ -257,7 +267,7 @@ function handleLogout(req, res) {
       console.error("Fout bij uitloggen:", err)
       return res.status(500).send("Er ging iets mis bij het uitloggen")
     }
-    res.redirect("/login")
+    res.redirect("/")
   })
 }
 
@@ -343,7 +353,6 @@ async function showCreateCompanyProfile(req, res) {
 async function handleCreateCompanyProfile(req, res) {
   try {
     const { companyName, sector, companySize, website, description } = req.body
-    const logo = req.file ? req.file.filename : null
 
     await companiesCollection.updateOne(
       { _id: new ObjectId(req.session.user.id) },
@@ -354,7 +363,6 @@ async function handleCreateCompanyProfile(req, res) {
           companySize,
           website,
           description,
-          logo,
         },
       },
     )
@@ -400,7 +408,7 @@ async function handleAddVacancy(req, res) {
       createdAt: new Date(),
     })
 
-    res.redirect("/add-vacancy")
+    res.redirect("/company-matching")
   } catch (err) {
     console.error("Fout bij vacature toevoegen:", err)
     res.status(500).render("pages/add-vacancy", {
