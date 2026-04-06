@@ -458,7 +458,6 @@ async function showDashboard(req, res) {
   try {
     const userId = req.session.user.id
 
-
 const savedVacancies = await reactionsCollection
   .find({ userId: userId, reaction: "yes", status: { $ne: "matched" } })
   .toArray()
@@ -493,6 +492,7 @@ async function deleteFavorite(req, res) {
     res.status(500).json({ success: false })
   }
 }
+
 // Sanna - Matching
 async function showMatching(req, res) {
   try {
@@ -566,9 +566,6 @@ async function showCompanyMatches(req, res) {
     res.status(500).render("pages/company-matches", { vacancies: [], reactions: [] })
   }
 }
-
-
-
 
 async function updateMatchStatus(req, res) {
   try {
@@ -823,7 +820,7 @@ async function handleMatchReaction(req, res) {
     }
 
     const companyId = vacancy.companyId.toString()
-    const status = reaction === "yes" ? "pending" : "skipped"
+    const status = reaction === "yes" ? "In behandeling" : ""
 
     // reactie opslaan in de database
     await reactionsCollection.insertOne({
