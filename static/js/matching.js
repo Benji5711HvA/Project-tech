@@ -1,9 +1,7 @@
-// alle kaarten ophalen
 const cards = document.querySelectorAll(".vacancy-card")
 const wisFilters = document.getElementById("wisFilters")
 const voorkeurenBtn = document.getElementById("voorkeurenFilter")
 
-// actieve filters bijhouden
 const activeFilters = {
   category: [],
   hours: [],
@@ -13,7 +11,6 @@ const activeFilters = {
 
 let voorkeurenActief = false
 
-// gebruikersvoorkeuren laden in de filters
 function laadGebruikersVoorkeuren() {
   const prefs = document.getElementById("user-prefs")
   if (!prefs) return
@@ -47,7 +44,6 @@ function laadGebruikersVoorkeuren() {
   applyFilters()
 }
 
-// mijn voorkeuren knop aan/uitzetten
 voorkeurenBtn.addEventListener("click", function handleVoorkeurenClick() {
   voorkeurenActief = !voorkeurenActief
   voorkeurenBtn.classList.toggle("active", voorkeurenActief)
@@ -65,7 +61,6 @@ voorkeurenBtn.addEventListener("click", function handleVoorkeurenClick() {
   }
 })
 
-// filter dropdowns openen en sluiten
 document.querySelectorAll(".filter-btn").forEach(function addDropdownListener(btn) {
   btn.addEventListener("click", function handleDropdownClick() {
     const filterKey = btn.dataset.filter
@@ -81,7 +76,6 @@ document.querySelectorAll(".filter-btn").forEach(function addDropdownListener(bt
   })
 })
 
-// dropdown sluiten als je erbuiten klikt
 document.addEventListener("click", function handleOutsideClick(event) {
   const clickedInsideFilter = event.target.closest(".filter-group")
   if (!clickedInsideFilter) {
@@ -91,7 +85,6 @@ document.addEventListener("click", function handleOutsideClick(event) {
   }
 })
 
-// filter aanvinken of uitvinken
 document.querySelectorAll(".filter-checkbox").forEach(function addCheckboxListener(checkbox) {
   checkbox.addEventListener("change", function handleCheckboxChange() {
     const filterKey = checkbox.dataset.filter
@@ -109,7 +102,6 @@ document.querySelectorAll(".filter-checkbox").forEach(function addCheckboxListen
   })
 })
 
-// kaarten tonen of verbergen op basis van filters
 function applyFilters() {
   const geenFiltersActief =
     activeFilters.category.length === 0 &&
@@ -126,7 +118,6 @@ function applyFilters() {
     if (geenFiltersActief) {
       card.style.display = "flex"
     } else if (voorkeurenActief) {
-      // bij voorkeuren: kaart tonen als minstens 1 ding overeenkomt
       const eenMatch =
         activeFilters.category.includes(cardCategory) ||
         activeFilters.hours.includes(cardHours) ||
@@ -135,7 +126,6 @@ function applyFilters() {
 
       card.style.display = eenMatch ? "flex" : "none"
     } else {
-      // bij losse filters: alles moet kloppen
       const categoryKlopt = activeFilters.category.length === 0 || activeFilters.category.includes(cardCategory)
       const hoursKlopt = activeFilters.hours.length === 0 || activeFilters.hours.includes(cardHours)
       const contractKlopt = activeFilters.contract.length === 0 || activeFilters.contract.includes(cardContract)
@@ -143,7 +133,6 @@ function applyFilters() {
       card.style.display = categoryKlopt && hoursKlopt && contractKlopt ? "flex" : "none"
     }
 
-    // tags oranje maken als ze overeenkomen met een filter
     card.querySelectorAll(".card-tag").forEach(function updateTag(tag) {
       const type = tag.dataset.filterType
       const value = tag.dataset.filterValue
@@ -156,7 +145,6 @@ function applyFilters() {
   })
 }
 
-// alle filters wissen
 wisFilters.addEventListener("click", function handleWisFilters() {
   voorkeurenActief = false
   voorkeurenBtn.classList.remove("active")
@@ -177,7 +165,6 @@ wisFilters.addEventListener("click", function handleWisFilters() {
   })
 })
 
-// toast melding tonen
 function toonToast(titel, bericht) {
   const toast = document.getElementById("toast")
   document.getElementById("toast-titel").textContent = titel
@@ -188,7 +175,6 @@ function toonToast(titel, bericht) {
   }, 4000)
 }
 
-// reactie sturen naar de server
 async function sendReaction(vacancyId, vacancyTitle, company, reaction, location, salary, hoursPerWeek, contractType, card) {
   try {
     const response = await fetch("/match-reaction", {
@@ -228,7 +214,6 @@ async function sendReaction(vacancyId, vacancyTitle, company, reaction, location
   }
 }
 
-// ja of nee knop klikken
 document.querySelectorAll(".yes-button, .no-button").forEach(function addReactionListener(button) {
   button.addEventListener("click", function handleReactionClick() {
     const { vacancyId, vacancyTitle, company, location, salary, hoursPerWeek, contractType } = button.dataset
@@ -238,16 +223,14 @@ document.querySelectorAll(".yes-button, .no-button").forEach(function addReactio
   })
 })
 
-// meer info knop opent de popup met hetzelfde vacancy id
 document.querySelectorAll(".more-info-button").forEach(function addMoreInfoListener(button) {
   button.addEventListener("click", function handleMoreInfoClick() {
-    const vacancyId = button.dataset.vacancyId
-    const popup = document.getElementById("popup-" + vacancyId)
+    const card = button.closest(".vacancy-card")
+    const popup = card.querySelector(".popup")
     popup.classList.add("active")
   })
 })
 
-// sluit knop in popup
 document.querySelectorAll(".close-button").forEach(function addCloseListener(button) {
   button.addEventListener("click", function handleCloseClick() {
     const popup = button.closest(".popup")
@@ -255,16 +238,6 @@ document.querySelectorAll(".close-button").forEach(function addCloseListener(but
   })
 })
 
-// klik op de donkere achtergrond sluit ook de popup
-document.querySelectorAll(".popup").forEach(function addOverlayListener(popup) {
-  popup.addEventListener("click", function handleOverlayClick(e) {
-    if (e.target === popup) {
-      popup.classList.remove("active")
-    }
-  })
-})
-
-// favoriet knop aan/uitzetten
 document.querySelectorAll(".favorite-button").forEach(function addFavoriteListener(button) {
   button.addEventListener("click", function handleFavoriteClick() {
     const { vacancyId, vacancyTitle, company, location, salary, hoursPerWeek, contractType } = button.dataset
