@@ -1,3 +1,4 @@
+/* Hoofdknop oranje */
 .btn {
   width: 100%;
   padding: 1rem;
@@ -15,6 +16,7 @@
   background: var(--orange-hover);
 }
 
+/* Kleine knop voor nav */
 .btn-small {
   background: transparent;
   border: 0.125rem solid #ffffff;
@@ -26,128 +28,7 @@
   cursor: pointer;
 }
 
-.matching-page .no-button,
-.matching-page .yes-button {
-  width: 2.75rem;
-  height: 2.75rem;
-  border: none;
-  border-radius: 50%;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s;
-}
-
-.matching-page .no-button {
-  background-color: #fff0f0;
-  color: #e53e3e;
-  border: 0.0625rem solid #fca5a5;
-}
-
-.matching-page .no-button:hover {
-  background-color: #e53e3e;
-  color: var(--white);
-  transform: scale(1.05);
-}
-
-.matching-page .yes-button {
-  background-color: #f0faf4;
-  color: #1a7f4b;
-  border: 0.0625rem solid #a3d9b8;
-}
-
-.matching-page .yes-button:hover {
-  background-color: #1a7f4b;
-  color: var(--white);
-  transform: scale(1.05);
-}
-
-.matching-page .more-info-button {
-  background: none;
-  border: 0.0625rem solid var(--gray);
-  color: var(--text-gray);
-  padding: 0.5rem 1.2rem;
-  border-radius: 2rem;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-  margin-top: 0.5rem;
-  width: fit-content;
-}
-
-.matching-page .more-info-button:hover {
-  border-color: var(--orange);
-  color: var(--orange);
-}
-
-.matching-page .previous-button,
-.matching-page .next-button {
-  width: 3rem;
-  height: 3rem;
-  border: 0.125rem solid var(--orange);
-  border-radius: 50%;
-  background-color: transparent;
-  color: var(--orange);
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.matching-page .previous-button:hover,
-.matching-page .next-button:hover {
-  background-color: var(--orange);
-  color: var(--white);
-}
-.favorite-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.favorite-icon {
-  font-size: 1.6rem;
-  color: var(--gray);
-  transition: color 0.2s;
-}
-
-.favorite-button:hover .favorite-icon {
-  color: #e53e3e;
-}
-
-.favorite-button.active .favorite-icon {
-  color: #e53e3e;
-}
-
-.matching-page .close-button {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  align-self: flex-end;
-  color: var(--text-gray);
-}
-
-.matching-page .voorkeuren-filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  background: none;
-  border: 0.0625rem solid var(--orange);
-  color: var(--orange);
-  padding: 0.4rem 1rem;
-  border-radius: 2rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.matching-page .voorkeuren-filter-btn:hover,
-.matching-page .voorkeuren-filter-btn.active {
-  background-color: var(--orange);
-  color: var(--white);
-}
-
+/* Toggle knoppen */
 .toggle-btn {
   padding: 1rem 4rem;
   border: none;
@@ -165,6 +46,117 @@
   color: var(--orange);
 }
 
+/* Ja/nee knoppen op kaarten */
+.no-button,
+.no-btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  background-color: #fff0f0;
+  color: #e53e3e;
+  border: 0.0625rem solid #fca5a5;
+}
+
+.no-button:hover,
+.no-btn:hover {
+  background-color: #e53e3e;
+  color: var(--white);
+  transform: scale(1.05);
+}
+
+.yes-button,
+.yes-btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+  background-color: #f0faf4;
+  color: #1a7f4b;
+  border: 0.0625rem solid #a3d9b8;
+}
+
+.yes-button:hover,
+.yes-btn:hover {
+  background-color: #1a7f4b;
+  color: var(--white);
+  transform: scale(1.05);
+}
+
+/* Meer info knop */
+.more-info-button,
+.more-info-btn {
+  background: none;
+  border: 0.0625rem solid var(--gray);
+  color: var(--text-gray);
+  padding: 0.5rem 1.2rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  margin-top: 0.5rem;
+  align-self: flex-start;
+  width: auto;
+}
+
+.more-info-button:hover,
+.more-info-btn:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: none;
+}
+
+/* Sluit knop in popup */
+.close-button,
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  align-self: flex-end;
+  color: var(--text-gray);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button:hover,
+.close-btn:hover {
+  color: var(--text-dark);
+}
+
+/* Favoriet knop */
+.favorite-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  position: absolute;
+  top: 1.5rem;
+  right: 3rem;
+}
+
+.favorite-icon {
+  font-size: 1.6rem;
+  color: var(--gray);
+  transition: color 0.2s;
+}
+
+.favorite-button:hover .favorite-icon {
+  color: #e53e3e;
+}
+
+.favorite-button.active .favorite-icon {
+  color: #e53e3e;
+}
+
+/* Verwijder knop */
 .delete-button {
   position: absolute;
   top: 1.2rem;
@@ -180,10 +172,29 @@
   transition: color 0.2s;
 }
 
-.delete-button:hover {
-  color: var (--error-text);
+/* Voorkeuren filter knop */
+.voorkeuren-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: none;
+  border: 0.0625rem solid var(--orange);
+  color: var(--orange);
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
 }
 
+.voorkeuren-filter-btn:hover,
+.voorkeuren-filter-btn.active {
+  background-color: var(--orange);
+  color: var(--white);
+}
+
+/* Zero state knop */
 .zero-state-button {
   background-color: var(--orange);
   color: var(--white);
@@ -199,6 +210,26 @@
   background-color: var(--orange-hover);
 }
 
+
+.zero-state-btn {
+  background: none;
+  border: 0.0625rem solid var(--gray);
+  color: var(--text-gray);
+  padding: 0.5rem 1.2rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.zero-state-btn:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: none;
+}
+
+/* Hero knoppen */
 .hero-button-primary {
   background-color: var(--white);
   color: var(--orange);
@@ -228,4 +259,24 @@
 
 .hero-button-secondary:hover {
   background-color: rgba(255 255 255 / 15%);
+}
+
+/* Navigatie vorige/volgende knoppen */
+.previous-button,
+.next-button {
+  width: 3rem;
+  height: 3rem;
+  border: 0.125rem solid var(--orange);
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--orange);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.previous-button:hover,
+.next-button:hover {
+  background-color: var(--orange);
+  color: var(--white);
 }

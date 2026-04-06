@@ -1,0 +1,365 @@
+
+.company-matching-page .toggle-container {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+
+.company-matching-page .toggle {
+  background-color: var(--gray);
+  border-radius: 999px;
+  padding: 0.25rem;
+  display: flex;
+  gap: 0.25rem;
+}
+
+
+.company-matching-page .tab-badge {
+  background: var(--gray);
+  color: var(--text-dark);
+  border-radius: 999px;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 1.4rem;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.25rem;
+}
+
+.company-matching-page .toggle-btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+.company-matching-page .toggle-btn.active .tab-badge {
+  background: var(--checked-card-bg);
+  color: var(--orange);
+}
+
+.company-matching-page .info-bar {
+  display: flex;
+  gap: 1rem;
+  padding: 0 4rem;
+  max-width: 75rem;
+  margin: 1.5rem auto 0;
+}
+
+.company-matching-page .info-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex: 1;
+  background-color: var(--white);
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.06);
+}
+
+.company-matching-page .info-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  color: var(--orange);
+}
+
+.company-matching-page .info-step p {
+  font-size: 0.85rem;
+  color: var(--text-gray);
+  line-height: 1.5;
+}
+
+.company-matching-page .info-step strong {
+  color: var(--text-dark);
+}
+
+.company-matching-page .vacancies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 2rem 4rem;
+  max-width: 75rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.company-matching-page .candidate-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 1.75rem 2rem;
+  border-radius: 1.5rem;
+  background-color: var(--white);
+  box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+  transition: opacity 0.35s ease, transform 0.35s ease, max-height 0.4s ease, padding 0.35s ease, margin 0.35s ease;
+}
+
+.company-matching-page .candidate-card.disappear {
+  opacity: 0;
+  transform: translateX(-2rem);
+  max-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.company-matching-page .card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  align-items: flex-start;
+}
+
+.company-matching-page .card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.company-matching-page .card-title-row h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.3rem;
+  color: var(--text-dark);
+}
+
+.candidate-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--checked-card-bg);
+  color: var(--orange);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.company-matching-page .candidate-card .education {
+  font-size: 1rem;
+  color: var(--text-gray);
+}
+
+.company-matching-page .candidate-card .location {
+  font-size: 1rem;
+  color: var(--text-gray);
+}
+
+.company-matching-page .card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.company-matching-page .card-tag {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 2rem;
+  border: 0.0625rem solid var(--gray);
+  color: var(--text-gray);
+  background-color: var(--white);
+  white-space: nowrap;
+}
+
+.company-matching-page .card-tag.active-filter {
+  background-color: #fff6f0;
+  border-color: var(--orange);
+  color: var(--orange);
+  font-weight: 600;
+}
+
+.company-matching-page .card-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6.25rem;
+  margin-top: 0.25rem;
+  align-self: flex-start;
+}
+
+.status-pill.matched {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border: 0.0625rem solid var(--success-border);
+}
+
+.contact-box {
+  background: var(--success-bg);
+  border: 0.0625rem solid var(--success-border);
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9rem;
+  color: var(--success-text);
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cv-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  color: var(--orange);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.cv-link:hover {
+  color: var(--orange-hover);
+  text-decoration: underline;
+}
+
+.cv-locked {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  color: var(--text-gray);
+  font-size: 0.85rem;
+}
+
+.company-matching-page .popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.company-matching-page .popup.active {
+  display: flex;
+}
+
+.company-matching-page .popup-content {
+  background-color: var(--white);
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 37.5rem;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.company-matching-page .popup-content h2 {
+  font-size: 1.4rem;
+  color: var(--text-dark);
+}
+
+.company-matching-page .popup-content .education {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--orange);
+}
+
+.company-matching-page .popup-content .location {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+}
+
+.company-matching-page .popup-content .bio {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  line-height: 1.6;
+  margin-top: 0.5rem;
+}
+
+.company-matching-page .zero-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 4rem;
+  gap: 1rem;
+}
+
+.company-matching-page .zero-state-text {
+  color: var(--text-gray);
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.company-matching-page #tab-matches .zero-state {
+  padding: 4rem 0;
+}
+
+.company-matching-page .toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background-color: var(--white);
+  border-left: 0.25rem solid var(--orange);
+  border-radius: 0.75rem;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.15);
+  max-width: 22rem;
+  z-index: 999;
+  opacity: 0;
+  transform: translateY(1rem);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.company-matching-page .toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.company-matching-page .toast-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 0.25rem;
+}
+
+.company-matching-page .toast-message {
+  font-size: 0.85rem;
+  color: var(--text-gray);
+  line-height: 1.5;
+}
+
+.status-pill .info-icon,
+.contact-box .info-icon,
+.cv-locked .info-icon,
+.cv-link .info-icon {
+  font-size: 1rem;
+}
+
+.company-matching-page .vacancies-list.hidden {
+  display: none;
+}
+
+.popup-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-top: 1rem;
+}

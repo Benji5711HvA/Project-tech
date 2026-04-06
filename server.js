@@ -74,6 +74,9 @@ function validateRegistration(email, password, confirmPassword) {
   return null
 }
 
+
+
+
 // Routes
 app.get("/", home)
 
@@ -115,7 +118,9 @@ app.delete("/favorites/:id", isLoggedIn, deleteFavorite)
 app.get("/matching", isLoggedIn, isUser, showMatching)
 app.post("/match-reaction", isLoggedIn, isUser, handleMatchReaction)
 app.get("/company-matches", isLoggedIn, isCompany, showCompanyMatches)
-app.post("/update-status", isLoggedIn, isUser, updateMatchStatus)
+app.post("/update-status", isLoggedIn, updateMatchStatus)
+app.get("/company-matching", isLoggedIn, isCompany, showCompanyMatching)
+app.post("/company-like", isLoggedIn, isCompany, handleCompanyLike)
 
 // Functions
 function home(req, res) {
@@ -243,11 +248,11 @@ function handleLogout(req, res) {
 
 async function showCreateProfile(req, res) {
   const user = await usersCollection.findOne({ _id: new ObjectId(req.session.user.id) })
-  
+
   if (user.firstName) {
     return res.redirect("/matching")
   }
-  
+
   res.render("pages/create-profile")
 }
 
@@ -312,11 +317,11 @@ async function handleCreateProfile(req, res) {
 
 async function showCreateCompanyProfile(req, res) {
   const company = await companiesCollection.findOne({ _id: new ObjectId(req.session.user.id) })
-  
+
   if (company.companyName) {
     return res.redirect("/add-vacancy")
   }
-  
+
   res.render("pages/create-company-profile")
 }
 
@@ -338,7 +343,6 @@ async function handleCreateCompanyProfile(req, res) {
         },
       },
     )
-
     res.redirect("/add-vacancy")
   } catch (err) {
     console.error("Fout bij bedrijfsprofiel aanmaken:", err)
@@ -439,18 +443,22 @@ async function showDashboard(req, res) {
   try {
     const userId = req.session.user.id
 
-    const savedVacancies = await reactionsCollection
-      .find({ userId: userId, reaction: "yes" })
-      .toArray()
 
+const savedVacancies = await reactionsCollection
+  .find({ userId: userId, reaction: "yes", status: { $ne: "matched" } })
+  .toArray()
     const favoriteVacancies = await reactionsCollection
       .find({ userId: userId, reaction: "favorite" })
       .toArray()
 
-    res.render("pages/dashboard", { savedVacancies, favoriteVacancies })
+// alleen user-reactions met status matched, want company-reactions hebben geen vacaturedata
+const matchedVacancies = await reactionsCollection
+  .find({ userId: userId, type: "user-reaction", status: "matched" })
+  .toArray()
+    res.render("pages/dashboard", { savedVacancies, favoriteVacancies, matchedVacancies })
   } catch (err) {
     console.error("Fout bij ophalen favorieten:", err)
-    res.status(500).render("pages/dashboard", { savedVacancies: [], favoriteVacancies: [] })
+    res.status(500).render("pages/dashboard", { savedVacancies: [], favoriteVacancies: [], matchedVacancies: [] })
   }
 }
 
@@ -473,100 +481,60 @@ async function deleteFavorite(req, res) {
 // Sanna - Matching
 async function showMatching(req, res) {
   try {
-    const user = await usersCollection.findOne({
-      _id: new ObjectId(req.session.user.id)
+    const userId = req.session.user.id
+    const user = await usersCollection.findOne({ _id: new ObjectId(userId) })
+
+    const existingReactions = await reactionsCollection
+      .find({ userId: userId, type: "user-reaction" })
+      .toArray()
+
+    const seenIds = existingReactions
+      .map(function toObjectId(r) {
+        try { return new ObjectId(r.vacancyId) } catch (e) { return null }
+      })
+      .filter(Boolean)
+
+    const vacancies = await vacanciesCollection
+      .find({ _id: { $nin: seenIds } })
+      .toArray()
+
+    // bedrijven ophalen zodat we de beschrijving kunnen tonen
+    const companyIds = vacancies.map(function(v) { return v.companyId })
+    const companies = await companiesCollection
+      .find({ _id: { $in: companyIds.map(function(id) { try { return new ObjectId(id) } catch(e) { return null } }).filter(Boolean) } })
+      .toArray()
+
+    vacancies.forEach(function formatVacancy(vacancy) {
+      vacancy.categoryLabel = vacancy.category || ""
+      vacancy.educationLabel = vacancy.education || ""
+
+      const contractArr = Array.isArray(vacancy.contractType)
+        ? vacancy.contractType
+        : (vacancy.contractType ? vacancy.contractType.split(",") : [])
+      vacancy.contractLabels = contractArr
+
+      const workFormArr = Array.isArray(vacancy.workForm)
+        ? vacancy.workForm
+        : (vacancy.workForm ? vacancy.workForm.split(",") : [])
+      vacancy.workFormLabels = workFormArr
+
+      // bedrijfsbeschrijving toevoegen aan vacature
+      const company = companies.find(function(c) { return c._id.toString() === vacancy.companyId })
+      vacancy.companyDescription = company ? company.description : ""
     })
 
-    const vacancies = await vacanciesCollection.find({}).toArray()
-
-    const labels = {
-      category: {
-        "it-jobs": "ICT & Tech",
-        "healthcare-nursing-jobs": "Zorg & Welzijn",
-        "admin-jobs": "Administratie",
-        "retail-jobs": "Retail & Verkoop",
-        "hospitality-catering-jobs": "Horeca & Toerisme",
-        "teaching-jobs": "Onderwijs",
-        "logistics-warehouse-jobs": "Logistiek",
-        "pr-advertising-marketing-jobs": "Marketing & Comm.",
-        "manufacturing-jobs": "Techniek & Industrie",
-        "accounting-finance-jobs": "Finance & Juridisch",
-        "trade-construction-jobs": "Bouw & Infra"
-      },
-      contract: {
-        "permanent": "Vast contract",
-        "temporary": "Tijdelijk contract",
-        "freelance": "Freelance / ZZP",
-        "internship": "Stage"
-      },
-      education: {
-        "vmbo": "Middelbaar onderwijs",
-        "mbo12": "MBO niveau 1 of 2",
-        "mbo34": "MBO niveau 3 of 4",
-        "hbo": "HBO Bachelor",
-        "wo": "WO Bachelor",
-        "master": "HBO/WO Master"
-      }
-    }
-
-    vacancies.forEach(function vertaalVacature(vacancy) {
-      vacancy.categoryLabel = labels.category[vacancy.category] || vacancy.category
-      vacancy.contractLabel = labels.contract[vacancy.contractType] || vacancy.contractType
-      vacancy.educationLabel = labels.education[vacancy.education] || vacancy.education
-    })
-
-    res.render("pages/matching", { vacancies, user })
+    res.render("pages/matching", { vacancies: vacancies, user: user })
   } catch (err) {
     console.error("Fout bij ophalen vacatures:", err)
     res.status(500).render("pages/matching", { vacancies: [], user: null })
   }
 }
 
-async function handleMatchReaction(req, res) {
-  try {
-    const userId = req.session.user.id
-    const {
-      vacancyId,
-      vacancyTitle,
-      company,
-      reaction,
-      location,
-      salary,
-      hoursPerWeek,
-      contractType,
-    } = req.body
 
-    if (reaction === "yes" || reaction === "favorite") {
-      const bestaandeReactie = await reactionsCollection.findOne({ userId, vacancyId, reaction })
-      if (bestaandeReactie) {
-        return res.json({ success: true })
-      }
-
-      await reactionsCollection.insertOne({
-        userId,
-        vacancyId,
-        vacancyTitle,
-        company,
-        location,
-        salary,
-        hoursPerWeek,
-        contractType,
-        reaction,
-        status: "in behandeling",
-      })
-    }
-
-    res.json({ success: true })
-  } catch (err) {
-    console.error("Fout bij opslaan reactie:", err)
-    res.status(500).json({ success: false })
-  }
-}
 
 async function showCompanyMatches(req, res) {
   try {
     const companyId = req.session.user.id
-
     const vacancies = await vacanciesCollection.find({ companyId }).toArray()
 
     const vacancyIds = vacancies.map(function getVacancyId(vacancy) {
@@ -574,35 +542,322 @@ async function showCompanyMatches(req, res) {
     })
 
     const reactions = await reactionsCollection
-      .find({
-        vacancyId: { $in: vacancyIds },
-      })
+      .find({ vacancyId: { $in: vacancyIds } })
       .toArray()
 
     res.render("pages/company-matches", { vacancies, reactions })
   } catch (err) {
     console.error("Fout bij ophalen matches:", err)
-    res
-      .status(500)
-      .render("pages/company-matches", { vacancies: [], reactions: [] })
+    res.status(500).render("pages/company-matches", { vacancies: [], reactions: [] })
   }
 }
+
+
+
 
 async function updateMatchStatus(req, res) {
   try {
     const { reactionId, status } = req.body
-
     await reactionsCollection.updateOne(
       { _id: new ObjectId(reactionId) },
       { $set: { status } },
     )
-
     res.json({ success: true })
   } catch (err) {
     console.error("Fout bij updaten status:", err)
     res.status(500).json({ success: false })
   }
 }
+
+function mapCandidate(user) {
+  const sectorArr = Array.isArray(user.sector) ? user.sector : (user.sector ? [user.sector] : [])
+  const contractArr = Array.isArray(user.contractType) ? user.contractType : (user.contractType ? [user.contractType] : [])
+  const workFormArr = Array.isArray(user.workForm) ? user.workForm : (user.workForm ? [user.workForm] : [])
+
+  return {
+    _id: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    city: user.city,
+    bio: user.bio,
+    cv: user.cv,
+    initialen: (user.firstName?.[0] || "") + (user.lastName?.[0] || ""),
+    educationLabel: user.education || "",
+    sectorLabels: sectorArr,
+    contractLabels: contractArr,
+    workFormLabels: workFormArr,
+    hoursPerWeek: user.hoursPerWeek || "",
+    salary: user.salary || "",
+  }
+}
+
+async function showCompanyMatching(req, res) {
+  try {
+    const companyId = req.session.user.id
+
+    const myReactions = await reactionsCollection
+      .find({ companyId: companyId, type: "company-reaction" })
+      .toArray()
+
+const seenUserIds = new Set(
+      myReactions.map(function getId(r) { return r.userId })
+    )
+
+  const pendingUserIds = new Set(
+      myReactions
+        .filter(function isWaiting(r) {
+          return r.reaction === "yes" && r.status !== "matched"
+        })
+        .map(function getId(r) { return r.userId })
+    )
+
+    const matchedUserIds = new Set(
+      myReactions
+        .filter(function isMatched(r) {
+          return r.reaction === "yes" && r.status === "matched"
+        })
+        .map(function getId(r) { return r.userId })
+    )
+
+    function toObjectIds(idSet) {
+      return Array.from(idSet)
+        .map(function convert(id) {
+          try {
+            return new ObjectId(id)
+          } catch (e) {
+            return null
+          }
+        })
+        .filter(Boolean)
+    }
+
+const seenObjectIds = toObjectIds(seenUserIds)
+const pendingObjectIds = toObjectIds(pendingUserIds)
+const matchedObjectIds = toObjectIds(matchedUserIds)
+    const browseUsers = await usersCollection
+      .find({
+        firstName: { $exists: true, $ne: "" },
+       _id: { $nin: seenObjectIds },
+      })
+      .toArray()
+
+  let pendingUsers = []
+let matchedUsers = []
+
+   if (pendingObjectIds.length > 0) {
+  pendingUsers = await usersCollection
+    .find({ _id: { $in: pendingObjectIds } })
+    .toArray()
+}
+
+if (matchedObjectIds.length > 0) {
+  matchedUsers = await usersCollection
+    .find({ _id: { $in: matchedObjectIds } })
+    .toArray()
+}
+
+    const browseKandidaten = browseUsers.map(mapCandidate)
+const wachtendeKandidaten = pendingUsers.map(mapCandidate)
+const matchedKandidaten = matchedUsers.map(mapCandidate)
+
+    res.render("pages/company-matching", {
+      browseKandidaten: browseKandidaten,
+      wachtendeKandidaten: wachtendeKandidaten,
+      matchedKandidaten: matchedKandidaten,
+      totalMatches: matchedKandidaten.length,
+      user: req.session.user,
+    })
+  } catch (err) {
+    console.error("Fout bij ophalen kandidaten:", err)
+    res.status(500).render("pages/company-matching", {
+      browseKandidaten: [],
+      wachtendeKandidaten: [],
+      matchedKandidaten: [],
+      totalMatches: 0,
+      user: req.session.user,
+    })
+  }
+}
+
+
+
+async function handleCompanyLike(req, res) {
+  try {
+    const companyId = req.session.user.id.toString()
+    const userId = req.body.userId
+    const reaction = req.body.reaction || "yes"
+
+    if (!userId) {
+      return res.status(400).json({ success: false, error: "userId ontbreekt" })
+    }
+
+    const candidate = await usersCollection.findOne({ _id: new ObjectId(userId) })
+   if (!candidate) {
+      return res.status(404).json({ success: false, error: "Kandidaat niet gevonden" })
+    }
+
+   const existingReaction = await reactionsCollection.findOne({
+      companyId: companyId,
+      userId: userId,
+      type: "company-reaction",
+    })
+
+   if (existingReaction) {
+  return res.json({
+    success: true,
+    alreadyReacted: true,
+    matched: existingReaction.status === "matched",
+    kandidaat: mapCandidate(candidate),
+  })
+}
+
+    const status = reaction === "yes" ? "In behandeling" : "skipped"
+
+    await reactionsCollection.insertOne({
+      companyId: companyId,
+      userId: userId,
+      reaction: reaction,
+      type: "company-reaction",
+      status: status,
+      createdAt: new Date(),
+    })
+
+    if (reaction === "yes") {
+const userLikedCompany = await reactionsCollection.findOne({
+        userId: userId,
+        companyId: companyId,
+        type: "user-reaction",
+        reaction: "yes",
+      })
+
+  if (userLikedCompany) {
+        await reactionsCollection.updateMany(
+          {
+            $or: [
+              {
+                userId: userId,
+                companyId: companyId,
+                type: "user-reaction",
+                reaction: "yes",
+              },
+              {
+                companyId: companyId,
+                userId: userId,
+                type: "company-reaction",
+                reaction: "yes",
+              },
+            ],
+          },
+          { $set: { status: "matched" } },
+        )
+
+        return res.json({
+          success: true,
+          matched: true,
+         kandidaat: mapCandidate(candidate),
+        })
+      }
+
+      return res.json({
+        success: true,
+        matched: false,
+       kandidaat: mapCandidate(candidate),
+      })
+    }
+
+    res.json({
+      success: true,
+      matched: false,
+      skipped: true,
+   kandidaat: mapCandidate(candidate),
+    })
+  } catch (err) {
+    console.error("Fout bij company reactie:", err)
+    res.status(500).json({ success: false })
+  }
+}
+
+async function handleMatchReaction(req, res) {
+  try {
+    const userId = req.session.user.id
+    const vacancyId = req.body.vacancyId
+    const vacancyTitle = req.body.vacancyTitle
+    const company = req.body.company
+    const reaction = req.body.reaction
+    const location = req.body.location
+    const salary = req.body.salary
+    const hoursPerWeek = req.body.hoursPerWeek
+    const contractType = req.body.contractType
+
+    // kijken of de gebruiker al eerder gereageerd heeft op deze vacature
+    const existingReaction = await reactionsCollection.findOne({
+      userId: userId,
+      vacancyId: vacancyId,
+      type: "user-reaction",
+    })
+
+    if (existingReaction) {
+      return res.json({ success: true, alreadyReacted: true })
+    }
+
+    // vacature ophalen om het bedrijfsid te vinden
+    const vacancy = await vacanciesCollection.findOne({ _id: new ObjectId(vacancyId) })
+    if (!vacancy) {
+      return res.status(404).json({ success: false, error: "Vacature niet gevonden" })
+    }
+
+    const companyId = vacancy.companyId.toString()
+    const status = reaction === "yes" ? "pending" : "skipped"
+
+    // reactie opslaan in de database
+    await reactionsCollection.insertOne({
+      userId: userId,
+      vacancyId: vacancyId,
+      vacancyTitle: vacancyTitle,
+      company: company,
+      companyId: companyId,
+      location: location,
+      salary: salary,
+      hoursPerWeek: hoursPerWeek,
+      contractType: contractType,
+      reaction: reaction,
+      type: "user-reaction",
+      status: status,
+      createdAt: new Date(),
+    })
+
+    // kijken of het bedrijf al interesse heeft getoond in deze gebruiker
+    if (reaction === "yes") {
+      const companyLikedUser = await reactionsCollection.findOne({
+        companyId: companyId,
+        userId: userId,
+        type: "company-reaction",
+        reaction: "yes",
+      })
+
+      // als beide partijen ja hebben gezegd is het een match
+      if (companyLikedUser) {
+        await reactionsCollection.updateMany(
+          {
+            $or: [
+              { userId: userId, vacancyId: vacancyId, type: "user-reaction" },
+              { companyId: companyId, userId: userId, type: "company-reaction" },
+            ],
+          },
+          { $set: { status: "matched" } },
+        )
+        return res.json({ success: true, matched: true })
+      }
+    }
+
+    res.json({ success: true, matched: false })
+  } catch (err) {
+    console.error("Fout bij opslaan reactie:", err)
+    res.status(500).json({ success: false })
+  }
+}
+
 
 // Start server
 async function startServer() {
@@ -615,6 +870,7 @@ async function startServer() {
     companiesCollection = db.collection("companies")
     reactionsCollection = db.collection("reactions")
     vacanciesCollection = db.collection("vacancies")
+
 
     app.listen(3000, () => {
       console.log("Server draait op http://localhost:3000")

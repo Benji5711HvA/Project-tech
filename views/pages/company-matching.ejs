@@ -1,0 +1,187 @@
+<%- include("../partials/header") %>
+
+<main class="company-matching-page">
+
+  <section class="hero">
+    <h1>Kandidaten</h1>
+    <p>Bekijk kandidaten die passen bij jouw vacatures en maak een match!</p>
+  </section>
+
+  <div class="toggle-container">
+    <div class="toggle">
+      <button class="toggle-btn active" data-tab="browse">Browsen</button>
+      <button class="toggle-btn" data-tab="matches">
+        Matches
+        <span class="tab-badge"><%= totalMatches %></span>
+      </button>
+    </div>
+  </div>
+
+  <section class="info-bar">
+    <div class="info-step">
+      <span class="material-symbols-outlined info-icon">check_circle</span>
+      <p>Klik op de groene knop om een kandidaat te liken. Een match ontstaat alleen als beide partijen interesse tonen.</p>
+    </div>
+    <div class="info-step">
+      <span class="material-symbols-outlined info-icon">lock</span>
+      <p>Het CV van een kandidaat is alleen zichtbaar na een wederzijdse match.</p>
+    </div>
+    <div class="info-step">
+      <span class="material-symbols-outlined info-icon">dashboard</span>
+      <p>Bij een match krijg je het e-mailadres van de kandidaat zodat je zsm contact kunt opnemen!</p>
+    </div>
+  </section>
+
+  <%# TAB: BROWSEN %>
+  <section class="vacancies-list" id="tab-browse">
+
+    <% if (browseKandidaten.length === 0) { %>
+      <div class="zero-state">
+        <p class="zero-state-text">Geen nieuwe kandidaten op dit moment.</p>
+      </div>
+    <% } %>
+
+    <% browseKandidaten.forEach(function(candidate) { %>
+      <div class="candidate-card" id="card-<%= candidate._id %>">
+
+        <div class="card-info">
+          <div class="card-title-row">
+            <h2>
+              <span class="candidate-avatar"><%= candidate.initialen %></span>
+              <%= candidate.firstName %> <%= candidate.lastName %>
+            </h2>
+          </div>
+          <p class="education"><%= candidate.educationLabel %></p>
+          <p class="location"><%= candidate.city %></p>
+          <div class="card-tags">
+            <% candidate.sectorLabels.forEach(function(sector) { %>
+  <% if (sector) { %><span class="card-tag"><%= sector %></span><% } %>
+<% }) %>
+<% candidate.contractLabels.forEach(function(contract) { %>
+  <% if (contract) { %><span class="card-tag"><%= contract %></span><% } %>
+<% }) %>
+<% candidate.workFormLabels.forEach(function(workForm) { %>
+  <% if (workForm) { %><span class="card-tag"><%= workForm %></span><% } %>
+<% }) %>
+          </div>
+
+          <button class="more-info-btn">Meer info</button>
+        </div>
+
+        <div class="popup">
+          <div class="popup-content">
+            <button class="close-btn">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2><%= candidate.firstName %> <%= candidate.lastName %></h2>
+            <p class="education"><%= candidate.educationLabel %></p>
+            <p class="location"><%= candidate.city %></p>
+            <p class="bio"><%= candidate.bio %></p>
+            <p class="cv-locked">
+              <span class="material-symbols-outlined info-icon">lock</span>
+              CV zichtbaar na match
+            </p>
+          </div>
+        </div>
+
+        <div class="card-buttons">
+          <button class="no-btn"
+            data-user-id="<%= candidate._id %>"
+            data-name="<%= candidate.firstName %> <%= candidate.lastName %>">
+            &#10005;
+          </button>
+          <button class="yes-btn"
+            data-user-id="<%= candidate._id %>"
+            data-name="<%= candidate.firstName %> <%= candidate.lastName %>">
+            &#10003;
+          </button>
+        </div>
+
+      </div>
+    <% }) %>
+
+  </section>
+
+  <%# TAB: MATCHES %>
+  <section class="vacancies-list hidden" id="tab-matches">
+
+    <% if (matchedKandidaten.length === 0) { %>
+      <div class="zero-state">
+        <p class="zero-state-text">Nog geen matches. Like kandidaten om te beginnen!</p>
+        <button class="zero-state-btn" data-tab="browse">Ga naar browsen</button>
+      </div>
+    <% } %>
+
+    <% matchedKandidaten.forEach(function(candidate) { %>
+      <div class="candidate-card" id="card-<%= candidate._id %>">
+
+        <div class="card-info">
+          <div class="card-title-row">
+            <h2>
+              <span class="candidate-avatar"><%= candidate.initialen %></span>
+              <%= candidate.firstName %> <%= candidate.lastName %>
+            </h2>
+          </div>
+          <p class="education"><%= candidate.educationLabel %></p>
+          <p class="location"><%= candidate.city %></p>
+          <div class="card-tags">
+            <% candidate.sectorLabels.forEach(function(s) { %>
+              <% if (s) { %><span class="card-tag"><%= s %></span><% } %>
+            <% }) %>
+            <% if (candidate.hoursPerWeek) { %>
+              <span class="card-tag"><%= candidate.hoursPerWeek %> uur/week</span>
+            <% } %>
+            <% candidate.contractLabels.forEach(function(c) { %>
+              <% if (c) { %><span class="card-tag"><%= c %></span><% } %>
+            <% }) %>
+            <% if (candidate.salary) { %>
+              <span class="card-tag">€ <%= Number(candidate.salary).toLocaleString('nl-NL') %>/jr</span>
+            <% } %>
+            <% candidate.workFormLabels.forEach(function(w) { %>
+              <% if (w) { %><span class="card-tag"><%= w %></span><% } %>
+            <% }) %>
+          </div>
+          <span class="status-pill matched">
+            <span class="material-symbols-outlined info-icon">check_circle</span>
+            Match bevestigd
+          </span>
+          <div class="contact-box">
+            <span class="material-symbols-outlined info-icon">mail</span>
+            Neem contact op via: <strong><%= candidate.email %></strong>
+          </div>
+          <button class="more-info-btn">Meer info</button>
+        </div>
+
+        <div class="popup">
+          <div class="popup-content">
+            <button class="close-btn">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+            <h2><%= candidate.firstName %> <%= candidate.lastName %></h2>
+            <p class="education"><%= candidate.educationLabel %></p>
+            <p class="location"><%= candidate.city %></p>
+            <p class="bio"><%= candidate.bio %></p>
+            <% if (candidate.cv) { %>
+              <a href="/upload/<%= candidate.cv %>" target="_blank" class="cv-link">
+                <span class="material-symbols-outlined info-icon">description</span>
+                CV bekijken
+              </a>
+            <% } %>
+          </div>
+        </div>
+
+      </div>
+    <% }) %>
+
+  </section>
+
+  <div class="toast" id="toast">
+    <p class="toast-title" id="toast-title"></p>
+    <p class="toast-message" id="toast-message"></p>
+  </div>
+
+</main>
+
+<script src="/js/company-matching.js"></script>
+
+<%- include("../partials/footer") %>
