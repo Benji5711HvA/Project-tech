@@ -2,7 +2,7 @@
 const deleteButtons = document.querySelectorAll('.delete-button')
 const btnSaved = document.getElementById('btn-saved')
 const btnFavorites = document.getElementById('btn-favorites')
-const btnMatches = document.getElementById('btn-matches') 
+
 // Verwijder de favoriet op basis van het id van de knop
 function handleDeleteClick(button) {
   const id = button.dataset.id
@@ -33,34 +33,27 @@ function handleFavoritesClick() {
 
 btnSaved.addEventListener('click', handleSavedClick)
 btnFavorites.addEventListener('click', handleFavoritesClick)
-btnMatches.addEventListener('click', function handleMatchesClick() {
-  showTab('matches')
-})
+
 // Wissel het zichtbare tabje op basis van wat de gebruiker aanklikt
 function showTab(tabName) {
   const tabSaved = document.getElementById('tab-saved')
   const tabFavorites = document.getElementById('tab-favorites')
-const tabMatches = document.getElementById('tab-matches')
+
   // Verberg eerst alles zodat we daarna alleen het juiste tabje kunnen laten zien
   tabSaved.classList.add('hidden')
   tabFavorites.classList.add('hidden')
-tabMatches.classList.add('hidden')
 
   // Haal de actieve stijl weg zodat alleen de juiste knop oranje wordt
   btnSaved.classList.remove('active')
   btnFavorites.classList.remove('active')
-  btnMatches.classList.remove('active')
 
   // Laat het juiste tabje zien en maak de bijbehorende knop actief
- if (tabName === 'saved') {
+  if (tabName === 'saved') {
     tabSaved.classList.remove('hidden')
     btnSaved.classList.add('active')
-  } else if (tabName === 'favorites') {
+  } else {
     tabFavorites.classList.remove('hidden')
     btnFavorites.classList.add('active')
-  } else {
-    tabMatches.classList.remove('hidden')
-    btnMatches.classList.add('active')
   }
 }
 

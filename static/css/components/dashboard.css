@@ -103,38 +103,3 @@
   font-size: 0.85rem;
   color: var(--text-gray);
 }
-
-
-.tab-badge {
-  background: var(--gray);
-  color: var(--text-dark);
-  border-radius: 999px;
-  padding: 0.125rem 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  margin-left: 0.25rem;
-}
-
-.toggle-btn.active .tab-badge {
-  background: var(--checked-card-bg);
-  color: var(--orange);
-}
-
-.vacancy-match-box {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: var(--success-bg);
-  color: var(--success-text);
-  border: 1px solid var(--success-border);
-  border-radius: 0.5rem;
-  padding: 0.6rem 0.9rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-top: 0.5rem;
-}
-
-.vacancy-match-box .material-symbols-outlined {
-  font-size: 1.1rem;
-  flex-shrink: 0;
-}
