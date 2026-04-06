@@ -1,119 +1,175 @@
 <%- include('../partials/header') %>
-<main class="dashboard-page">
+  <main class="dashboard-page">
 
-  <section class="hero">
-    <h1>Dashboard</h1>
-    <p>Hier kun je al je opgeslagen en favoriete vacatures terug zien!</p>
-  </section>
+    <section class="hero">
+      <h1>Dashboard</h1>
+      <p>Hier kun je al je opgeslagen en favoriete vacatures terug zien!</p>
+    </section>
 
-  <section class="favorites-section">
+    <section class="favorites-section">
 
-  <div class="toggle-container">
-  <div class="toggle">
-    <button id="btn-saved" class="toggle-btn active">Sollicitaties</button>
-    <button id="btn-favorites" class="toggle-btn">Favorieten</button>
-    <button id="btn-matches" class="toggle-btn">
-      Matches
-      <span class="tab-badge"><%= matchedVacancies.length %></span>
-    </button>
-  </div>
-</div>
-      
-    </div>
-
-    <div id="tab-saved" class="tab">
-  <% if (savedVacancies.length === 0) { %>
-    <div class="zero-state">
-      <p class="zero-state-text">Nog geen sollicitaties. Ga op zoek naar jouw droombaan!</p>
-      <a href="/matching" class="zero-state-button">Zoek vacatures</a>
-    </div>
-  <% } else { %>
-    <div class="favorites-grid">
-      <% savedVacancies.forEach(function(vacancy) { %>
-        <div class="vacancy-card" id="card-<%= vacancy._id %>">
-          <h2 class="vacancy-title"><%= vacancy.vacancyTitle %></h2>
-          <p class="vacancy-company"><%= vacancy.company %></p>
-          <% if (vacancy.salary) { %><p class="vacancy-salary">€<%= vacancy.salary %> per maand</p><% } %>
-          <div class="vacancy-tags">
-            <% if (vacancy.location) { %><span class="vacancy-tag"><%= vacancy.location %></span><% } %>
-            <% if (vacancy.hoursPerWeek) { %><span class="vacancy-tag"><%= vacancy.hoursPerWeek %> uur p/w</span><% } %>
-            <% if (vacancy.contractType) { %><span class="vacancy-tag"><%= vacancy.contractType %></span><% } %>
-          </div>
-          <% if (vacancy.status) { %><span class="vacancy-status"><%= vacancy.status %></span><% } %>
-          <button class="delete-button" data-id="<%= vacancy._id %>">
-            <span class="material-symbols-outlined">delete</span>
+      <div class="toggle-container">
+        <div class="toggle">
+          <button id="btn-saved" class="toggle-btn active">Sollicitaties</button>
+          <button id="btn-favorites" class="toggle-btn">Favorieten</button>
+          <button id="btn-matches" class="toggle-btn">
+            Matches
+            <span class="tab-badge">
+              <%= matchedVacancies.length %>
+            </span>
           </button>
         </div>
-      <% }) %>
-    </div>
-  <% } %>
-</div>
+      </div>
 
-    <div id="tab-favorites" class="tab hidden">
-      <% if (favoriteVacancies.length === 0) { %>
-        <div class="zero-state">
-          <p class="zero-state-text">Je lijst is leeg. Tijd om te ontdekken wat er voor jou is!</p>
-          <a href="/matching" class="zero-state-button">Zoek vacatures</a>
-        </div>
-      <% } else { %>
-        <div class="favorites-grid">
-          <% favoriteVacancies.forEach(function(vacancy) { %>
-            <div class="vacancy-card" id="card-<%= vacancy._id %>">
-              <h2 class="vacancy-title"><%= vacancy.vacancyTitle %></h2>
-              <p class="vacancy-company"><%= vacancy.company %></p>
-              <% if (vacancy.salary) { %><p class="vacancy-salary">€<%= vacancy.salary %> per maand</p><% } %>
-             <div class="vacancy-tags">
-  <% if (vacancy.location) { %><span class="vacancy-tag"><%= vacancy.location %></span><% } %>
-  <% if (vacancy.hoursPerWeek) { %><span class="vacancy-tag"><%= vacancy.hoursPerWeek %> uur p/w</span><% } %>
-  <% if (vacancy.contractType) { %>
-    <% var contractTypes = Array.isArray(vacancy.contractType) ? vacancy.contractType : vacancy.contractType.split(',') %>
-    <% contractTypes.forEach(function(c) { %>
-      <span class="vacancy-tag"><%= c.trim() %></span>
-    <% }) %>
-  <% } %>
-</div>
-              <% if (vacancy.status) { %><span class="vacancy-status"><%= vacancy.status %></span><% } %>
-              <button class="delete-button" data-id="<%= vacancy._id %>">
-                <span class="material-symbols-outlined">delete</span>
-              </button>
+      </div>
+
+      <div id="tab-saved" class="tab">
+        <% if (savedVacancies.length===0) { %>
+          <div class="zero-state">
+            <p class="zero-state-text">Nog geen sollicitaties. Ga op zoek naar jouw droombaan!</p>
+            <a href="/matching" class="zero-state-button">Zoek vacatures</a>
+          </div>
+          <% } else { %>
+            <div class="favorites-grid">
+              <% savedVacancies.forEach(function(vacancy) { %>
+                <div class="vacancy-card" id="card-<%= vacancy._id %>">
+                  <h2 class="vacancy-title">
+                    <%= vacancy.vacancyTitle %>
+                  </h2>
+                  <p class="vacancy-company">
+                    <%= vacancy.company %>
+                  </p>
+                  <% if (vacancy.salary) { %>
+                    <p class="vacancy-salary">€<%= vacancy.salary %> per maand</p>
+                    <% } %>
+                      <div class="vacancy-tags">
+                        <% if (vacancy.location) { %><span class="vacancy-tag">
+                            <%= vacancy.location %>
+                          </span>
+                          <% } %>
+                            <% if (vacancy.hoursPerWeek) { %><span class="vacancy-tag">
+                                <%= vacancy.hoursPerWeek %> uur p/w
+                              </span>
+                              <% } %>
+                                <% if (vacancy.contractType) { %>
+                                  <% var contractTypesArray=Array.isArray(vacancy.contractType) ? vacancy.contractType :
+                                    vacancy.contractType.split(',') %>
+                                    <% contractTypesArray.forEach(function(contractType) { %>
+                                      <span class="vacancy-tag">
+                                        <%= contractType.trim() %>
+                                      </span>
+                                      <% }) %>
+                                        <% } %>
+                      </div>
+             
+                          <button class="delete-button" data-id="<%= vacancy._id %>">
+                            <span class="material-symbols-outlined">delete</span>
+                          </button>
+                </div>
+                <% }) %>
             </div>
-          <% }) %>
-        </div>
-      <% } %>
-    </div>
-    <div id="tab-matches" class="tab hidden">
-      <% if (matchedVacancies.length === 0) { %>
-        <div class="zero-state">
-          <p class="zero-state-text">Nog geen matches. Blijf reageren!</p>
-          <a href="/matching" class="zero-state-button">Zoek vacatures</a>
-        </div>
-      <% } else { %>
-        <div class="favorites-grid">
-          <% matchedVacancies.forEach(function(vacancy) { %>
-            <div class="vacancy-card" id="card-<%= vacancy._id %>">
-              <h2 class="vacancy-title"><%= vacancy.vacancyTitle %></h2>
-              <p class="vacancy-company"><%= vacancy.company %></p>
-              <% if (vacancy.salary) { %>
-                <p class="vacancy-salary">€<%= vacancy.salary %> per maand</p>
-              <% } %>
-              <div class="vacancy-tags">
-                <% if (vacancy.location) { %><span class="vacancy-tag"><%= vacancy.location %></span><% } %>
-                <% if (vacancy.hoursPerWeek) { %><span class="vacancy-tag"><%= vacancy.hoursPerWeek %> uur p/w</span><% } %>
-                <% if (vacancy.contractType) { %><span class="vacancy-tag"><%= vacancy.contractType %></span><% } %>
-              </div>
-              <div class="vacancy-match-box">
-                <span class="material-symbols-outlined">check_circle</span>
-                <span>Match! Het bedrijf neemt zsm contact op via jouw e-mailadres.</span>
-              </div>
+            <% } %>
+      </div>
+
+      <div id="tab-favorites" class="tab hidden">
+        <% if (favoriteVacancies.length===0) { %>
+          <div class="zero-state">
+            <p class="zero-state-text">Je lijst is leeg. Tijd om te ontdekken wat er voor jou is!</p>
+            <a href="/matching" class="zero-state-button">Zoek vacatures</a>
+          </div>
+          <% } else { %>
+            <div class="favorites-grid">
+              <% favoriteVacancies.forEach(function(vacancy) { %>
+                <div class="vacancy-card" id="card-<%= vacancy._id %>">
+                  <h2 class="vacancy-title">
+                    <%= vacancy.vacancyTitle %>
+                  </h2>
+                  <p class="vacancy-company">
+                    <%= vacancy.company %>
+                  </p>
+                  <% if (vacancy.salary) { %>
+                    <p class="vacancy-salary">€<%= vacancy.salary %> per maand</p>
+                    <% } %>
+                      <div class="vacancy-tags">
+                        <% if (vacancy.location) { %><span class="vacancy-tag">
+                            <%= vacancy.location %>
+                          </span>
+                          <% } %>
+                            <% if (vacancy.hoursPerWeek) { %><span class="vacancy-tag">
+                                <%= vacancy.hoursPerWeek %> uur p/w
+                              </span>
+                              <% } %>
+                                <% if (vacancy.contractType) { %>
+                                  <% var contractTypes=Array.isArray(vacancy.contractType) ? vacancy.contractType :
+                                    vacancy.contractType.split(',') %>
+                                    <% contractTypes.forEach(function(c) { %>
+                                      <span class="vacancy-tag">
+                                        <%= c.trim() %>
+                                      </span>
+                                      <% }) %>
+                                        <% } %>
+                      </div>
+                    
+                          <button class="delete-button" data-id="<%= vacancy._id %>">
+                            <span class="material-symbols-outlined">delete</span>
+                          </button>
+                </div>
+                <% }) %>
             </div>
-          <% }) %>
-        </div>
-      <% } %>
-    </div>
+            <% } %>
+      </div>
+      <div id="tab-matches" class="tab hidden">
+        <% if (matchedVacancies.length===0) { %>
+          <div class="zero-state">
+            <p class="zero-state-text">Nog geen matches. Blijf reageren!</p>
+            <a href="/matching" class="zero-state-button">Zoek vacatures</a>
+          </div>
+          <% } else { %>
+            <div class="favorites-grid">
+              <% matchedVacancies.forEach(function(vacancy) { %>
+                <div class="vacancy-card" id="card-<%= vacancy._id %>">
+                  <h2 class="vacancy-title">
+                    <%= vacancy.vacancyTitle %>
+                  </h2>
+                  <p class="vacancy-company">
+                    <%= vacancy.company %>
+                  </p>
+                  <% if (vacancy.salary) { %>
+                    <p class="vacancy-salary">€<%= vacancy.salary %> per maand</p>
+                    <% } %>
+                      <div class="vacancy-tags">
+                        <% if (vacancy.location) { %><span class="vacancy-tag">
+                            <%= vacancy.location %>
+                          </span>
+                          <% } %>
+                            <% if (vacancy.hoursPerWeek) { %><span class="vacancy-tag">
+                                <%= vacancy.hoursPerWeek %> uur p/w
+                              </span>
+                              <% } %>
 
-  </section>
+                                <% if (vacancy.contractType) { %>
+                                  <% var contractTypesArray=Array.isArray(vacancy.contractType) ? vacancy.contractType :
+                                    vacancy.contractType.split(',') %>
+                                    <% contractTypesArray.forEach(function(contractType) { %>
+                                      <span class="vacancy-tag">
+                                        <%= contractType.trim() %>
+                                      </span>
+                                      <% }) %>
+                                        <% } %>
+                      </div>
+                      <div class="vacancy-match-box">
+                        <span class="material-symbols-outlined">check_circle</span>
+                        <span>Match! Het bedrijf neemt zsm contact op via jouw e-mailadres.</span>
+                      </div>
+                </div>
+                <% }) %>
+            </div>
+            <% } %>
+      </div>
 
-</main>
+    </section>
 
-<script src="/js/dashboard.js"></script>
-<%- include('../partials/footer') %>
+  </main>
+
+  <script src="/js/dashboard.js"></script>
+  <%- include('../partials/footer') %>
