@@ -67,12 +67,11 @@
   <% if (vacancy.hoursPerWeek) { %><span class="vacancy-tag"><%= vacancy.hoursPerWeek %> uur p/w</span><% } %>
   <% if (vacancy.contractType) { %>
     <% var contractTypes = Array.isArray(vacancy.contractType) ? vacancy.contractType : vacancy.contractType.split(',') %>
-    <% contractTypes.forEach(function(c) { %>
-      <span class="vacancy-tag"><%= c.trim() %></span>
+    <% contractTypes.forEach(function(category) { %>
+      <span class="vacancy-tag"><%= category.trim() %></span>
     <% }) %>
   <% } %>
 </div>
-              <% if (vacancy.status) { %><span class="vacancy-status"><%= vacancy.status %></span><% } %>
               <button class="delete-button" data-id="<%= vacancy._id %>">
                 <span class="material-symbols-outlined">delete</span>
               </button>
