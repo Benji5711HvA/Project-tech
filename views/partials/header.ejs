@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Collego</title>
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Collego' %></title>
   <link rel="stylesheet" href="/css/output.css">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
@@ -13,22 +13,19 @@
 
   <nav>
     <div class="nav-logo">Collego</div>
-    <ul class="nav-links">
-      <% if (user && user.role === 'company') { %>
-        <li><a href="/company-matching">Kandidaten</a></li>
-        <li><a href="/add-vacancy">Vacature toevoegen</a></li>
-      <% } else if (user) { %>
-        <li><a href="/matching">Vacatures</a></li>
-        <li><a href="/dashboard">Mijn dashboard</a></li>
-      <% } %>
-    </ul>
+   <ul class="nav-links">
+  <% if (user) { %>
+    <li><a href="/matching">Vacatures</a></li>
+    <li><a href="/dashboard">Mijn dashboard</a></li>
+  <% } %>
+</ul>
     <div class="nav-right">
       <% if (user) { %>
-        <form action="/logout" method="POST">
-          <button type="submit" class="btn-small">Uitloggen</button>
-        </form>
+      <form action="/logout" method="POST">
+        <button type="submit" class="btn-small">Uitloggen</button>
+      </form>
       <% } else { %>
-        <a href="/login"><button class="btn-small">Inloggen</button></a>
+      <a href="/login"><button class="btn-small">Inloggen</button></a>
       <% } %>
     </div>
   </nav>
