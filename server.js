@@ -35,28 +35,6 @@ app.use(
   }),
 )
 
-function setLocals(req, res, next) {
-  res.locals.user = req.session.user
-  next()
-}
-
-app.use(setLocals)
-
-function isLoggedIn(req, res, next) {
-  if (req.session.user) return next()
-  return res.redirect("/login")
-}
-
-function isUser(req, res, next) {
-  if (req.session.user && req.session.user.role === 'user') return next()
-  return res.redirect('/')
-}
-
-function isCompany(req, res, next) {
-  if (req.session.user && req.session.user.role === 'company') return next()
-  return res.redirect('/')
-}
-
 // Hulp functies
 async function hashPassword(password) {
   const salt = await bcrypt.genSalt(10)
@@ -72,6 +50,42 @@ function validateRegistration(email, password, confirmPassword) {
   if (password !== confirmPassword) return "Wachtwoorden komen niet overeen"
   if (password.length < 8) return "Wachtwoord moet minimaal 8 tekens zijn"
   return null
+}
+
+const pageTitles = {
+  "/": "Home | Collego",
+  "/register": "Registreren | Collego",
+  "/login": "Inloggen | Collego",
+  "/create-profile": "Profiel aanmaken | Collego",
+  "/create-company-profile": "Bedrijfsprofiel aanmaken | Collego",
+  "/add-vacancy": "Vacature toevoegen | Collego",
+  "/dashboard": "Dashboard | Collego",
+  "/matching": "Vacatures ontdekken | Collego",
+  "/company-matches": "Match reacties | Collego",
+  "/company-matching": "Kandidaten | Collego",
+}
+
+function setLocals(req, res, next) {
+  res.locals.user = req.session.user
+  res.locals.pageTitle = pageTitles[req.path] || "Collego"
+  next()
+}
+
+app.use(setLocals)
+
+function isLoggedIn(req, res, next) {
+  if (req.session.user) return next()
+    return res.redirect("/login")
+}
+
+function isUser(req, res, next) {
+  if (req.session.user && req.session.user.role === 'user') return next()
+    return res.redirect('/')
+}
+
+function isCompany(req, res, next) {
+  if (req.session.user && req.session.user.role === 'company') return next()
+    return res.redirect('/')
 }
 
 // Routes
@@ -96,7 +110,6 @@ app.get("/create-company-profile", isLoggedIn, isCompany, showCreateCompanyProfi
 app.post(
   "/create-company-profile",
   isLoggedIn,
-  upload.single("logo"),
   handleCreateCompanyProfile,
 )
 
@@ -143,7 +156,7 @@ function showRegister(req, res) {
   res.render("pages/register", {
     error: undefined,
     email: undefined,
-    role: undefined,
+    role: req.query.role || "user",
   })
 }
 
@@ -174,7 +187,7 @@ async function handleRegister(req, res) {
       await usersCollection.insertOne({ email, password: hashedPassword })
     }
 
-    res.redirect("/login")
+    res.redirect(`/login?role=${role}`)
   } catch (err) {
     console.error("Fout bij registreren:", err)
     res.status(500).render("pages/register", {
@@ -189,7 +202,7 @@ function showLogin(req, res) {
   res.render("pages/login", {
     error: undefined,
     email: undefined,
-    role: undefined,
+    role: req.query.role || "user",
   })
 }
 
@@ -228,7 +241,7 @@ async function handleLogin(req, res) {
       if (!user.companyName) {
         res.redirect("/create-company-profile")
       } else {
-        res.redirect("/add-vacancy")
+        res.redirect("/company-matching")
       }
     } else {
       if (!user.firstName) {
@@ -253,7 +266,7 @@ function handleLogout(req, res) {
       console.error("Fout bij uitloggen:", err)
       return res.status(500).send("Er ging iets mis bij het uitloggen")
     }
-    res.redirect("/login")
+    res.redirect("/")
   })
 }
 
@@ -339,7 +352,6 @@ async function showCreateCompanyProfile(req, res) {
 async function handleCreateCompanyProfile(req, res) {
   try {
     const { companyName, sector, companySize, website, description } = req.body
-    const logo = req.file ? req.file.filename : null
 
     await companiesCollection.updateOne(
       { _id: new ObjectId(req.session.user.id) },
@@ -350,7 +362,6 @@ async function handleCreateCompanyProfile(req, res) {
           companySize,
           website,
           description,
-          logo,
         },
       },
     )
@@ -396,7 +407,7 @@ async function handleAddVacancy(req, res) {
       createdAt: new Date(),
     })
 
-    res.redirect("/add-vacancy")
+    res.redirect("/company-matching")
   } catch (err) {
     console.error("Fout bij vacature toevoegen:", err)
     res.status(500).render("pages/add-vacancy", {
@@ -454,17 +465,23 @@ async function showDashboard(req, res) {
   try {
     const userId = req.session.user.id
 
-const savedVacancies = await reactionsCollection
-  .find({ userId: userId, reaction: "yes", status: { $ne: "matched" } })
+
+   const savedVacancies = await reactionsCollection
+  .find({ userId: userId, reaction: "yes", type: "user-reaction", status: { $ne: "matched" } })
   .toArray()
     const favoriteVacancies = await reactionsCollection
-      .find({ userId: userId, reaction: "favorite" })
+      .find({
+        userId: userId,
+        reaction: "favorite",
+        type: "user-reaction",
+        status: { $ne: "matched" }
+      })
       .toArray()
 
-// alleen user-reactions met status matched, want company-reactions hebben geen vacaturedata
-const matchedVacancies = await reactionsCollection
-  .find({ userId: userId, type: "user-reaction", status: "matched" })
-  .toArray()
+    // alleen user-reactions met status matched, want company-reactions hebben geen vacaturedata
+    const matchedVacancies = await reactionsCollection
+      .find({ userId: userId, type: "user-reaction", status: "matched" })
+      .toArray()
     res.render("pages/dashboard", { savedVacancies, favoriteVacancies, matchedVacancies })
   } catch (err) {
     console.error("Fout bij ophalen favorieten:", err)
@@ -490,6 +507,7 @@ async function deleteFavorite(req, res) {
 }
 
 // Sanna - Matching
+// Haal alle vacatures op die de gebruiker nog niet heeft gezien en voeg de bedrijfsbeschrijving toe
 async function showMatching(req, res) {
   try {
     const userId = req.session.user.id
@@ -510,9 +528,9 @@ async function showMatching(req, res) {
       .toArray()
 
     // bedrijven ophalen zodat we de beschrijving kunnen tonen
-    const companyIds = vacancies.map(function(v) { return v.companyId })
+    const companyIds = vacancies.map(function (v) { return v.companyId })
     const companies = await companiesCollection
-      .find({ _id: { $in: companyIds.map(function(id) { try { return new ObjectId(id) } catch(e) { return null } }).filter(Boolean) } })
+      .find({ _id: { $in: companyIds.map(function (id) { try { return new ObjectId(id) } catch (e) { return null } }).filter(Boolean) } })
       .toArray()
 
     vacancies.forEach(function formatVacancy(vacancy) {
@@ -530,7 +548,7 @@ async function showMatching(req, res) {
       vacancy.workFormLabels = workFormArr
 
       // bedrijfsbeschrijving toevoegen aan vacature
-      const company = companies.find(function(c) { return c._id.toString() === vacancy.companyId })
+      const company = companies.find(function (c) { return c._id.toString() === vacancy.companyId })
       vacancy.companyDescription = company ? company.description : ""
     })
 
@@ -606,11 +624,11 @@ async function showCompanyMatching(req, res) {
       .find({ companyId: companyId, type: "company-reaction" })
       .toArray()
 
-const seenUserIds = new Set(
+    const seenUserIds = new Set(
       myReactions.map(function getId(r) { return r.userId })
     )
 
-  const pendingUserIds = new Set(
+    const pendingUserIds = new Set(
       myReactions
         .filter(function isWaiting(r) {
           return r.reaction === "yes" && r.status !== "matched"
@@ -638,48 +656,48 @@ const seenUserIds = new Set(
         .filter(Boolean)
     }
 
-const seenObjectIds = toObjectIds(seenUserIds)
-const pendingObjectIds = toObjectIds(pendingUserIds)
-const matchedObjectIds = toObjectIds(matchedUserIds)
+    const seenObjectIds = toObjectIds(seenUserIds)
+    const pendingObjectIds = toObjectIds(pendingUserIds)
+    const matchedObjectIds = toObjectIds(matchedUserIds)
     const browseUsers = await usersCollection
       .find({
         firstName: { $exists: true, $ne: "" },
-       _id: { $nin: seenObjectIds },
+        _id: { $nin: seenObjectIds },
       })
       .toArray()
 
-  let pendingUsers = []
-let matchedUsers = []
+    let pendingUsers = []
+    let matchedUsers = []
 
-   if (pendingObjectIds.length > 0) {
-  pendingUsers = await usersCollection
-    .find({ _id: { $in: pendingObjectIds } })
-    .toArray()
-}
+    if (pendingObjectIds.length > 0) {
+      pendingUsers = await usersCollection
+        .find({ _id: { $in: pendingObjectIds } })
+        .toArray()
+    }
 
-if (matchedObjectIds.length > 0) {
-  matchedUsers = await usersCollection
-    .find({ _id: { $in: matchedObjectIds } })
-    .toArray()
-}
+    if (matchedObjectIds.length > 0) {
+      matchedUsers = await usersCollection
+        .find({ _id: { $in: matchedObjectIds } })
+        .toArray()
+    }
 
-    const browseKandidaten = browseUsers.map(mapCandidate)
-const wachtendeKandidaten = pendingUsers.map(mapCandidate)
-const matchedKandidaten = matchedUsers.map(mapCandidate)
+    const browseCandidates = browseUsers.map(mapCandidate)
+    const pendingCandidates = pendingUsers.map(mapCandidate)
+    const matchedCandidates = matchedUsers.map(mapCandidate)
 
     res.render("pages/company-matching", {
-      browseKandidaten: browseKandidaten,
-      wachtendeKandidaten: wachtendeKandidaten,
-      matchedKandidaten: matchedKandidaten,
-      totalMatches: matchedKandidaten.length,
+      browseCandidates: browseCandidates,
+      pendingCandidates: pendingCandidates,
+      matchedCandidates: matchedCandidates,
+      totalMatches: matchedCandidates.length,
       user: req.session.user,
     })
   } catch (err) {
     console.error("Fout bij ophalen kandidaten:", err)
     res.status(500).render("pages/company-matching", {
-      browseKandidaten: [],
-      wachtendeKandidaten: [],
-      matchedKandidaten: [],
+  browseCandidates: [],
+  pendingCandidates: [],
+  matchedCandidates: [],
       totalMatches: 0,
       user: req.session.user,
     })
@@ -699,24 +717,24 @@ async function handleCompanyLike(req, res) {
     }
 
     const candidate = await usersCollection.findOne({ _id: new ObjectId(userId) })
-   if (!candidate) {
+    if (!candidate) {
       return res.status(404).json({ success: false, error: "Kandidaat niet gevonden" })
     }
 
-   const existingReaction = await reactionsCollection.findOne({
+    const existingReaction = await reactionsCollection.findOne({
       companyId: companyId,
       userId: userId,
       type: "company-reaction",
     })
 
-   if (existingReaction) {
-  return res.json({
-    success: true,
-    alreadyReacted: true,
-    matched: existingReaction.status === "matched",
-    kandidaat: mapCandidate(candidate),
-  })
-}
+    if (existingReaction) {
+      return res.json({
+        success: true,
+        alreadyReacted: true,
+        matched: existingReaction.status === "matched",
+        kandidaat: mapCandidate(candidate),
+      })
+    }
 
     const status = reaction === "yes" ? "In behandeling" : "skipped"
 
@@ -730,14 +748,14 @@ async function handleCompanyLike(req, res) {
     })
 
     if (reaction === "yes") {
-const userLikedCompany = await reactionsCollection.findOne({
+      const userLikedCompany = await reactionsCollection.findOne({
         userId: userId,
         companyId: companyId,
         type: "user-reaction",
         reaction: "yes",
       })
 
-  if (userLikedCompany) {
+      if (userLikedCompany) {
         await reactionsCollection.updateMany(
           {
             $or: [
@@ -761,14 +779,14 @@ const userLikedCompany = await reactionsCollection.findOne({
         return res.json({
           success: true,
           matched: true,
-         kandidaat: mapCandidate(candidate),
+          kandidaat: mapCandidate(candidate),
         })
       }
 
       return res.json({
         success: true,
         matched: false,
-       kandidaat: mapCandidate(candidate),
+        kandidaat: mapCandidate(candidate),
       })
     }
 
@@ -776,7 +794,7 @@ const userLikedCompany = await reactionsCollection.findOne({
       success: true,
       matched: false,
       skipped: true,
-   kandidaat: mapCandidate(candidate),
+      kandidaat: mapCandidate(candidate),
     })
   } catch (err) {
     console.error("Fout bij company reactie:", err)

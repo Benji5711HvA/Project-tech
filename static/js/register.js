@@ -1,21 +1,32 @@
 const radios = document.querySelectorAll('input[name="role"]')
 const slider = document.getElementById('roleSlider')
+const subtitle = document.querySelector('.subtitle')
+const loginLink = document.getElementById('loginLink')
+const leftTitle = document.querySelector('.account-left h2')
+const leftText = document.querySelector('.account-left p')
 
-function updateSlider() {
-  if (this.value === 'company') {
-    slider.classList.add('company')
-  } else {
-    slider.classList.remove('company')
-  }
+const subtitleTexts = {
+  user: 'Maak een gratis account aan en ontdek vacatures die bij jou passen.',
+  company: 'Maak een gratis account aan en plaats vacatures voor jouw bedrijf.'
 }
 
-function addSliderEvent(radio) {
-  radio.addEventListener('change', updateSlider)
+const leftTitleTexts = {
+  user: 'Klaar voor een nieuwe stap?',
+  company: 'Vind jouw volgende collega.'
 }
 
-radios.forEach(addSliderEvent)
+function updateRole() {
+  const role = document.querySelector('input[name="role"]:checked').value
 
-const selectedRole = document.querySelector('input[name="role"]:checked')
-if (selectedRole && selectedRole.value === 'company') {
-  slider.classList.add('company')
+  slider.classList.toggle('company', role === 'company')
+  subtitle.textContent = subtitleTexts[role]
+  leftTitle.textContent = leftTitleTexts[role]
+  leftText.textContent = subtitleTexts[role]
+  loginLink.href = '/login?role=' + role
 }
+
+radios.forEach(function addRoleEvent(radio) {
+  radio.addEventListener('change', updateRole)
+})
+
+updateRole()

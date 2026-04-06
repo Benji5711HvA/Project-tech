@@ -116,7 +116,7 @@
   position: relative;
 }
 
-.matching-page .vacancy-card.verdwijnen {
+.matching-page .vacancy-card.disappear {
   opacity: 0;
   transform: translateX(-2rem);
   max-height: 0;
@@ -236,7 +236,7 @@
 }
 
 .matching-page .card-tag.active-filter {
-  background-color: #fff6f0;
+  background-color: var(--checked-card-bg);
   border-color: var(--orange);
   color: var(--orange);
   font-weight: 600;
@@ -259,20 +259,20 @@
   pointer-events: none;
 }
 
-.matching-page .toast.zichtbaar {
+.matching-page .toast.visible {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
-.matching-page .toast-titel {
+.matching-page .toast-title {
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-dark);
   margin-bottom: 0.25rem;
 }
 
-.matching-page .toast-bericht {
+.matching-page .toast-message {
   font-size: 0.85rem;
   color: var(--text-gray);
   line-height: 1.5;
@@ -299,7 +299,6 @@
 
 .matching-page .uitleg-icon {
   font-size: 1.2rem;
-  flex-shrink: 0;
   color: var(--orange);
 }
 
