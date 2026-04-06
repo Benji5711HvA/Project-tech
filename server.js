@@ -458,17 +458,23 @@ async function showDashboard(req, res) {
   try {
     const userId = req.session.user.id
 
-const savedVacancies = await reactionsCollection
-  .find({ userId: userId, reaction: "yes", status: { $ne: "matched" } })
+
+   const savedVacancies = await reactionsCollection
+  .find({ userId: userId, reaction: "yes", type: "user-reaction", status: { $ne: "matched" } })
   .toArray()
     const favoriteVacancies = await reactionsCollection
-      .find({ userId: userId, reaction: "favorite" })
+      .find({
+        userId: userId,
+        reaction: "favorite",
+        type: "user-reaction",
+        status: { $ne: "matched" }
+      })
       .toArray()
 
-// alleen user-reactions met status matched, want company-reactions hebben geen vacaturedata
-const matchedVacancies = await reactionsCollection
-  .find({ userId: userId, type: "user-reaction", status: "matched" })
-  .toArray()
+    // alleen user-reactions met status matched, want company-reactions hebben geen vacaturedata
+    const matchedVacancies = await reactionsCollection
+      .find({ userId: userId, type: "user-reaction", status: "matched" })
+      .toArray()
     res.render("pages/dashboard", { savedVacancies, favoriteVacancies, matchedVacancies })
   } catch (err) {
     console.error("Fout bij ophalen favorieten:", err)
@@ -494,6 +500,7 @@ async function deleteFavorite(req, res) {
 }
 
 // Sanna - Matching
+// Haal alle vacatures op die de gebruiker nog niet heeft gezien en voeg de bedrijfsbeschrijving toe
 async function showMatching(req, res) {
   try {
     const userId = req.session.user.id
@@ -514,9 +521,9 @@ async function showMatching(req, res) {
       .toArray()
 
     // bedrijven ophalen zodat we de beschrijving kunnen tonen
-    const companyIds = vacancies.map(function(v) { return v.companyId })
+    const companyIds = vacancies.map(function (v) { return v.companyId })
     const companies = await companiesCollection
-      .find({ _id: { $in: companyIds.map(function(id) { try { return new ObjectId(id) } catch(e) { return null } }).filter(Boolean) } })
+      .find({ _id: { $in: companyIds.map(function (id) { try { return new ObjectId(id) } catch (e) { return null } }).filter(Boolean) } })
       .toArray()
 
     vacancies.forEach(function formatVacancy(vacancy) {
@@ -534,7 +541,7 @@ async function showMatching(req, res) {
       vacancy.workFormLabels = workFormArr
 
       // bedrijfsbeschrijving toevoegen aan vacature
-      const company = companies.find(function(c) { return c._id.toString() === vacancy.companyId })
+      const company = companies.find(function (c) { return c._id.toString() === vacancy.companyId })
       vacancy.companyDescription = company ? company.description : ""
     })
 
@@ -612,11 +619,11 @@ async function showCompanyMatching(req, res) {
       .find({ companyId: companyId, type: "company-reaction" })
       .toArray()
 
-const seenUserIds = new Set(
+    const seenUserIds = new Set(
       myReactions.map(function getId(r) { return r.userId })
     )
 
-  const pendingUserIds = new Set(
+    const pendingUserIds = new Set(
       myReactions
         .filter(function isWaiting(r) {
           return r.reaction === "yes" && r.status !== "matched"
@@ -644,48 +651,48 @@ const seenUserIds = new Set(
         .filter(Boolean)
     }
 
-const seenObjectIds = toObjectIds(seenUserIds)
-const pendingObjectIds = toObjectIds(pendingUserIds)
-const matchedObjectIds = toObjectIds(matchedUserIds)
+    const seenObjectIds = toObjectIds(seenUserIds)
+    const pendingObjectIds = toObjectIds(pendingUserIds)
+    const matchedObjectIds = toObjectIds(matchedUserIds)
     const browseUsers = await usersCollection
       .find({
         firstName: { $exists: true, $ne: "" },
-       _id: { $nin: seenObjectIds },
+        _id: { $nin: seenObjectIds },
       })
       .toArray()
 
-  let pendingUsers = []
-let matchedUsers = []
+    let pendingUsers = []
+    let matchedUsers = []
 
-   if (pendingObjectIds.length > 0) {
-  pendingUsers = await usersCollection
-    .find({ _id: { $in: pendingObjectIds } })
-    .toArray()
-}
+    if (pendingObjectIds.length > 0) {
+      pendingUsers = await usersCollection
+        .find({ _id: { $in: pendingObjectIds } })
+        .toArray()
+    }
 
-if (matchedObjectIds.length > 0) {
-  matchedUsers = await usersCollection
-    .find({ _id: { $in: matchedObjectIds } })
-    .toArray()
-}
+    if (matchedObjectIds.length > 0) {
+      matchedUsers = await usersCollection
+        .find({ _id: { $in: matchedObjectIds } })
+        .toArray()
+    }
 
-    const browseKandidaten = browseUsers.map(mapCandidate)
-const wachtendeKandidaten = pendingUsers.map(mapCandidate)
-const matchedKandidaten = matchedUsers.map(mapCandidate)
+    const browseCandidates = browseUsers.map(mapCandidate)
+    const pendingCandidates = pendingUsers.map(mapCandidate)
+    const matchedCandidates = matchedUsers.map(mapCandidate)
 
     res.render("pages/company-matching", {
-      browseKandidaten: browseKandidaten,
-      wachtendeKandidaten: wachtendeKandidaten,
-      matchedKandidaten: matchedKandidaten,
-      totalMatches: matchedKandidaten.length,
+      browseCandidates: browseCandidates,
+      pendingCandidates: pendingCandidates,
+      matchedCandidates: matchedCandidates,
+      totalMatches: matchedCandidates.length,
       user: req.session.user,
     })
   } catch (err) {
     console.error("Fout bij ophalen kandidaten:", err)
     res.status(500).render("pages/company-matching", {
-      browseKandidaten: [],
-      wachtendeKandidaten: [],
-      matchedKandidaten: [],
+  browseCandidates: [],
+  pendingCandidates: [],
+  matchedCandidates: [],
       totalMatches: 0,
       user: req.session.user,
     })
@@ -705,24 +712,24 @@ async function handleCompanyLike(req, res) {
     }
 
     const candidate = await usersCollection.findOne({ _id: new ObjectId(userId) })
-   if (!candidate) {
+    if (!candidate) {
       return res.status(404).json({ success: false, error: "Kandidaat niet gevonden" })
     }
 
-   const existingReaction = await reactionsCollection.findOne({
+    const existingReaction = await reactionsCollection.findOne({
       companyId: companyId,
       userId: userId,
       type: "company-reaction",
     })
 
-   if (existingReaction) {
-  return res.json({
-    success: true,
-    alreadyReacted: true,
-    matched: existingReaction.status === "matched",
-    kandidaat: mapCandidate(candidate),
-  })
-}
+    if (existingReaction) {
+      return res.json({
+        success: true,
+        alreadyReacted: true,
+        matched: existingReaction.status === "matched",
+        kandidaat: mapCandidate(candidate),
+      })
+    }
 
     const status = reaction === "yes" ? "In behandeling" : "skipped"
 
@@ -736,14 +743,14 @@ async function handleCompanyLike(req, res) {
     })
 
     if (reaction === "yes") {
-const userLikedCompany = await reactionsCollection.findOne({
+      const userLikedCompany = await reactionsCollection.findOne({
         userId: userId,
         companyId: companyId,
         type: "user-reaction",
         reaction: "yes",
       })
 
-  if (userLikedCompany) {
+      if (userLikedCompany) {
         await reactionsCollection.updateMany(
           {
             $or: [
@@ -767,14 +774,14 @@ const userLikedCompany = await reactionsCollection.findOne({
         return res.json({
           success: true,
           matched: true,
-         kandidaat: mapCandidate(candidate),
+          kandidaat: mapCandidate(candidate),
         })
       }
 
       return res.json({
         success: true,
         matched: false,
-       kandidaat: mapCandidate(candidate),
+        kandidaat: mapCandidate(candidate),
       })
     }
 
@@ -782,7 +789,7 @@ const userLikedCompany = await reactionsCollection.findOne({
       success: true,
       matched: false,
       skipped: true,
-   kandidaat: mapCandidate(candidate),
+      kandidaat: mapCandidate(candidate),
     })
   } catch (err) {
     console.error("Fout bij company reactie:", err)

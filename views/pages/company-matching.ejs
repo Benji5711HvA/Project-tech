@@ -32,16 +32,16 @@
     </div>
   </section>
 
-  <%# TAB: BROWSEN %>
+
   <section class="vacancies-list" id="tab-browse">
 
-    <% if (browseKandidaten.length === 0) { %>
+    <% if (browseCandidates.length === 0) { %>
       <div class="zero-state">
         <p class="zero-state-text">Geen nieuwe kandidaten op dit moment.</p>
       </div>
     <% } %>
 
-    <% browseKandidaten.forEach(function(candidate) { %>
+   <% browseCandidates.forEach(function(candidate) { %>
       <div class="candidate-card" id="card-<%= candidate._id %>">
 
         <div class="card-info">
@@ -102,17 +102,17 @@
 
   </section>
 
-  <%# TAB: MATCHES %>
+  
   <section class="vacancies-list hidden" id="tab-matches">
 
-    <% if (matchedKandidaten.length === 0) { %>
+    <% if (matchedCandidates.length === 0) { %>
       <div class="zero-state">
         <p class="zero-state-text">Nog geen matches. Like kandidaten om te beginnen!</p>
         <button class="zero-state-btn" data-tab="browse">Ga naar browsen</button>
       </div>
     <% } %>
 
-    <% matchedKandidaten.forEach(function(candidate) { %>
+<% matchedCandidates.forEach(function(candidate) { %>
       <div class="candidate-card" id="card-<%= candidate._id %>">
 
         <div class="card-info">
@@ -124,23 +124,28 @@
           </div>
           <p class="education"><%= candidate.educationLabel %></p>
           <p class="location"><%= candidate.city %></p>
+          
           <div class="card-tags">
-            <% candidate.sectorLabels.forEach(function(s) { %>
-              <% if (s) { %><span class="card-tag"><%= s %></span><% } %>
-            <% }) %>
-            <% if (candidate.hoursPerWeek) { %>
-              <span class="card-tag"><%= candidate.hoursPerWeek %> uur/week</span>
-            <% } %>
-            <% candidate.contractLabels.forEach(function(c) { %>
-              <% if (c) { %><span class="card-tag"><%= c %></span><% } %>
-            <% }) %>
-            <% if (candidate.salary) { %>
-              <span class="card-tag">€ <%= Number(candidate.salary).toLocaleString('nl-NL') %>/jr</span>
-            <% } %>
-            <% candidate.workFormLabels.forEach(function(w) { %>
-              <% if (w) { %><span class="card-tag"><%= w %></span><% } %>
-            <% }) %>
-          </div>
+
+  <% candidate.sectorLabels.forEach(function(sector) { %>
+    <% if (sector && sector.trim() !== "") { %>
+      <span class="card-tag"><%= sector %></span>
+    <% } %>
+  <% }) %>
+
+  <% candidate.contractLabels.forEach(function(contract) { %>
+    <% if (contract && contract.trim() !== "") { %>
+      <span class="card-tag"><%= contract %></span>
+    <% } %>
+  <% }) %>
+
+  <% candidate.workFormLabels.forEach(function(workForm) { %>
+    <% if (workForm && workForm.trim() !== "") { %>
+      <span class="card-tag"><%= workForm %></span>
+    <% } %>
+  <% }) %>
+
+</div>
           <span class="status-pill matched">
             <span class="material-symbols-outlined info-icon">check_circle</span>
             Match bevestigd
