@@ -48,13 +48,13 @@ function isLoggedIn(req, res, next) {
 }
 
 function isUser(req, res, next) {
-  if (req.session.user && req.session.user.role === 'user') return next()
-  return res.redirect('/')
+  if (req.session.user && req.session.user.role === "user") return next()
+  return res.redirect("/")
 }
 
 function isCompany(req, res, next) {
-  if (req.session.user && req.session.user.role === 'company') return next()
-  return res.redirect('/')
+  if (req.session.user && req.session.user.role === "company") return next()
+  return res.redirect("/")
 }
 
 // Hulp functies
@@ -95,14 +95,13 @@ app.post(
   handleCreateProfile,
 )
 
-app.get("/create-company-profile", isLoggedIn, isCompany, showCreateCompanyProfile)
-app.post(
+app.get(
   "/create-company-profile",
   isLoggedIn,
-  upload.single("logo"),
-  handleCreateCompanyProfile,
+  isCompany,
+  showCreateCompanyProfile,
 )
-
+app.post("/create-company-profile", isLoggedIn, handleCreateCompanyProfile)
 
 app.get("/add-vacancy", isLoggedIn, isCompany, showAddVacancy)
 app.post("/add-vacancy", isLoggedIn, isCompany, handleAddVacancy)
@@ -124,7 +123,7 @@ app.post("/company-like", isLoggedIn, isCompany, handleCompanyLike)
 
 // Functions
 function home(req, res) {
-  res.render("pages/index")
+  res.render("pages/index", { pageTitle: "Home | Collego" })
 }
 
 // Benjamin - Account
@@ -132,7 +131,8 @@ function showRegister(req, res) {
   res.render("pages/register", {
     error: undefined,
     email: undefined,
-    role: undefined,
+    role: req.query.role || "user",
+    pageTitle: "Registreren | Collego",
   })
 }
 
@@ -142,7 +142,7 @@ async function handleRegister(req, res) {
 
     const error = validateRegistration(email, password, confirmPassword)
     if (error)
-      return res.status(400).render("pages/register", { error, email, role })
+      return res.status(400).render("pages/register", { error, email, role, pageTitle: "Registreren | Collego" })
 
     const existingUser = await usersCollection.findOne({ email })
     const existingCompany = await companiesCollection.findOne({ email })
@@ -151,6 +151,7 @@ async function handleRegister(req, res) {
         error: "E-mailadres is al in gebruik",
         email,
         role,
+        pageTitle: "Registreren | Collego",
       })
     }
 
@@ -163,13 +164,14 @@ async function handleRegister(req, res) {
       await usersCollection.insertOne({ email, password: hashedPassword })
     }
 
-    res.redirect("/login")
+    res.redirect(`/login?role=${role}`)
   } catch (err) {
     console.error("Fout bij registreren:", err)
     res.status(500).render("pages/register", {
       error: "Er ging iets mis, probeer het opnieuw",
       email,
       role,
+      pageTitle: "Registreren | Collego",
     })
   }
 }
@@ -178,7 +180,8 @@ function showLogin(req, res) {
   res.render("pages/login", {
     error: undefined,
     email: undefined,
-    role: undefined,
+    role: req.query.role || "user",
+    pageTitle: "Inloggen | Collego",
   })
 }
 
@@ -194,6 +197,7 @@ async function handleLogin(req, res) {
         error: "Verkeerd e-mailadres of wachtwoord",
         email,
         role,
+        pageTitle: "Inloggen | Collego",
       })
     }
 
@@ -203,6 +207,7 @@ async function handleLogin(req, res) {
         error: "Verkeerd e-mailadres of wachtwoord",
         email,
         role,
+        pageTitle: "Inloggen | Collego",
       })
     }
 
@@ -232,6 +237,7 @@ async function handleLogin(req, res) {
       error: "Er ging iets mis, probeer het opnieuw",
       email,
       role,
+      pageTitle: "Inloggen | Collego",
     })
   }
 }
@@ -247,13 +253,17 @@ function handleLogout(req, res) {
 }
 
 async function showCreateProfile(req, res) {
-  const user = await usersCollection.findOne({ _id: new ObjectId(req.session.user.id) })
+  const user = await usersCollection.findOne({
+    _id: new ObjectId(req.session.user.id),
+  })
 
   if (user.firstName) {
     return res.redirect("/matching")
   }
 
-  res.render("pages/create-profile")
+  res.render("pages/create-profile", {
+    pageTitle: "Profiel aanmaken | Collego",
+  })
 }
 
 async function handleCreateProfile(req, res) {
@@ -311,24 +321,28 @@ async function handleCreateProfile(req, res) {
     console.error("Fout bij profiel aanmaken:", err)
     res.status(500).render("pages/create-profile", {
       error: "Er ging iets mis, probeer het opnieuw",
+      pageTitle: "Profiel aanmaken | Collego",
     })
   }
 }
 
 async function showCreateCompanyProfile(req, res) {
-  const company = await companiesCollection.findOne({ _id: new ObjectId(req.session.user.id) })
+  const company = await companiesCollection.findOne({
+    _id: new ObjectId(req.session.user.id),
+  })
 
   if (company.companyName) {
     return res.redirect("/add-vacancy")
   }
 
-  res.render("pages/create-company-profile")
+  res.render("pages/create-company-profile", {
+    pageTitle: "Bedrijfsprofiel aanmaken | Collego",
+  })
 }
 
 async function handleCreateCompanyProfile(req, res) {
   try {
     const { companyName, sector, companySize, website, description } = req.body
-    const logo = req.file ? req.file.filename : null
 
     await companiesCollection.updateOne(
       { _id: new ObjectId(req.session.user.id) },
@@ -339,7 +353,6 @@ async function handleCreateCompanyProfile(req, res) {
           companySize,
           website,
           description,
-          logo,
         },
       },
     )
@@ -348,12 +361,15 @@ async function handleCreateCompanyProfile(req, res) {
     console.error("Fout bij bedrijfsprofiel aanmaken:", err)
     res.status(500).render("pages/create-company-profile", {
       error: "Er ging iets mis, probeer het opnieuw",
+      pageTitle: "Bedrijfsprofiel aanmaken | Collego",
     })
   }
 }
 
 function showAddVacancy(req, res) {
-  res.render("pages/add-vacancy")
+  res.render("pages/add-vacancy", {
+    pageTitle: "Vacature toevoegen | Collego",
+  })
 }
 
 async function handleAddVacancy(req, res) {
@@ -369,7 +385,9 @@ async function handleAddVacancy(req, res) {
       description,
     } = req.body
 
-    const company = await companiesCollection.findOne({ _id: new ObjectId(req.session.user.id) })
+    const company = await companiesCollection.findOne({
+      _id: new ObjectId(req.session.user.id),
+    })
 
     await vacanciesCollection.insertOne({
       companyId: req.session.user.id,
@@ -390,6 +408,7 @@ async function handleAddVacancy(req, res) {
     console.error("Fout bij vacature toevoegen:", err)
     res.status(500).render("pages/add-vacancy", {
       error: "Er ging iets mis, probeer het opnieuw",
+      pageTitle: "Vacature toevoegen | Collego",
     })
   }
 }
@@ -414,7 +433,9 @@ async function handleAddressLookup(req, res) {
     const { zipCode, houseNumber } = req.query
 
     if (!zipCode || !houseNumber) {
-      return res.status(400).json({ error: "Postcode en huisnummer zijn verplicht" })
+      return res
+        .status(400)
+        .json({ error: "Postcode en huisnummer zijn verplicht" })
     }
 
     const response = await fetch(
@@ -443,22 +464,33 @@ async function showDashboard(req, res) {
   try {
     const userId = req.session.user.id
 
+    const savedVacancies = await reactionsCollection
+      .find({ userId: userId, reaction: "yes", status: { $ne: "matched" } })
+      .toArray()
 
-const savedVacancies = await reactionsCollection
-  .find({ userId: userId, reaction: "yes", status: { $ne: "matched" } })
-  .toArray()
     const favoriteVacancies = await reactionsCollection
       .find({ userId: userId, reaction: "favorite" })
       .toArray()
 
-// alleen user-reactions met status matched, want company-reactions hebben geen vacaturedata
-const matchedVacancies = await reactionsCollection
-  .find({ userId: userId, type: "user-reaction", status: "matched" })
-  .toArray()
-    res.render("pages/dashboard", { savedVacancies, favoriteVacancies, matchedVacancies })
+    // alleen user-reactions met status matched, want company-reactions hebben geen vacaturedata
+    const matchedVacancies = await reactionsCollection
+      .find({ userId: userId, type: "user-reaction", status: "matched" })
+      .toArray()
+
+    res.render("pages/dashboard", {
+      savedVacancies,
+      favoriteVacancies,
+      matchedVacancies,
+      pageTitle: "Dashboard | Collego",
+    })
   } catch (err) {
     console.error("Fout bij ophalen favorieten:", err)
-    res.status(500).render("pages/dashboard", { savedVacancies: [], favoriteVacancies: [], matchedVacancies: [] })
+    res.status(500).render("pages/dashboard", {
+      savedVacancies: [],
+      favoriteVacancies: [],
+      matchedVacancies: [],
+      pageTitle: "Dashboard | Collego",
+    })
   }
 }
 
@@ -523,13 +555,40 @@ async function showMatching(req, res) {
       vacancy.companyDescription = company ? company.description : ""
     })
 
-    res.render("pages/matching", { vacancies: vacancies, user: user })
+    res.render("pages/matching", { vacancies: vacancies, user: user, pageTitle: "Vacatures ontdekken | Collego" })
   } catch (err) {
     console.error("Fout bij ophalen vacatures:", err)
-    res.status(500).render("pages/matching", { vacancies: [], user: null })
+    res.status(500).render("pages/matching", {
+      vacancies: [],
+      user: null,
+      pageTitle: "Vacatures ontdekken | Collego",
+    })
   }
 }
 
+async function handleMatchReaction(req, res) {
+  try {
+    const userId = req.session.user.id
+    const {
+      vacancyId,
+      vacancyTitle,
+      company,
+      reaction,
+      location,
+      salary,
+      hoursPerWeek,
+      contractType,
+    } = req.body
+
+    if (reaction === "yes" || reaction === "favorite") {
+      const bestaandeReactie = await reactionsCollection.findOne({
+        userId,
+        vacancyId,
+        reaction,
+      })
+      if (bestaandeReactie) {
+        return res.json({ success: true })
+      }
 
 
 async function showCompanyMatches(req, res) {
@@ -545,10 +604,18 @@ async function showCompanyMatches(req, res) {
       .find({ vacancyId: { $in: vacancyIds } })
       .toArray()
 
-    res.render("pages/company-matches", { vacancies, reactions })
+    res.render("pages/company-matches", {
+      vacancies,
+      reactions,
+      pageTitle: "Match reacties | Collego",
+    })
   } catch (err) {
     console.error("Fout bij ophalen matches:", err)
-    res.status(500).render("pages/company-matches", { vacancies: [], reactions: [] })
+    res.status(500).render("pages/company-matches", {
+      vacancies: [],
+      reactions: [],
+      pageTitle: "Match reacties | Collego",
+    })
   }
 }
 
