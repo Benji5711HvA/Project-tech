@@ -36,15 +36,18 @@ app.use(
 )
 
 // Hulp functies
+// Wachtwoord hashen met bcrypt zodat we nooit onveilige wachtwoorden in de database opslaan
 async function hashPassword(password) {
   const salt = await bcrypt.genSalt(10)
   return bcrypt.hash(password, salt)
 }
 
+// Wachtwoord vergelijken tijdens het inloggen, bcrypt zorgt ervoor dat hetzelfde wachtwoord elke keer een andere hash oplevert, dus we kunnen niet gewoon vergelijken maar moeten de compare functie gebruiken
 async function verifyPassword(password, hashedPassword) {
   return bcrypt.compare(password, hashedPassword)
 }
 
+// Validatiefunctie voor registratie, zodat we niet onnodig database queries uitvoeren als de input al niet klopt
 function validateRegistration(email, password, confirmPassword) {
   if (!email || !password || !confirmPassword) return "Vul alles in"
   if (password !== confirmPassword) return "Wachtwoorden komen niet overeen"
@@ -52,6 +55,7 @@ function validateRegistration(email, password, confirmPassword) {
   return null
 }
 
+// Middleware om gebruikersdata en paginatitels beschikbaar te maken in alle templates zonder dat we die in elke route opnieuw hoeven te definiëren
 const pageTitles = {
   "/": "Home | Collego",
   "/register": "Registreren | Collego",
@@ -65,6 +69,7 @@ const pageTitles = {
   "/company-matching": "Kandidaten | Collego",
 }
 
+// Deze middleware wordt uitgevoerd bij elke binnenkomende request, voordat de route handler wordt aangeroepen, zodat we zeker weten dat de benodigde data altijd beschikbaar is in de templates
 function setLocals(req, res, next) {
   res.locals.user = req.session.user
   res.locals.pageTitle = pageTitles[req.path] || "Collego"
@@ -73,15 +78,18 @@ function setLocals(req, res, next) {
 
 app.use(setLocals)
 
+// Alleen ingelogde gebruikers mogen deze routes bereiken
 function isLoggedIn(req, res, next) {
   if (req.session.user) return next()
     return res.redirect("/login")
 }
 
+// Bedrijven mogen niet op gebruikerspagina's komen en andersom
 function isUser(req, res, next) {
   if (req.session.user && req.session.user.role === 'user') return next()
     return res.redirect('/')
 }
+
 
 function isCompany(req, res, next) {
   if (req.session.user && req.session.user.role === 'company') return next()
@@ -152,6 +160,7 @@ async function home(req, res) {
 }
 
 // Benjamin - Account
+// Registratiepagina tonen met lege standaardwaarden zodat de template nooit undefined fouten gooit
 function showRegister(req, res) {
   res.render("pages/register", {
     error: undefined,
@@ -164,10 +173,12 @@ async function handleRegister(req, res) {
   try {
     const { email, password, confirmPassword, role } = req.body
 
+    // Eerst valideren voordat we de database aanspreken, scheelt een onnodige query
     const error = validateRegistration(email, password, confirmPassword)
     if (error)
       return res.status(400).render("pages/register", { error, email, role })
 
+    // Beide collecties checken zodat een e-mailadres maar 1 keer bestaat in het systeem, ongeacht of het een gebruiker of bedrijf is
     const existingUser = await usersCollection.findOne({ email })
     const existingCompany = await companiesCollection.findOne({ email })
     if (existingUser || existingCompany) {
@@ -180,13 +191,14 @@ async function handleRegister(req, res) {
 
     const hashedPassword = await hashPassword(password)
 
-    // Hier willen we checken of het account dat wordt geregistreerd een bedrijf is of een gewone gebruiker, en op basis daarvan willen we het in de juiste collectie opslaan
+    // Gebruikers en bedrijven worden in aparte collecties opgeslagen omdat ze fundamenteel andere data hebben en verschillende flows doorlopen
     if (role === "company") {
       await companiesCollection.insertOne({ email, password: hashedPassword })
     } else {
       await usersCollection.insertOne({ email, password: hashedPassword })
     }
 
+    // na registratie doorsturen naar login met dezelfde rol zodat het tabblad al geselecteerd staat
     res.redirect(`/login?role=${role}`)
   } catch (err) {
     console.error("Fout bij registreren:", err)
@@ -198,6 +210,7 @@ async function handleRegister(req, res) {
   }
 }
 
+// Loginpagina tonen met lege standaardwaarden zodat de template nooit undefined-fouten gooit
 function showLogin(req, res) {
   res.render("pages/login", {
     error: undefined,
@@ -210,9 +223,12 @@ async function handleLogin(req, res) {
   try {
     const { email, password, role } = req.body
 
+    // Op basis van de rol de juiste collectie kiezen zodat we niet gebruikers en bedrijven door elkaar halen
     const collection =
       role === "company" ? companiesCollection : usersCollection
     const user = await collection.findOne({ email })
+
+    // Zelfde foutmelding voor onbekend e-mailadres en verkeerd wachtwoord, zodat een aanvaller niet kan achterhalen welke e-mailadressen bestaan
     if (!user) {
       return res.status(400).render("pages/login", {
         error: "Verkeerd e-mailadres of wachtwoord",
@@ -230,6 +246,7 @@ async function handleLogin(req, res) {
       })
     }
 
+    // Alleen de minimaal benodigde gegevens in de sessie opslaan, het wachtwoord en andere gevoelige velden blijven buiten de sessie
     req.session.user = {
       id: user._id.toString(),
       email: user.email,
@@ -237,6 +254,7 @@ async function handleLogin(req, res) {
       companyName: user.companyName || null,
     }
 
+    // Na inloggen controleren of het profiel al compleet is, anders wordt de gebruiker gedwongen het eerst aan te vullen
     if (role === "company") {
       if (!user.companyName) {
         res.redirect("/create-company-profile")
@@ -260,6 +278,7 @@ async function handleLogin(req, res) {
   }
 }
 
+// Sessie volledig vernietigen zodat de cookie niet hergebruikt kan worden
 function handleLogout(req, res) {
   req.session.destroy((err) => {
     if (err) {
@@ -273,6 +292,7 @@ function handleLogout(req, res) {
 async function showCreateProfile(req, res) {
   const user = await usersCollection.findOne({ _id: new ObjectId(req.session.user.id) })
 
+  // Als het profiel al bestaat de gebruiker doorsturen zodat ze het formulier niet opnieuw kunnen invullen
   if (user.firstName) {
     return res.redirect("/matching")
   }
@@ -302,6 +322,7 @@ async function handleCreateProfile(req, res) {
       workForm,
     } = req.body
 
+    // Alleen de bestandsnaam opslaan, niet het volledige pad, zodat het pad niet breekt als de server of mapstructuur verandert
     const cv = req.file ? req.file.filename : null
 
     await usersCollection.updateOne(
@@ -342,6 +363,7 @@ async function handleCreateProfile(req, res) {
 async function showCreateCompanyProfile(req, res) {
   const company = await companiesCollection.findOne({ _id: new ObjectId(req.session.user.id) })
 
+  // Als het bedrijfsprofiel al bestaat doorsturen naar de vacaturepagina zodat ze het formulier niet opnieuw kunnen invullen
   if (company.companyName) {
     return res.redirect("/add-vacancy")
   }
@@ -365,6 +387,8 @@ async function handleCreateCompanyProfile(req, res) {
         },
       },
     )
+
+    // Na het aanmaken van het bedrijfsprofiel direct doorsturen naar de vacaturepagina zodat het bedrijf meteen zijn eerste vacature kan toevoegen
     res.redirect("/add-vacancy")
   } catch (err) {
     console.error("Fout bij bedrijfsprofiel aanmaken:", err)
@@ -391,6 +415,7 @@ async function handleAddVacancy(req, res) {
       description,
     } = req.body
 
+    // Bedrijfsnaam ophalen uit de database zodat die altijd klopt, ook als het bedrijf de naam later zou wijzigen
     const company = await companiesCollection.findOne({ _id: new ObjectId(req.session.user.id) })
 
     await vacanciesCollection.insertOne({
@@ -416,6 +441,7 @@ async function handleAddVacancy(req, res) {
   }
 }
 
+// Salarisindicatie ophalen via de server zodat de Adzuna API-sleutels nooit zichtbaar zijn in de browser
 async function getSalaryHint(req, res) {
   try {
     const { category } = req.query
@@ -423,6 +449,8 @@ async function getSalaryHint(req, res) {
       `https://api.adzuna.com/v1/api/jobs/nl/search/1?app_id=${process.env.ADZUNA_APP_ID}&app_key=${process.env.ADZUNA_APP_KEY}&category=${category}&results_per_page=1`,
     )
     const data = await response.json()
+
+    // Adzuna geeft een jaarsalaris terug, wij willen een maandbedrag tonen
     const monthlySalary = Math.round(data.mean / 12)
     res.json({ salaryPerMonth: monthlySalary })
   } catch (err) {
@@ -431,10 +459,12 @@ async function getSalaryHint(req, res) {
   }
 }
 
+// Adresgegevens ophalen via de server zodat de Postcode.tech API-token nooit zichtbaar is in de browser
 async function handleAddressLookup(req, res) {
   try {
     const { zipCode, houseNumber } = req.query
 
+    // Vroeg afbreken als verplichte parameters ontbreken zodat we geen onnodige request naar de externe api sturen
     if (!zipCode || !houseNumber) {
       return res.status(400).json({ error: "Postcode en huisnummer zijn verplicht" })
     }

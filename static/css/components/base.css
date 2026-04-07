@@ -8,13 +8,14 @@
 
 :root {
   --white: #ffffff;
-  --orange: #ff5e00;
+  --orange: #FF6116;
   --gray: #e8e8e8;
 
   --orange-hover: #e65400;
 
   --text-dark: #1a1a2e;
   --text-gray: #6b7280;
+  --placeholder-gray: #9ca3af;
 
   --input-bg: #f3f4f6;
 

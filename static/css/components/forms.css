@@ -42,7 +42,7 @@
 }
 
 .field input::placeholder {
-  color: #9ca3af;
+  color: var(--placeholder-gray);
 }
 
 .field input:focus {
@@ -72,7 +72,7 @@ textarea {
 }
 
 textarea::placeholder {
-  color: #9ca3af;
+  color: var(--placeholder-gray);
 }
 
 textarea:focus {
