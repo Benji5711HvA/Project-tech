@@ -15,6 +15,7 @@
         <button id="btn-matches" class="toggle-btn">
           Matches
           <span class="tab-badge">
+            <%# Toont het aantal matches als getal in het icoontje naast de knop %>
             <%= matchedVacancies.length %>
           </span>
         </button>
@@ -24,6 +25,7 @@
     </div>
 
     <div id="tab-saved" class="tab">
+      <%# Controleer of de gebruiker sollicitaties heeft, zo niet toon dan een zero state %>
       <% if (savedVacancies.length===0) { %>
       <div class="zero-state">
         <p class="zero-state-text">Nog geen sollicitaties. Ga op zoek naar jouw droombaan!</p>
@@ -31,7 +33,9 @@
       </div>
       <% } else { %>
       <div class="favorites-grid">
+        <%# Loop door elke sollicitatie en maak er een kaartje van %>
         <% savedVacancies.forEach(function(vacancy) { %>
+        <%# Geef elk kaartje een uniek id zodat we het later via JavaScript kunnen vinden en verwijderen %>
         <div class="vacancy-card" id="card-<%= vacancy._id %>">
           <h2 class="vacancy-title">
             <%= vacancy.vacancyTitle %>
@@ -39,19 +43,23 @@
           <p class="vacancy-company">
             <%= vacancy.company %>
           </p>
+          <%# Toon het salaris alleen als de vacature een salaris heeft ingevuld %>
           <% if (vacancy.salary) { %>
           <p class="vacancy-salary">€<%= vacancy.salary %> per maand</p>
           <% } %>
           <div class="vacancy-tags">
+            <%# Toon locatie alleen als die beschikbaar is %>
             <% if (vacancy.location) { %><span class="vacancy-tag">
               <%= vacancy.location %>
             </span>
             <% } %>
+            <%# Toon uren per week alleen als die beschikbaar is %>
             <% if (vacancy.hoursPerWeek) { %><span class="vacancy-tag">
               <%= vacancy.hoursPerWeek %> uur p/w
             </span>
             <% } %>
-
+            <%# contractType kan als losse tekst of als lijst binnenkomen uit de database.
+            We zorgen dat het altijd een lijst wordt zodat we er eenn voor een doorheen kunnen gaan %>
             <% if (vacancy.contractType) { %>
             <% var contractTypes=Array.isArray(vacancy.contractType) ? vacancy.contractType :
                                     vacancy.contractType.split(',') %>
@@ -62,6 +70,7 @@
             <% }) %>
             <% } %>
           </div>
+          <%# De verwijderknop krijgt het id van de vacature mee zodat JavaScript weet welke vacature verwijderd moet worden %>
           <button class="delete-button" data-id="<%= vacancy._id %>">
             <span class="material-symbols-outlined">delete</span>
           </button>
@@ -72,6 +81,7 @@
     </div>
 
     <div id="tab-favorites" class="tab hidden">
+      <%# Controleer of de gebruiker favorieten heeft, zo niet toon dan een zero state %>
       <% if (favoriteVacancies.length===0) { %>
       <div class="zero-state">
         <p class="zero-state-text">Je lijst is leeg. Tijd om te ontdekken wat er voor jou is!</p>
@@ -79,7 +89,9 @@
       </div>
       <% } else { %>
       <div class="favorites-grid">
+        <%# Loop door elke favoriet en maak er een kaartje van %>
         <% favoriteVacancies.forEach(function(vacancy) { %>
+        <%# Geef elk kaartje een uniek id zodat we het later via JavaScript kunnen vinden en verwijderen %>
         <div class="vacancy-card" id="card-<%= vacancy._id %>">
           <h2 class="vacancy-title">
             <%= vacancy.vacancyTitle %>
@@ -87,18 +99,23 @@
           <p class="vacancy-company">
             <%= vacancy.company %>
           </p>
+          <%# Toon het salaris alleen als de vacature een salaris heeft ingevuld %>
           <% if (vacancy.salary) { %>
           <p class="vacancy-salary">€<%= vacancy.salary %> per maand</p>
           <% } %>
           <div class="vacancy-tags">
+            <%# Toon locatie alleen als die beschikbaar is %>
             <% if (vacancy.location) { %><span class="vacancy-tag">
               <%= vacancy.location %>
             </span>
             <% } %>
+            <%# Toon uren per week alleen als die beschikbaar is %>
             <% if (vacancy.hoursPerWeek) { %><span class="vacancy-tag">
               <%= vacancy.hoursPerWeek %> uur p/w
             </span>
             <% } %>
+            <%# contractType kan als losse tekst of als lijst binnenkomen uit de database.
+            We zorgen dat het altijd een lijst wordt zodat we er eenn voor een doorheen kunnen gaan %>
             <% if (vacancy.contractType) { %>
             <% var contractTypes=Array.isArray(vacancy.contractType) ? vacancy.contractType :
                                     vacancy.contractType.split(',') %>
@@ -109,6 +126,7 @@
             <% }) %>
             <% } %>
           </div>
+          <%# De verwijderknop krijgt het id van de vacature mee zodat JavaScript weet welke vacature verwijderd moet worden %>
           <button class="delete-button" data-id="<%= vacancy._id %>">
             <span class="material-symbols-outlined">delete</span>
           </button>
@@ -117,7 +135,9 @@
       </div>
       <% } %>
     </div>
+
     <div id="tab-matches" class="tab hidden">
+      <%# Controleer of de gebruiker matches heeft, zo niet toon dan een zero state %>
       <% if (matchedVacancies.length===0) { %>
       <div class="zero-state">
         <p class="zero-state-text">Nog geen matches. Blijf reageren!</p>
@@ -125,7 +145,9 @@
       </div>
       <% } else { %>
       <div class="favorites-grid">
+        <%# Loop door elke match en maak er een kaartje van %>
         <% matchedVacancies.forEach(function(vacancy) { %>
+        <%# Geef elk kaartje een uniek id zodat we het later via JavaScript kunnen vinden %>
         <div class="vacancy-card" id="card-<%= vacancy._id %>">
           <h2 class="vacancy-title">
             <%= vacancy.vacancyTitle %>
@@ -133,18 +155,23 @@
           <p class="vacancy-company">
             <%= vacancy.company %>
           </p>
+          <%# Toon het salaris alleen als de vacature een salaris heeft ingevuld %>
           <% if (vacancy.salary) { %>
           <p class="vacancy-salary">€<%= vacancy.salary %> per maand</p>
           <% } %>
           <div class="vacancy-tags">
+            <%# Toon locatie alleen als die beschikbaar is %>
             <% if (vacancy.location) { %><span class="vacancy-tag">
               <%= vacancy.location %>
             </span>
             <% } %>
+            <%# Toon uren per week alleen als die beschikbaar is %>
             <% if (vacancy.hoursPerWeek) { %><span class="vacancy-tag">
               <%= vacancy.hoursPerWeek %> uur p/w
             </span>
             <% } %>
+            <%# contractType kan als losse tekst of als lijst binnenkomen uit de database.
+            We zorgen dat het altijd een lijst wordt zodat we er eenn voor een doorheen kunnen gaan %>
             <% if (vacancy.contractType) { %>
             <% var contractTypes=Array.isArray(vacancy.contractType) ? vacancy.contractType :
                                     vacancy.contractType.split(',') %>
@@ -170,4 +197,4 @@
 </main>
 
 <script src="/js/dashboard.js"></script>
-<%- include('../partials/footer') %>
+<%- include('../partials/foot') %>
