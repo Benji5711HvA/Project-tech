@@ -1,4 +1,3 @@
-/* Hoofdknop oranje */
 .btn {
   width: 100%;
   padding: 1rem;
@@ -16,7 +15,6 @@
   background: var(--orange-hover);
 }
 
-/* Kleine knop voor nav */
 .btn-small {
   background: transparent;
   border: 0.125rem solid var(--white);
@@ -42,7 +40,6 @@
   border-color: var(--gray);
 }
 
-/* Toggle knoppen */
 .toggle-btn {
   padding: 1rem 4rem;
   border: none;
@@ -60,7 +57,6 @@
   color: var(--orange);
 }
 
-/* Ja/nee knoppen op kaarten */
 .no-button,
 .no-btn {
   width: 2.75rem;
@@ -69,14 +65,14 @@
   font-size: 1.1rem;
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
-  background-color: #fff0f0;
-  color: #e53e3e;
-  border: 0.0625rem solid #fca5a5;
+  background-color: var(--error-bg);
+  color: var(--error-text);
+  border: 0.0625rem solid var(--error-border);
 }
 
 .no-button:hover,
 .no-btn:hover {
-  background-color: #e53e3e;
+  background-color: var(--error-text);
   color: var(--white);
   transform: scale(1.05);
 }
@@ -89,19 +85,18 @@
   font-size: 1.1rem;
   cursor: pointer;
   transition: transform 0.2s, background-color 0.2s;
-  background-color: #f0faf4;
-  color: #1a7f4b;
-  border: 0.0625rem solid #a3d9b8;
+  background-color: var(--success-bg);
+  color: var(--success-text);
+  border: 0.0625rem solid var(--success-border);
 }
 
 .yes-button:hover,
 .yes-btn:hover {
-  background-color: #1a7f4b;
+  background-color: var(--success-text);
   color: var(--white);
   transform: scale(1.05);
 }
 
-/* Meer info knop */
 .more-info-button,
 .more-info-btn {
   background: none;
@@ -125,7 +120,6 @@
   background: none;
 }
 
-/* Sluit knop in popup */
 .close-button,
 .close-btn {
   background: none;
@@ -145,7 +139,6 @@
   color: var(--text-dark);
 }
 
-/* Favoriet knop */
 .favorite-button {
   background: none;
   border: none;
@@ -163,14 +156,13 @@
 }
 
 .favorite-button:hover .favorite-icon {
-  color: #e53e3e;
+  color: var(--error-text);
 }
 
 .favorite-button.active .favorite-icon {
-  color: #e53e3e;
+  color: var(--error-text);
 }
 
-/* Verwijder knop */
 .delete-button {
   position: absolute;
   top: 1.2rem;
@@ -186,7 +178,6 @@
   transition: color 0.2s;
 }
 
-/* Voorkeuren filter knop */
 .voorkeuren-filter-btn {
   display: flex;
   align-items: center;
@@ -208,7 +199,6 @@
   color: var(--white);
 }
 
-/* Zero state knop */
 .zero-state-button {
   background-color: var(--orange);
   color: var(--white);
@@ -223,7 +213,6 @@
 .zero-state-button:hover {
   background-color: var(--orange-hover);
 }
-
 
 .zero-state-btn {
   background: none;
@@ -243,7 +232,6 @@
   background: none;
 }
 
-/* Hero knoppen */
 .hero-button-primary {
   background-color: var(--white);
   color: var(--orange);
@@ -275,7 +263,6 @@
   background-color: rgba(255 255 255 / 15%);
 }
 
-/* Navigatie vorige/volgende knoppen */
 .previous-button,
 .next-button {
   width: 3rem;

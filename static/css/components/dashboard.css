@@ -138,3 +138,9 @@
   font-size: 1.1rem;
   flex-shrink: 0;
 }
+
+.zero-state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
