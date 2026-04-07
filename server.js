@@ -133,7 +133,7 @@ app.get("/company-matching", isLoggedIn, isCompany, showCompanyMatching)
 app.post("/company-like", isLoggedIn, isCompany, handleCompanyLike)
 
 // Mehmet - Home
-// Haal 3 willekeurige vacatures op voor de trending sectie
+// Haal 3 willekeurige vacatures op uit de database en stuur ze naar de homepagina
 async function home(req, res) {
   try {
     const allVacancies = await vacanciesCollection.find({}).toArray()
@@ -461,14 +461,17 @@ async function handleAddressLookup(req, res) {
 }
 
 // Mehmet - Dashboard
+// Haal alle opgeslagen vacatures, favorieten en matches op van de ingelogde gebruiker en stuur ze naar het dashboard
 async function showDashboard(req, res) {
   try {
     const userId = req.session.user.id
 
+    // Haal vacatures op waar de gebruiker ja op heeft gedrukt maar nog geen match is
+    const savedVacancies = await reactionsCollection
+      .find({ userId: userId, reaction: "yes", type: "user-reaction", status: { $ne: "matched" } })
+      .toArray()
 
-   const savedVacancies = await reactionsCollection
-  .find({ userId: userId, reaction: "yes", type: "user-reaction", status: { $ne: "matched" } })
-  .toArray()
+    // Haal vacatures op die de gebruiker als favoriet heeft gemarkeerd maar nog geen match is
     const favoriteVacancies = await reactionsCollection
       .find({
         userId: userId,
@@ -478,10 +481,11 @@ async function showDashboard(req, res) {
       })
       .toArray()
 
-    // alleen user-reactions met status matched, want company-reactions hebben geen vacaturedata
+    // Haal alleen de user-reactions op met status matched, want company-reactions hebben geen vacaturedata
     const matchedVacancies = await reactionsCollection
       .find({ userId: userId, type: "user-reaction", status: "matched" })
       .toArray()
+
     res.render("pages/dashboard", { savedVacancies, favoriteVacancies, matchedVacancies })
   } catch (err) {
     console.error("Fout bij ophalen favorieten:", err)
@@ -489,6 +493,7 @@ async function showDashboard(req, res) {
   }
 }
 
+// Verwijder een reactie van de gebruiker op basis van het vacature id uit de url
 async function deleteFavorite(req, res) {
   try {
     // Haal het vacature id op uit de url parameters

@@ -2,26 +2,27 @@
 const deleteButtons = document.querySelectorAll('.delete-button')
 const btnSaved = document.getElementById('btn-saved')
 const btnFavorites = document.getElementById('btn-favorites')
-const btnMatches = document.getElementById('btn-matches') 
-// Verwijder de favoriet op basis van het id van de knop
+const btnMatches = document.getElementById('btn-matches')
+
+// Lees het vacature id van de knop uit en stuur het door naar de verwijder functie
 function handleDeleteClick(button) {
   const id = button.dataset.id
   deleteFavorite(id)
 }
 
-// Voeg een klik event toe aan een knop
+// Koppel een klik event aan een verwijder knop zodat hij reageert als de gebruiker erop klikt
 function addDeleteListener(button) {
   button.addEventListener('click', function handleClick() {
     handleDeleteClick(button)
   })
 }
 
-// Voeg een klik event toe aan elke verwijder knop alleen als er knoppen zijn
+// Koppel het klik event alleen als er verwijder knoppen op de pagina staan
 if (deleteButtons.length > 0) {
   deleteButtons.forEach(addDeleteListener)
 }
 
-// Laat het opgeslagen tabje zien als de gebruiker daarop klikt
+// Laat het sollicitaties tabje zien als de gebruiker daarop klikt
 function handleSavedClick() {
   showTab('saved')
 }
@@ -31,28 +32,33 @@ function handleFavoritesClick() {
   showTab('favorites')
 }
 
+// Laat het matches tabje zien als de gebruiker daarop klikt
+function handleMatchesClick() {
+  showTab('matches')
+}
+
 btnSaved.addEventListener('click', handleSavedClick)
 btnFavorites.addEventListener('click', handleFavoritesClick)
-btnMatches.addEventListener('click', function handleMatchesClick() {
-  showTab('matches')
-})
-// Wissel het zichtbare tabje op basis van wat de gebruiker aanklikt
+btnMatches.addEventListener('click', handleMatchesClick)
+
+// Verberg alle tabjes en laat alleen het gekozen tabje zien
 function showTab(tabName) {
   const tabSaved = document.getElementById('tab-saved')
   const tabFavorites = document.getElementById('tab-favorites')
-const tabMatches = document.getElementById('tab-matches')
-  // Verberg eerst alles zodat we daarna alleen het juiste tabje kunnen laten zien
+  const tabMatches = document.getElementById('tab-matches')
+
+  // Verberg eerst alle tabjes zodat we daarna alleen het juiste kunnen laten zien
   tabSaved.classList.add('hidden')
   tabFavorites.classList.add('hidden')
-tabMatches.classList.add('hidden')
+  tabMatches.classList.add('hidden')
 
-  // Haal de actieve stijl weg zodat alleen de juiste knop oranje wordt
+  // Haal de actieve stijl weg bij alle knoppen zodat alleen de juiste knop actief wordt
   btnSaved.classList.remove('active')
   btnFavorites.classList.remove('active')
   btnMatches.classList.remove('active')
 
-  // Laat het juiste tabje zien en maak de bijbehorende knop actief
- if (tabName === 'saved') {
+  // Laat het juiste tabje zien en markeer de bijbehorende knop als actief
+  if (tabName === 'saved') {
     tabSaved.classList.remove('hidden')
     btnSaved.classList.add('active')
   } else if (tabName === 'favorites') {
@@ -64,7 +70,7 @@ tabMatches.classList.add('hidden')
   }
 }
 
-// Stuur een verzoek naar de server om de favoriet te verwijderen
+// Stuur een verzoek naar de server om de vacature uit de favorieten te verwijderen
 async function deleteFavorite(id) {
   try {
     const response = await fetch(`/favorites/${id}`, {
@@ -73,27 +79,25 @@ async function deleteFavorite(id) {
 
     const data = await response.json()
 
-    // Als het gelukt is haal het kaartje van de pagina
+    // Als het verwijderen gelukt is haal dan het kaartje van de pagina
     if (data.success) {
       const card = document.getElementById(`card-${id}`)
       card.remove()
 
-      // Controleer of er nog kaartjes over zijn in de actieve tab
+      // Kijk welk tabje momenteel zichtbaar is zodat we daarin kunnen controleren of het leeg is
       const activeTab = document.querySelector('.tab:not(.hidden)')
       const cards = activeTab.querySelectorAll('.vacancy-card')
 
-      // Bepaal de juiste tekst op basis van welke tab actief is
+      // Kies de juiste lege staat tekst op basis van welk tabje open staat
       const isSaved = activeTab.id === 'tab-saved'
       const zeroStateText = isSaved
         ? 'Nog geen opgeslagen vacatures. Ga op zoek naar jouw droombaan!'
         : 'Je lijst is leeg. Tijd om te ontdekken wat er voor jou is!'
 
-      // Als er geen kaartjes meer zijn toon dan de zero state
+      // Als er geen kaartjes meer over zijn laat dan de lege staat zien
       if (cards.length === 0) {
         const grid = activeTab.querySelector('.favorites-grid')
-        grid.style.display = 'flex'
-        grid.style.flexDirection = 'column'
-        grid.style.alignItems = 'center'
+        grid.classList.add('zero-state-container')
         grid.innerHTML = `
           <div class="zero-state">
             <p class="zero-state-text">${zeroStateText}</p>
