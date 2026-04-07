@@ -512,43 +512,49 @@ async function showMatching(req, res) {
   try {
     const userId = req.session.user.id
     const user = await usersCollection.findOne({ _id: new ObjectId(userId) })
-
+// Alle eerdere reacties ophalen zodat we weten welke vacatures
+// de gebruiker al heeft gezien, ongeacht of het ja of nee was
     const existingReactions = await reactionsCollection
       .find({ userId: userId, type: "user-reaction" })
       .toArray()
 
+    // IDs omzetten naar ObjectId zodat MongoDB ze kan vergelijken
+    // met de _id velden in de vacatures collectie
     const seenIds = existingReactions
       .map(function toObjectId(r) {
         try { return new ObjectId(r.vacancyId) } catch (e) { return null }
       })
       .filter(Boolean)
-
+// $nin zorgt ervoor dat alleen nieuwe vacatures worden opgehaald
+    // zodat een gebruiker nooit twee keer dezelfde vacature ziet
     const vacancies = await vacanciesCollection
       .find({ _id: { $nin: seenIds } })
       .toArray()
 
-    // bedrijven ophalen zodat we de beschrijving kunnen tonen
+    // bedrijven ophalen zodat we de beschrijving kunnen tonen in de popup
     const companyIds = vacancies.map(function (v) { return v.companyId })
     const companies = await companiesCollection
       .find({ _id: { $in: companyIds.map(function (id) { try { return new ObjectId(id) } catch (e) { return null } }).filter(Boolean) } })
       .toArray()
-
+// Labels en arrays voorbereiden op de server zodat de template
+// alleen nog hoeft te renderen zonder extra logica
     vacancies.forEach(function formatVacancy(vacancy) {
       vacancy.categoryLabel = vacancy.category || ""
       vacancy.educationLabel = vacancy.education || ""
-
+// contractType kan een string of array zijn afhankelijk van
+// hoe het formulier het heeft opgeslagen, beide gevallen afvangen
       const contractArr = Array.isArray(vacancy.contractType)
         ? vacancy.contractType
         : (vacancy.contractType ? vacancy.contractType.split(",") : [])
       vacancy.contractLabels = contractArr
 
       const workFormArr = Array.isArray(vacancy.workForm)
+      
         ? vacancy.workForm
         : (vacancy.workForm ? vacancy.workForm.split(",") : [])
       vacancy.workFormLabels = workFormArr
-
       // bedrijfsbeschrijving toevoegen aan vacature
-      const company = companies.find(function (c) { return c._id.toString() === vacancy.companyId })
+      const company = companies.find(function (company) { return company._id.toString() === vacancy.companyId })
       vacancy.companyDescription = company ? company.description : ""
     })
 
@@ -593,6 +599,8 @@ async function updateMatchStatus(req, res) {
   }
 }
 
+// Kandidaatdata filteren zodat het wachtwoord en andere gevoelige velden
+// nooit naar de EJS template worden gestuurd
 function mapCandidate(user) {
   const sectorArr = Array.isArray(user.sector) ? user.sector : (user.sector ? [user.sector] : [])
   const contractArr = Array.isArray(user.contractType) ? user.contractType : (user.contractType ? [user.contractType] : [])
@@ -606,6 +614,8 @@ function mapCandidate(user) {
     city: user.city,
     bio: user.bio,
     cv: user.cv,
+    // Initialen genereren op de server zodat de template geen
+    // extra logica nodig heeft voor de avatar weergave
     initialen: (user.firstName?.[0] || "") + (user.lastName?.[0] || ""),
     educationLabel: user.education || "",
     sectorLabels: sectorArr,
@@ -620,10 +630,13 @@ async function showCompanyMatching(req, res) {
   try {
     const companyId = req.session.user.id
 
+  // Alle eerdere reacties van dit bedrijf ophalen zodat we
+    // kandidaten kunnen opdelen in gezien, in behandeling en gematcht
     const myReactions = await reactionsCollection
       .find({ companyId: companyId, type: "company-reaction" })
       .toArray()
 
+      // Set gebruiken zodat dubbele gebruiker-ids automatisch worden verwijderd
     const seenUserIds = new Set(
       myReactions.map(function getId(r) { return r.userId })
     )
@@ -644,6 +657,8 @@ async function showCompanyMatching(req, res) {
         .map(function getId(r) { return r.userId })
     )
 
+     // String IDs omzetten naar ObjectId zodat MongoDB ze kan gebruiken
+    // in een $in of $nin query op de _id velden
     function toObjectIds(idSet) {
       return Array.from(idSet)
         .map(function convert(id) {
@@ -659,8 +674,11 @@ async function showCompanyMatching(req, res) {
     const seenObjectIds = toObjectIds(seenUserIds)
     const pendingObjectIds = toObjectIds(pendingUserIds)
     const matchedObjectIds = toObjectIds(matchedUserIds)
+      // Alleen kandidaten ophalen met een volledig profiel zodat
+    // bedrijven geen lege profielen te zien krijgen
     const browseUsers = await usersCollection
-      .find({
+   
+  .find({
         firstName: { $exists: true, $ne: "" },
         _id: { $nin: seenObjectIds },
       })
@@ -668,7 +686,8 @@ async function showCompanyMatching(req, res) {
 
     let pendingUsers = []
     let matchedUsers = []
-
+// Alleen een query uitvoeren als er ook daadwerkelijk ids zijn
+    // om een lege $in query te vermijden die alle documenten zou teruggeven
     if (pendingObjectIds.length > 0) {
       pendingUsers = await usersCollection
         .find({ _id: { $in: pendingObjectIds } })
@@ -721,6 +740,8 @@ async function handleCompanyLike(req, res) {
       return res.status(404).json({ success: false, error: "Kandidaat niet gevonden" })
     }
 
+    // Controleren of het bedrijf al heeft gereageerd zodat
+    // een dubbele like niet mogelijk is
     const existingReaction = await reactionsCollection.findOne({
       companyId: companyId,
       userId: userId,
@@ -748,6 +769,8 @@ async function handleCompanyLike(req, res) {
     })
 
     if (reaction === "yes") {
+      // Controleren of de gebruiker al interesse had getoond in dit bedrijf
+      // zodat we direct een wederzijdse match kunnen registreren
       const userLikedCompany = await reactionsCollection.findOne({
         userId: userId,
         companyId: companyId,
